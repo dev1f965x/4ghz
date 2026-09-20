@@ -31,6 +31,8 @@ jobs:
         run: npm run test:coverage
       - name: Build
         run: npm run build
+      - name: Feed
+        run: npm run feed:validate
 
   rust:
     name: Rust
