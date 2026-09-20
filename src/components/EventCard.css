@@ -1,0 +1,93 @@
+.event {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-medium);
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+/* The game reads as a colored edge rather than another badge competing for attention. */
+.event::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  border-radius: var(--radius-pill);
+  background: var(--game-color);
+}
+
+.event[data-game="genshin"] {
+  --game-color: var(--game-genshin);
+}
+
+.event[data-game="starrail"] {
+  --game-color: var(--game-starrail);
+}
+
+.event[data-game="zenless"] {
+  --game-color: var(--game-zenless);
+}
+
+.event__meta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 72px;
+  padding-left: var(--space-2);
+}
+
+.event__game {
+  color: var(--game-color);
+  font-size: var(--text-small);
+  font-weight: 600;
+}
+
+.event__kind {
+  color: var(--text-muted);
+  font-size: var(--text-small);
+}
+
+.event__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.event__title {
+  overflow: hidden;
+  color: var(--text-strong);
+  font-size: var(--text-large);
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event__start {
+  color: var(--text-muted);
+  font-size: var(--text-small);
+  font-variant-numeric: tabular-nums;
+}
+
+.event__phase {
+  color: var(--text-body);
+  font-family: var(--font-numeric);
+  font-size: var(--text-base);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.event[data-status="running"] .event__phase {
+  color: var(--live);
+}
+
+.event[data-status="today"] .event__phase {
+  color: var(--soon);
+  font-weight: 600;
+}

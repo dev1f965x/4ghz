@@ -1,0 +1,55 @@
+/**
+ * Design tokens. Components reference these and never raw values, so a change to the
+ * palette or the rhythm lands everywhere at once.
+ *
+ * The app is dark only: it sits next to a game that runs full screen, and a bright
+ * window beside it is the thing people close first.
+ */
+:root {
+  /* Surfaces, from the window background up to a raised card. */
+  --surface-base: #0e0f13;
+  --surface-raised: #16181f;
+  --surface-overlay: #1e2028;
+  --border-subtle: #262933;
+  --border-strong: #343845;
+
+  /* Text, at contrast ratios that clear WCAG AA on --surface-base. */
+  --text-strong: #f4f5f8;
+  --text-body: #c3c7d1;
+  --text-muted: #8b91a0;
+
+  /* One accent for interaction, plus the states that carry meaning. */
+  --accent: #7aa2ff;
+  --accent-quiet: #7aa2ff1f;
+  --live: #4ade80;
+  --soon: #fbbf24;
+
+  /* Each game keeps its own hue so a glance separates the three. */
+  --game-genshin: #6fb6ff;
+  --game-starrail: #b79cff;
+  --game-zenless: #ffb35c;
+
+  /* Type scale. One family, four sizes, three weights. */
+  --font-family:
+    "Pretendard Variable", Pretendard, "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
+  --font-numeric: "SF Mono", "Cascadia Mono", ui-monospace, monospace;
+  --text-title: 1.5rem;
+  --text-large: 1.0625rem;
+  --text-base: 0.875rem;
+  --text-small: 0.75rem;
+
+  /* Spacing on a 4px rhythm. */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+
+  --radius-small: 8px;
+  --radius-medium: 12px;
+  --radius-pill: 999px;
+
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4);
+  --focus-ring: 2px solid var(--accent);
+}
