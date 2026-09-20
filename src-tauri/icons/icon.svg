@@ -1,0 +1,7 @@
+<!-- Source for every generated icon: npx @tauri-apps/cli icon src-tauri/icons/icon.svg -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="1024" height="1024">
+  <rect width="40" height="40" rx="9" fill="#16181f" />
+  <rect x="11" y="22" width="5" height="9" rx="2.5" fill="#6fb6ff" />
+  <rect x="18" y="16" width="5" height="15" rx="2.5" fill="#b79cff" />
+  <rect x="25" y="9" width="5" height="22" rx="2.5" fill="#ffb35c" />
+</svg>
