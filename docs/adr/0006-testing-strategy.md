@@ -22,7 +22,7 @@ around them is a list and a toggle.
 
 Vitest with Testing Library for the frontend, `cargo test` for Rust, and a schema check
 of the feed in CI. End-to-end tests through `tauri-driver` are deferred until the
-interface settles, and are tracked as their own issue rather than skipped silently.
+interface settles, tracked in issue #2 rather than skipped silently.
 
 ## Consequences
 

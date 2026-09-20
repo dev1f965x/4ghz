@@ -19,13 +19,23 @@ releases. The app must not require a new installer every time a livestream is sc
 
 ## Decision
 
-Events live in `feed/events.json` in this repository, validated in CI against a schema,
-and published as a static file. The app fetches it on a schedule and caches the last good
-copy.
+Events live in `feed/events.json` in this repository, validated in CI against a JSON
+Schema, and published to GitHub Pages by a workflow on every push to `main`. The app
+fetches that URL on a schedule and caches the last good copy.
+
+The document carries a `schemaVersion`. The app reads a feed whose major version it
+knows and refuses one it does not, telling the player to update instead of failing to
+parse.
+
+GitHub Pages rather than `raw.githubusercontent.com`: raw serves with a fixed five
+minute cache and an unauthenticated rate limit shared across the whole host, and its URL
+is tied to the branch name. Pages puts the file behind a CDN, answers conditional
+requests with ETags, and keeps the URL stable if the layout changes.
 
 ## Consequences
 
-Adding an event is a pull request, which is slower than typing into a window but leaves a
+Publishing now depends on a workflow, so a broken deploy means a stale feed rather than a
+broken app: clients keep their cache. Adding an event is a pull request, which is slower than typing into a window but leaves a
 history and a review. The same file can later feed a Discord bot or a website without
 either owning the data. If the feed is unreachable, the app shows the cached copy and
 says when it was fetched.

@@ -20,9 +20,13 @@ with a countdown.
   in-game event), a start instant, and an optional end instant.
 - The list shows how many days remain, marks what happens today, and separates what
   is already running from what has not started.
-- Event data is refreshed from a published feed and cached, so the window still shows
-  the last known schedule with no network.
-- A desktop notification fires for events that start within a day.
+- Event data is refreshed from a published feed on launch and every six hours, and can
+  be refreshed by hand. A failed fetch retries three times with growing delays, then waits
+  for the next cycle.
+- The last good feed is cached, so the window still shows the last known schedule with no
+  network, alongside when it was fetched.
+- A desktop notification fires 24 hours and 1 hour before an event starts. Each of those
+  is sent once per event; notifications missed while the app was closed are dropped.
 
 ## Acceptance criteria
 
@@ -31,8 +35,26 @@ with a countdown.
 - An event that has started but not ended reads as running.
 - With the network unplugged, the last fetched schedule is still shown, with the time
   it was fetched.
-- A schedule published to the feed appears in the app within one refresh cycle.
+- An event published to the feed appears within six hours, or immediately after a manual
+  refresh.
+- On a first run with no network and no cache, the window explains that the schedule could
+  not be fetched and offers to retry, rather than showing an empty list.
 - Notifications can be turned off, and turning them off silences them immediately.
+- Each event notifies at most once per threshold, even across restarts.
+
+## Interface language
+
+Korean, with every user-facing string kept in one place so a second language can be added
+without touching components. English follows once the feed covers global announcement
+times.
+
+## Non-functional requirements
+
+- The window is usable with the keyboard alone, and the countdown is announced to screen
+  readers as text, not as color.
+- Cold start to a readable list is under two seconds on the cached path.
+- Nothing about the player is collected, stored, or sent. The only outbound request is the
+  feed fetch.
 
 ## Out of scope for 1.0.0
 

@@ -12,3 +12,4 @@ the record that replaced it.
 | [5](0005-use-biome-for-lint-and-format.md) | Use Biome for linting and formatting | accepted |
 | [6](0006-testing-strategy.md) | Test with Vitest, Testing Library, and cargo test | accepted |
 | [7](0007-store-instants-in-utc.md) | Store instants in UTC and render in the viewer's zone | accepted |
+| [8](0008-ship-updates-through-the-tauri-updater.md) | Ship updates through the Tauri updater | accepted |
