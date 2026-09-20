@@ -14,10 +14,9 @@
   background: var(--surface-base);
 }
 
-/* The mark stretches to the height of the name and subtitle beside it. */
 .app__identity {
   display: flex;
-  align-items: stretch;
+  align-items: center;
   gap: var(--space-3);
 }
 
