@@ -1,4 +1,20 @@
-/** The list scrolls; the window does not. */
-.scroll-area {
-  overflow-y: auto;
+/**
+ * The scrollbar, themed.
+ *
+ * Drawn by OverlayScrollbars rather than the platform: Chromium applies no transitions
+ * to `::-webkit-scrollbar`, so a native bar can only blink in and out. The library keeps
+ * the accessibility and drag behaviour of a real scrollbar and lets it fade.
+ */
+.os-theme-4ghz {
+  --os-size: 10px;
+  --os-padding-perpendicular: 2px;
+  --os-padding-axis: 4px;
+  --os-track-bg: transparent;
+  --os-track-bg-hover: transparent;
+  --os-track-bg-active: transparent;
+  --os-handle-bg: var(--border-strong);
+  --os-handle-bg-hover: var(--text-muted);
+  --os-handle-bg-active: var(--text-muted);
+  --os-handle-border-radius: var(--radius-pill);
+  --os-handle-min-size: 32px;
 }

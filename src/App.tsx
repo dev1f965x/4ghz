@@ -1,3 +1,5 @@
+import "overlayscrollbars/overlayscrollbars.css";
+import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 import "./design/base.css";
 import "./design/scrollbar.css";
 import "./App.css";
@@ -52,7 +54,16 @@ export default function App({ state, onRefresh, tourMemory, now = new Date() }: 
         </div>
       </header>
 
-      <main className="app__main scroll-area">{renderBody(state, onRefresh, now)}</main>
+      <OverlayScrollbarsComponent
+        element="main"
+        className="app__main"
+        defer
+        options={{
+          scrollbars: { theme: "os-theme-4ghz", autoHide: "move", autoHideDelay: 700 },
+        }}
+      >
+        {renderBody(state, onRefresh, now)}
+      </OverlayScrollbarsComponent>
 
       {tour.step && (
         <Spotlight

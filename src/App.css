@@ -47,6 +47,7 @@
 
 .app__main {
   flex: 1;
+  min-height: 0;
   padding: var(--space-5) var(--space-6) var(--space-6);
 }
 
