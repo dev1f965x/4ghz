@@ -1,15 +1,15 @@
-## 무엇을
+## What
 
-<!-- 이 PR이 바꾸는 것 한두 줄 -->
+<!-- One or two lines on what this changes -->
 
-## 왜
+## Why
 
-<!-- 고른 방법과 버린 방법. 되돌리기 어려운 결정이면 ADR 링크 -->
+<!-- The approach taken and the ones dropped. Link an ADR for anything hard to reverse -->
 
-## 확인
+## Checks
 
-- [ ] 자동 검사 통과
-- [ ] 직접 실행해 확인
-- [ ] 문서 갱신 필요 없음 또는 갱신함
+- [ ] Automated checks pass
+- [ ] Ran it and looked
+- [ ] Docs updated, or none needed
 
 Closes #

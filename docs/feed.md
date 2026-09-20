@@ -16,7 +16,7 @@ installed app fetches on launch and every six hours.
      "title": "7.2 버전 특별 방송",
      "startsAt": "2026-11-01T11:00:00Z",
      "url": "https://genshin.hoyoverse.com/ko-kr/news",
-     "note": "공식 공지 기준"
+     "note": "From the official announcement"
    }
    ```
 

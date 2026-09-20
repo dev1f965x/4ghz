@@ -10,8 +10,6 @@ in one desktop window. (*for GHZ* — **G**enshin, **H**onkai, **Z**enless.)
 ![TypeScript](https://img.shields.io/badge/TypeScript-6-3178C6?logo=typescript&logoColor=white)
 ![Rust](https://img.shields.io/badge/Rust-stable-DEA584?logo=rust&logoColor=white)
 
-[English](./README.md) | [한국어](./README.ko.md)
-
 ## Install
 
 Grab `4GHz_x.y.z_x64-setup.exe` from [Releases](https://github.com/dev1f965x/4ghz/releases).
