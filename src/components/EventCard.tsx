@@ -6,13 +6,14 @@ import "./EventCard.css";
 interface Props {
   event: GameEvent;
   phase: EventPhase;
+  now: Date;
 }
 
 /**
  * One announced event. The countdown carries the weight, so it sits on the right at the
  * largest size in the card and repeats its meaning as text for screen readers.
  */
-export function EventCard({ event, phase }: Props) {
+export function EventCard({ event, phase, now }: Props) {
   return (
     <article className="event" data-game={event.game} data-status={phase.status}>
       <div className="event__meta">
@@ -20,8 +21,8 @@ export function EventCard({ event, phase }: Props) {
         <span className="event__kind">{KIND_LABELS[event.kind]}</span>
       </div>
       <div className="event__body">
-        <h2 className="event__title">{event.title}</h2>
-        <p className="event__start">{formatStart(event.startsAt)}</p>
+        <h3 className="event__title">{event.title}</h3>
+        <p className="event__start">{formatStart(event.startsAt, now)}</p>
       </div>
       <p className="event__phase">{phaseLabel(phase)}</p>
     </article>

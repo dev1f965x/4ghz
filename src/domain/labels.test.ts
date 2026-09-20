@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatFetchedAt, phaseLabel } from "./labels";
+import { formatFetchedAt, formatStart, phaseLabel } from "./labels";
 
 describe("phaseLabel", () => {
   it.each([
@@ -25,5 +25,17 @@ describe("formatFetchedAt", () => {
 
   it("falls back to a date once it is older than a day", () => {
     expect(formatFetchedAt(new Date("2026-09-28T12:00:00"), now)).toBe("9월 28일");
+  });
+});
+
+describe("formatStart", () => {
+  const now = new Date("2026-10-01T12:00:00");
+
+  it("leaves the year out within the year being viewed", () => {
+    expect(formatStart(new Date("2026-10-04T20:00:00"), now)).toBe("10월 4일 20:00");
+  });
+
+  it("says the year when the event falls in another one", () => {
+    expect(formatStart(new Date("2027-01-08T20:00:00"), now)).toBe("2027년 1월 8일 20:00");
   });
 });

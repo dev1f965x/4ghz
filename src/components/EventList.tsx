@@ -26,7 +26,7 @@ export function EventList({ events, now }: Props) {
             지금 진행 중
           </h2>
           {running.map(({ event, phase }) => (
-            <EventCard key={event.id} event={event} phase={phase} />
+            <EventCard key={event.id} event={event} phase={phase} now={now} />
           ))}
         </section>
       )}
@@ -36,7 +36,7 @@ export function EventList({ events, now }: Props) {
           다가오는 일정
         </h2>
         {ahead.map(({ event, phase }) => (
-          <EventCard key={event.id} event={event} phase={phase} />
+          <EventCard key={event.id} event={event} phase={phase} now={now} />
         ))}
       </section>
     </div>

@@ -1,4 +1,5 @@
 .event {
+  position: relative;
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
@@ -8,6 +9,7 @@
   border-radius: var(--radius-medium);
   background: var(--surface-raised);
   box-shadow: var(--shadow-card);
+  overflow: hidden;
 }
 
 /* The game reads as a colored edge rather than another badge competing for attention. */
@@ -18,11 +20,6 @@
   width: 3px;
   border-radius: var(--radius-pill);
   background: var(--game-color);
-}
-
-.event {
-  position: relative;
-  overflow: hidden;
 }
 
 .event[data-game="genshin"] {

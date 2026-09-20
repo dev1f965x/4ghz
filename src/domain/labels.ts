@@ -35,9 +35,15 @@ export function phaseLabel(phase: EventPhase): string {
   }
 }
 
-/** The clock time of an event in the viewer's zone, as `10월 2일 20:00`. */
-export function formatStart(instant: Date): string {
+/**
+ * The clock time of an event in the viewer's zone, as `10월 2일 20:00`.
+ *
+ * The year appears only when it differs from the year being viewed: the common case
+ * stays short, and a January event seen in December still says which January.
+ */
+export function formatStart(instant: Date, now: Date): string {
   return new Intl.DateTimeFormat("ko-KR", {
+    year: instant.getFullYear() === now.getFullYear() ? undefined : "numeric",
     month: "long",
     day: "numeric",
     hour: "2-digit",
