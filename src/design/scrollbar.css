@@ -24,17 +24,18 @@
   background-clip: content-box;
   background-color: transparent;
   /* Leaving: a beat to be sure scrolling stopped, then a slow fade to nothing. */
-  transition: background-color 420ms ease 240ms;
+  transition: background-color 600ms ease 200ms;
 }
 
-.scroll-area:hover::-webkit-scrollbar-thumb {
-  background-color: var(--border-strong);
-  transition: background-color 180ms ease;
-}
-
-.scroll-area[data-scrolling="true"]::-webkit-scrollbar-thumb {
+/* Reaching for the scrollbar shows it at once; scrolling eases it in. */
+.scroll-area[data-scrollbar="pointer"]::-webkit-scrollbar-thumb {
   background-color: var(--border-strong);
   transition: none;
+}
+
+.scroll-area[data-scrollbar="scroll"]::-webkit-scrollbar-thumb {
+  background-color: var(--border-strong);
+  transition: background-color 160ms ease-out;
 }
 
 .scroll-area::-webkit-scrollbar-thumb:hover {
@@ -43,7 +44,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .scroll-area::-webkit-scrollbar-thumb,
-  .scroll-area:hover::-webkit-scrollbar-thumb {
+  .scroll-area[data-scrollbar="scroll"]::-webkit-scrollbar-thumb {
     transition: none;
   }
 }

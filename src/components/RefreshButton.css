@@ -1,6 +1,7 @@
 .refresh {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: var(--space-2);
   height: 32px;
   padding: 0 var(--space-3);
@@ -11,8 +12,7 @@
   font-size: var(--text-small);
   transition:
     padding 200ms ease,
-    width 200ms ease,
-    border-color 120ms ease;
+    gap 200ms ease;
 }
 
 .refresh:hover:not(:disabled) {
@@ -39,25 +39,30 @@
   white-space: nowrap;
 }
 
-/* While fetching the button becomes a disc and the arrow turns once per second. */
-.refresh[data-spinning="true"] {
-  padding: 0;
+/* Collapsed: a disc the width of its own height. */
+.refresh[data-phase="collapsing"],
+.refresh[data-phase="turning"],
+.refresh[data-phase="expanding"] {
   width: 32px;
-  justify-content: center;
+  padding: 0;
+  gap: 0;
   color: var(--text-muted);
   cursor: default;
 }
 
-.refresh[data-spinning="true"] .refresh__label {
+.refresh[data-phase="collapsing"] .refresh__label,
+.refresh[data-phase="turning"] .refresh__label,
+.refresh[data-phase="expanding"] .refresh__label {
   max-width: 0;
   opacity: 0;
 }
 
-.refresh[data-spinning="true"] .refresh__icon {
-  animation: refresh-spin 700ms linear infinite;
+/* The arrow turns only once the shrinking is done, and always by whole turns. */
+.refresh[data-phase="turning"] .refresh__icon {
+  animation: refresh-turn var(--turn-ms) linear infinite;
 }
 
-@keyframes refresh-spin {
+@keyframes refresh-turn {
   to {
     transform: rotate(360deg);
   }
@@ -69,7 +74,7 @@
     transition: none;
   }
 
-  .refresh[data-spinning="true"] .refresh__icon {
-    animation: none;
+  .refresh[data-phase="turning"] .refresh__icon {
+    animation-duration: 1400ms;
   }
 }

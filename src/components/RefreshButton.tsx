@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import type { CSSProperties } from "react";
+import { TURN_MS, useRefreshPhase } from "./useRefreshPhase";
 import "./RefreshButton.css";
 
 interface Props {
@@ -6,26 +7,27 @@ interface Props {
   onRefresh: () => void;
 }
 
-/** A spin lasts at least this long, so a fetch that returns at once still reads as one. */
-const MINIMUM_SPIN_MS = 700;
-
 /**
- * Collapses into a spinning disc while the schedule is being fetched, then grows back
- * into its label. The label is the resting state; the spin is the feedback.
+ * Shrinks to a disc, turns once, and grows back into its label.
+ *
+ * Each stage waits for the one before it, so the motion reads as one gesture rather than
+ * a button that changes shape while its icon happens to spin.
  */
 export function RefreshButton({ busy, onRefresh }: Props) {
-  const spinning = useMinimumDuration(busy, MINIMUM_SPIN_MS);
+  const phase = useRefreshPhase(busy);
+  const working = phase !== "resting";
 
   return (
     <button
       type="button"
       className="refresh"
-      data-spinning={spinning}
+      style={{ "--turn-ms": `${TURN_MS}ms` } as CSSProperties}
+      data-phase={phase}
       data-tour="refresh"
       onClick={onRefresh}
-      disabled={spinning}
+      disabled={working}
       aria-label="새로고침"
-      aria-busy={spinning}
+      aria-busy={working}
     >
       <svg className="refresh__icon" viewBox="0 0 16 16" aria-hidden="true">
         <path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9" />
@@ -34,21 +36,4 @@ export function RefreshButton({ busy, onRefresh }: Props) {
       <span className="refresh__label">새로고침</span>
     </button>
   );
-}
-
-/** Keeps a flag raised for a while after it drops, so short work is still visible. */
-function useMinimumDuration(active: boolean, duration: number): boolean {
-  const [held, setHeld] = useState(active);
-
-  useEffect(() => {
-    if (active) {
-      setHeld(true);
-      return;
-    }
-
-    const timer = setTimeout(() => setHeld(false), duration);
-    return () => clearTimeout(timer);
-  }, [active, duration]);
-
-  return held;
 }

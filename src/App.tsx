@@ -7,7 +7,8 @@ import { EventList } from "./components/EventList";
 import { Notice } from "./components/Notice";
 import { RefreshButton } from "./components/RefreshButton";
 import { TitleBar } from "./components/TitleBar";
-import { useScrollActivity } from "./components/useScrollActivity";
+import { useScrollbar } from "./components/useScrollbar";
+import { useSmoothWheel } from "./components/useSmoothWheel";
 import { formatFetchedAt } from "./domain/labels";
 import type { SyncState } from "./feed/sync";
 import { Spotlight } from "./onboarding/Spotlight";
@@ -28,7 +29,8 @@ export interface AppProps {
  */
 export default function App({ state, onRefresh, tourMemory, now = new Date() }: AppProps) {
   const scroller = useRef<HTMLElement>(null);
-  const scrolling = useScrollActivity(scroller);
+  const scrollbar = useScrollbar(scroller);
+  useSmoothWheel(scroller);
   const refreshing = state.status === "ready" && state.refreshing;
   const hasEvents = state.status === "ready" && state.cached.feed.events.length > 0;
   const tour = useTour(tourMemory, hasEvents);
@@ -56,7 +58,7 @@ export default function App({ state, onRefresh, tourMemory, now = new Date() }: 
         </div>
       </header>
 
-      <main className="app__main scroll-area" ref={scroller} data-scrolling={scrolling}>
+      <main className="app__main scroll-area" ref={scroller} data-scrollbar={scrollbar}>
         {renderBody(state, onRefresh, now)}
       </main>
 
