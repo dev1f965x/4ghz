@@ -36,6 +36,9 @@ npm run test       # Vitest
 
 Rust 검사는 `src-tauri`에서 `cargo fmt --check`, `cargo clippy`, `cargo test`로 합니다.
 
+> 아직 피드가 배포되지 않았습니다. 릴리즈 빌드는 배포 워크플로(#11) 이후에 찍습니다.
+> 개발 중에는 `feed/events.sample.json`을 읽습니다.
+
 ## 구조
 
 일정은 크롤링하지 않습니다. `feed/events.json`에 두고 코드처럼 리뷰한 뒤 정적 파일로

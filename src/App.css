@@ -35,3 +35,37 @@
 .app__main {
   flex: 1;
 }
+
+.app__status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.app__refresh {
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  background: var(--surface-raised);
+  cursor: pointer;
+  font-size: var(--text-small);
+}
+
+.app__refresh:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--text-strong);
+}
+
+.app__refresh:disabled {
+  color: var(--text-muted);
+  cursor: default;
+}
+
+.app__stale {
+  margin-bottom: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-small);
+  background: var(--surface-overlay);
+  color: var(--text-muted);
+  font-size: var(--text-small);
+}
