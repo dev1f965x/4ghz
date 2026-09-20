@@ -1,7 +1,11 @@
+import { useRef } from "react";
 import "./design/base.css";
+import "./design/scrollbar.css";
 import "./App.css";
 import { EventList } from "./components/EventList";
 import { Notice } from "./components/Notice";
+import { useScrollActivity } from "./components/useScrollActivity";
+import { WindowControls } from "./components/WindowControls";
 import { formatFetchedAt } from "./domain/labels";
 import type { SyncState } from "./feed/sync";
 
@@ -12,38 +16,48 @@ export interface AppProps {
 }
 
 /**
- * The window. It renders whatever the sync loop is doing, and never an empty frame:
- * every state says what is known and what the viewer can do about it.
+ * The window. The header doubles as the title bar: the app draws its own so the top of
+ * the window belongs to the same dark surface as the list below it.
  */
 export default function App({ state, onRefresh, now = new Date() }: AppProps) {
+  const scroller = useRef<HTMLElement>(null);
+  const scrolling = useScrollActivity(scroller);
+  const refreshing = state.status === "ready" && state.refreshing;
+
   return (
     <div className="app">
-      <header className="app__header">
-        <div>
+      <header className="app__header" data-tauri-drag-region>
+        <div className="app__identity" data-tauri-drag-region>
           <h1 className="app__title">4GHz</h1>
           <p className="app__subtitle">원신 · 스타레일 · 젠레스 공식 일정</p>
         </div>
-        <div className="app__status" aria-live="polite">
-          {state.status === "ready" && (
-            <p className="app__fetched">
-              {state.refreshing
-                ? "새로고침 중…"
-                : `${formatFetchedAt(state.cached.fetchedAt, now)} 기준`}
-            </p>
-          )}
-          <button
-            type="button"
-            className="app__refresh"
-            onClick={onRefresh}
-            disabled={state.status === "ready" && state.refreshing}
-            aria-busy={state.status === "ready" && state.refreshing}
-          >
-            새로고침
-          </button>
+
+        <div className="app__actions">
+          <div className="app__status" aria-live="polite">
+            {state.status === "ready" && (
+              <p className="app__fetched">
+                {refreshing
+                  ? "새로고침 중…"
+                  : `${formatFetchedAt(state.cached.fetchedAt, now)} 기준`}
+              </p>
+            )}
+            <button
+              type="button"
+              className="app__refresh"
+              onClick={onRefresh}
+              disabled={refreshing}
+              aria-busy={refreshing}
+            >
+              새로고침
+            </button>
+          </div>
+          <WindowControls />
         </div>
       </header>
 
-      <main className="app__main">{renderBody(state, onRefresh, now)}</main>
+      <main className="app__main scroll-area" ref={scroller} data-scrolling={scrolling}>
+        {renderBody(state, onRefresh, now)}
+      </main>
     </div>
   );
 }
