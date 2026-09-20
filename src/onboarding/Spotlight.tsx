@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { cardTop, GAP, type Hole } from "./placement";
 import type { TourStep } from "./steps";
 import "./Spotlight.css";
 
@@ -10,13 +11,7 @@ interface Props {
   onSkip: () => void;
 }
 
-interface Hole {
-  top: number;
-  left: number;
-  width: number;
-  height: number;
-}
-
+/** How far the cut-out reaches past the element it highlights. */
 const PADDING = 8;
 
 /**
@@ -26,8 +21,9 @@ const PADDING = 8;
  * there is one element to paint rather than four strips to keep aligned.
  */
 export function Spotlight({ step, position, total, onNext, onSkip }: Props) {
-  const hole = useHole(step.target);
+  const target = useTargetRect(step.target);
   const card = useRef<HTMLDivElement>(null);
+  const cardHeight = useCardHeight(card, step.id);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: focus has to follow the step
   useEffect(() => card.current?.focus(), [step.id]);
@@ -42,24 +38,24 @@ export function Spotlight({ step, position, total, onNext, onSkip }: Props) {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [onNext, onSkip]);
 
-  if (!hole) return null;
+  if (!target) return null;
 
-  const below = hole.top + hole.height + PADDING * 2;
+  const hole: Hole = {
+    top: target.top - PADDING,
+    left: target.left - PADDING,
+    width: target.width + PADDING * 2,
+    height: target.height + PADDING * 2,
+  };
 
   return (
     <div className="spotlight" role="presentation">
-      <div
-        className="spotlight__hole"
-        style={{
-          top: hole.top - PADDING,
-          left: hole.left - PADDING,
-          width: hole.width + PADDING * 2,
-          height: hole.height + PADDING * 2,
-        }}
-      />
+      <div className="spotlight__hole" style={hole} />
       <div
         className="spotlight__card"
-        style={{ top: below, left: Math.max(hole.left - PADDING, 24) }}
+        style={{
+          top: cardTop({ hole, cardHeight, viewportHeight: window.innerHeight }),
+          left: Math.max(hole.left, GAP),
+        }}
         role="dialog"
         aria-modal="true"
         aria-labelledby={`tour-${step.id}-title`}
@@ -90,16 +86,16 @@ export function Spotlight({ step, position, total, onNext, onSkip }: Props) {
 }
 
 /** Follows the target through layout changes, so the cut-out never drifts off it. */
-function useHole(selector: string): Hole | undefined {
-  const [hole, setHole] = useState<Hole>();
+function useTargetRect(selector: string): Hole | undefined {
+  const [rect, setRect] = useState<Hole>();
 
   useEffect(() => {
     const measure = () => {
       const target = document.querySelector(selector);
-      if (!target) return setHole(undefined);
+      if (!target) return setRect(undefined);
 
       const { top, left, width, height } = target.getBoundingClientRect();
-      setHole({ top, left, width, height });
+      setRect({ top, left, width, height });
     };
 
     measure();
@@ -107,5 +103,17 @@ function useHole(selector: string): Hole | undefined {
     return () => window.removeEventListener("resize", measure);
   }, [selector]);
 
-  return hole;
+  return rect;
+}
+
+/** Measures before paint, so a card that has to flip above never shows below first. */
+function useCardHeight(card: React.RefObject<HTMLDivElement | null>, stepId: string): number {
+  const [height, setHeight] = useState(0);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: each step gets its own card
+  useLayoutEffect(() => {
+    setHeight(card.current?.offsetHeight ?? 0);
+  }, [card, stepId]);
+
+  return height;
 }
