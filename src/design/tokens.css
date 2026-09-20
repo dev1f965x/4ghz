@@ -50,9 +50,6 @@
   --leading-title: 1.2;
   --leading-body: 1.4;
 
-  --icon-small: 16px;
-  --icon-medium: 24px;
-
   /* The mark stands exactly as tall as the name and subtitle stacked beside it. Derived
      from the type scale rather than measured at runtime, so it holds across languages
      and system fonts. */
