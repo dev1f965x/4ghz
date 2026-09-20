@@ -46,11 +46,23 @@
   --space-5: 24px;
   --space-6: 32px;
 
-  /* Icon sizes. The brand mark is one step above the type block it sits beside: big
-     enough to hold the corner, small enough not to outweigh the name. */
+  /* Line heights are fixed here so blocks of type have a height that can be computed. */
+  --leading-title: 1.2;
+  --leading-body: 1.4;
+
   --icon-small: 16px;
   --icon-medium: 24px;
-  --icon-brand: 44px;
+
+  /* The mark stands exactly as tall as the name and subtitle stacked beside it. Derived
+     from the type scale rather than measured at runtime, so it holds across languages
+     and system fonts. */
+  --icon-brand: calc(
+    var(--text-title) *
+    var(--leading-title) +
+    var(--space-1) +
+    var(--text-small) *
+    var(--leading-body)
+  );
 
   --radius-small: 8px;
   --radius-medium: 12px;
