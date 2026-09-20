@@ -1,0 +1,19 @@
+name: 기능
+description: 새로 넣고 싶은 것
+labels: [feature]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 어떤 문제를 푸나요
+      description: 기능 자체보다 그게 없어서 겪는 불편
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: 완료 기준
+      placeholder: |
+        - ...하면 ...가 보인다
+    validations:
+      required: true
