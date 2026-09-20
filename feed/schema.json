@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dev1f965x.github.io/4ghz/schema.json",
+  "title": "4GHz event feed",
+  "type": "object",
+  "required": ["schemaVersion", "publishedAt", "events"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "description": "MAJOR.MINOR. A new MAJOR means older apps must update before reading.",
+      "type": "string",
+      "pattern": "^[0-9]+[.][0-9]+$"
+    },
+    "publishedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/event"
+      }
+    }
+  },
+  "$defs": {
+    "event": {
+      "type": "object",
+      "required": ["id", "game", "kind", "title", "startsAt"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "game": {
+          "enum": ["genshin", "starrail", "zenless"]
+        },
+        "kind": {
+          "enum": ["livestream", "version", "maintenance", "ingame"]
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "startsAt": {
+          "description": "UTC instant, as decided in ADR 7.",
+          "type": "string",
+          "format": "date-time",
+          "pattern": "Z$"
+        },
+        "endsAt": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "Z$"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "note": {
+          "type": "string",
+          "description": "For editors. The app ignores it."
+        }
+      }
+    }
+  }
+}

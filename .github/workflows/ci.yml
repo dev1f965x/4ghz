@@ -29,8 +29,12 @@ jobs:
         run: npm run typecheck
       - name: Tests
         run: npm run test:coverage
+      - name: Tests in another timezone
+        run: npm run test:timezones
       - name: Build
         run: npm run build
+      - name: Feed
+        run: npm run feed:validate
 
   rust:
     name: Rust

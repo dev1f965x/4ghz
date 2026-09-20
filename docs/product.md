@@ -33,6 +33,10 @@ with a countdown.
 - Opening the app shows every upcoming event of the three games, soonest first.
 - An event starting today reads as today, not as "in 0 days".
 - An event that has started but not ended reads as running.
+- An event announced without an end, such as a livestream, stays listed as running for
+  two hours after it starts, then drops off.
+- An event announced without an end, such as a livestream, stays listed as running for two
+  hours after it starts, then drops off.
 - With the network unplugged, the last fetched schedule is still shown, with the time
   it was fetched.
 - An event published to the feed appears within six hours, or immediately after a manual
