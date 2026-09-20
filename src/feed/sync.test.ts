@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Feed } from "../domain/feed";
 import type { CachedFeed, FeedCache, FeedSource, FetchOutcome } from "./ports";
-import { FeedSync, RETRY_DELAYS_MS, type SyncState } from "./sync";
+import { FeedSync, REFRESH_INTERVAL_MS, RETRY_DELAYS_MS, type SyncState } from "./sync";
 
 const feed: Feed = {
   schemaVersion: "1.0",
@@ -115,6 +115,76 @@ describe("FeedSync", () => {
       lastProblem: offline.problem,
     });
     sync.stop();
+  });
+
+  it("gives up at once on a feed it cannot read", async () => {
+    const unreadable = {
+      ok: false,
+      problem: { kind: "malformed", detail: "events is missing" },
+    } as const;
+    const source = sourceReturning(unreadable);
+    const sync = new FeedSync(source, emptyCache());
+    const states = track(sync);
+
+    await sync.start();
+
+    expect(source.calls).toBe(1);
+    expect(states.at(-1)).toEqual({ status: "failed", problem: unreadable.problem });
+    sync.stop();
+  });
+
+  it("ignores a refresh asked for while one is running", async () => {
+    const pending: Array<() => void> = [];
+    const source = {
+      calls: 0,
+      async fetch() {
+        source.calls += 1;
+        await new Promise<void>((resolve) => pending.push(resolve));
+        return { ok: true, feed } as const;
+      },
+    };
+    const sync = new FeedSync(source, emptyCache());
+
+    const running = sync.start();
+    await vi.advanceTimersByTimeAsync(0);
+    await sync.refresh();
+
+    expect(source.calls).toBe(1);
+
+    for (const resolve of pending) resolve();
+    await running;
+    sync.stop();
+  });
+
+  it("fetches again when the interval comes round", async () => {
+    const source = sourceReturning({ ok: true, feed });
+    const sync = new FeedSync(source, emptyCache());
+
+    await sync.start();
+    await vi.advanceTimersByTimeAsync(REFRESH_INTERVAL_MS);
+
+    expect(source.calls).toBe(2);
+    sync.stop();
+  });
+
+  it("drops an answer that arrives after it stopped", async () => {
+    const pending: Array<() => void> = [];
+    const cache = emptyCache();
+    const source: FeedSource = {
+      async fetch() {
+        await new Promise<void>((resolve) => pending.push(resolve));
+        return { ok: true, feed };
+      },
+    };
+    const sync = new FeedSync(source, cache);
+
+    const running = sync.start();
+    await vi.advanceTimersByTimeAsync(0);
+    sync.stop();
+    for (const resolve of pending) resolve();
+    await running;
+
+    expect(cache.written).toBeUndefined();
   });
 
   it("stops fetching once stopped", async () => {

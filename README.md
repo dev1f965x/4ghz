@@ -37,6 +37,9 @@ npm run test       # Vitest
 
 Rust checks live in `src-tauri`: `cargo fmt --check`, `cargo clippy`, `cargo test`.
 
+> The published feed does not exist yet; release builds wait on the deploy workflow in
+> issue #11. Development reads `feed/events.sample.json` instead.
+
 ## How it is put together
 
 Event dates are not scraped. They live in `feed/events.json`, are reviewed like code, and

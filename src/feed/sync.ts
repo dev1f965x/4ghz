@@ -15,12 +15,17 @@ export type SyncState =
 
 type FailedFetch = Extract<FetchOutcome, { ok: false }>["problem"];
 
+/** Only a network failure is worth waiting out. A broken or too-new feed stays broken. */
+function isTransient(problem: FailedFetch): boolean {
+  return problem.kind === "offline";
+}
+
 /**
  * Keeps one copy of the schedule fresh.
  *
  * The rules come from the product definition: fetch on start and every six hours, retry a
- * failure three times with growing delays, and never drop what is already on screen —
- * a stale schedule beats an empty window.
+ * network failure three times with growing delays, and never drop what is already on
+ * screen — a stale schedule beats an empty window.
  */
 export class FeedSync {
   private state: SyncState = { status: "loading" };
@@ -28,6 +33,8 @@ export class FeedSync {
   private retryTimer?: ReturnType<typeof setTimeout>;
   private intervalTimer?: ReturnType<typeof setInterval>;
   private attempt = 0;
+  private fetching = false;
+  private stopped = false;
 
   constructor(
     private readonly source: FeedSource,
@@ -44,20 +51,30 @@ export class FeedSync {
   /** Shows the cached schedule first, then goes to the network. */
   async start(): Promise<void> {
     const cached = await this.cache.read();
+    if (this.stopped) return;
     if (cached) this.publish({ status: "ready", cached, refreshing: true });
 
     this.intervalTimer = setInterval(() => void this.refresh(), REFRESH_INTERVAL_MS);
     await this.refresh();
   }
 
+  /** After this the loop is inert: late answers are dropped rather than written. */
   stop(): void {
+    this.stopped = true;
     clearTimeout(this.retryTimer);
     clearInterval(this.intervalTimer);
     this.listeners.clear();
   }
 
-  /** A refresh asked for by the viewer, or by the timer. */
+  /**
+   * A refresh asked for by the viewer, or by the timer.
+   *
+   * A second call while one is in flight is ignored rather than queued: two chains would
+   * share the retry counter and race to write the cache.
+   */
   async refresh(): Promise<void> {
+    if (this.fetching || this.stopped) return;
+
     clearTimeout(this.retryTimer);
     this.attempt = 0;
     this.markRefreshing();
@@ -65,17 +82,28 @@ export class FeedSync {
   }
 
   private async attemptFetch(): Promise<void> {
-    const outcome = await this.source.fetch();
+    if (this.stopped) return;
+
+    this.fetching = true;
+    let outcome: FetchOutcome;
+    try {
+      outcome = await this.source.fetch();
+    } finally {
+      this.fetching = false;
+    }
+    if (this.stopped) return;
 
     if (outcome.ok) {
       const cached = { feed: outcome.feed, fetchedAt: this.now() };
       await this.cache.write(cached);
+      if (this.stopped) return;
+
       this.attempt = 0;
       this.publish({ status: "ready", cached, refreshing: false });
       return;
     }
 
-    const delay = RETRY_DELAYS_MS[this.attempt];
+    const delay = isTransient(outcome.problem) ? RETRY_DELAYS_MS[this.attempt] : undefined;
     if (delay !== undefined) {
       this.attempt += 1;
       this.retryTimer = setTimeout(() => void this.attemptFetch(), delay);

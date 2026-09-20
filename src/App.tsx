@@ -23,7 +23,7 @@ export default function App({ state, onRefresh, now = new Date() }: AppProps) {
           <h1 className="app__title">4GHz</h1>
           <p className="app__subtitle">원신 · 스타레일 · 젠레스 공식 일정</p>
         </div>
-        <div className="app__status">
+        <div className="app__status" aria-live="polite">
           {state.status === "ready" && (
             <p className="app__fetched">
               {state.refreshing
@@ -36,6 +36,7 @@ export default function App({ state, onRefresh, now = new Date() }: AppProps) {
             className="app__refresh"
             onClick={onRefresh}
             disabled={state.status === "ready" && state.refreshing}
+            aria-busy={state.status === "ready" && state.refreshing}
           >
             새로고침
           </button>
