@@ -29,10 +29,10 @@ jobs:
           tagName: ${{ github.ref_name }}
           releaseName: ${{ github.ref_name }}
           releaseBody: |
-            설치 파일은 아래 `4GHz_*_x64-setup.exe`입니다.
+            The installer is `4GHz_*_x64-setup.exe` below.
 
-            서명하지 않은 빌드라 Windows SmartScreen이 한 번 경고를 띄웁니다.
-            `추가 정보` → `실행`으로 설치할 수 있습니다.
+            The build is unsigned, so Windows SmartScreen warns once:
+            `More info` → `Run anyway`.
           releaseDraft: true
           uploadUpdaterJson: false
           args: --bundles nsis

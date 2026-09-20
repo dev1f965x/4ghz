@@ -1,27 +1,27 @@
-name: 버그
-description: 동작이 기대와 다를 때
+name: Bug
+description: Something behaves differently than expected
 labels: [bug]
 body:
   - type: textarea
     id: what-happened
     attributes:
-      label: 무슨 일이 있었나요
-      description: 기대한 동작과 실제 동작
+      label: What happened
+      description: Expected behaviour, then actual behaviour
     validations:
       required: true
   - type: textarea
     id: steps
     attributes:
-      label: 재현 방법
+      label: Steps to reproduce
       placeholder: |
-        1. 앱을 켠다
+        1. Open the app
         2. ...
     validations:
       required: true
   - type: input
     id: version
     attributes:
-      label: 버전
+      label: Version
       placeholder: 1.0.0
     validations:
       required: true
