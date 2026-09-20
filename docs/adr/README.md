@@ -13,3 +13,4 @@ the record that replaced it.
 | [6](0006-testing-strategy.md) | Test with Vitest, Testing Library, and cargo test | accepted |
 | [7](0007-store-instants-in-utc.md) | Store instants in UTC and render in the viewer's zone | accepted |
 | [8](0008-ship-updates-through-the-tauri-updater.md) | Ship updates through the Tauri updater | accepted |
+| [9](0009-curate-the-schedule-by-hand.md) | Curate the schedule by hand | accepted |
