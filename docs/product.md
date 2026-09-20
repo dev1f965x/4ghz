@@ -25,8 +25,6 @@ with a countdown.
   for the next cycle.
 - The last good feed is cached, so the window still shows the last known schedule with no
   network, alongside when it was fetched.
-- A desktop notification fires 24 hours and 1 hour before an event starts. Each of those
-  is sent once per event; notifications missed while the app was closed are dropped.
 
 ## Acceptance criteria
 
@@ -35,16 +33,12 @@ with a countdown.
 - An event that has started but not ended reads as running.
 - An event announced without an end, such as a livestream, stays listed as running for
   two hours after it starts, then drops off.
-- An event announced without an end, such as a livestream, stays listed as running for two
-  hours after it starts, then drops off.
 - With the network unplugged, the last fetched schedule is still shown, with the time
   it was fetched.
 - An event published to the feed appears within six hours, or immediately after a manual
   refresh.
 - On a first run with no network and no cache, the window explains that the schedule could
   not be fetched and offers to retry, rather than showing an empty list.
-- Notifications can be turned off, and turning them off silences them immediately.
-- Each event notifies at most once per threshold, even across restarts.
 
 ## Interface language
 
@@ -62,13 +56,13 @@ times.
 
 ## Out of scope for 1.0.0
 
-Redeem codes, daily quest calendars, streaks, account linking, and a Discord bot or
-webhook. Each lands in a later version:
+Desktop notifications, redeem codes, daily quest calendars, streaks, account linking, and
+a Discord bot or webhook. Each lands in a later version:
 
 | Version | Adds |
 |---|---|
 | 1.0.0 | Official event countdowns |
-| 1.1.0 | Redeem codes |
+| 1.1.0 | Notifications before an event, redeem codes |
 | 1.2.0 | Daily quests, dailies, streaks |
 
 A Discord bot or webhook may publish the same feed later, which is why the feed is a
