@@ -10,7 +10,15 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       include: ["src/**/*.{ts,tsx}"],
-      exclude: ["src/test/**", "src/**/*.test.{ts,tsx}", "src/main.tsx"],
+      exclude: [
+        "src/test/**",
+        "src/**/*.test.{ts,tsx}",
+        // Wiring and shell adapters: they only exist to hand Tauri's APIs to the code
+        // above, and running them needs a live window rather than jsdom.
+        "src/main.tsx",
+        "src/feed/tauri.ts",
+        "src/feed/sample.ts",
+      ],
       thresholds: { lines: 80, functions: 80, branches: 75, statements: 80 },
     },
   },
