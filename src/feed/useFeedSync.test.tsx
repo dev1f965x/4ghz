@@ -1,4 +1,5 @@
 import { renderHook, waitFor } from "@testing-library/react";
+import { StrictMode } from "react";
 import { describe, expect, it } from "vitest";
 import type { Feed } from "../domain/feed";
 import type { FeedCache, FeedSource } from "./ports";
@@ -28,6 +29,12 @@ describe("useFeedSync", () => {
     const { result } = renderHook(() => useFeedSync(source, cache));
 
     expect(result.current.state.status).toBe("loading");
+    await waitFor(() => expect(result.current.state.status).toBe("ready"));
+  });
+
+  it("still loads when React mounts the effect twice", async () => {
+    const { result } = renderHook(() => useFeedSync(source, cache), { wrapper: StrictMode });
+
     await waitFor(() => expect(result.current.state.status).toBe("ready"));
   });
 
