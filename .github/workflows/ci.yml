@@ -35,6 +35,8 @@ jobs:
         run: npm run build
       - name: Feed
         run: npm run feed:validate
+      - name: Tauri plugin versions
+        run: npm run check:tauri
 
   rust:
     name: Rust
