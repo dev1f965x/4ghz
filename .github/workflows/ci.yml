@@ -29,6 +29,8 @@ jobs:
         run: npm run typecheck
       - name: Tests
         run: npm run test:coverage
+      - name: Build
+        run: npm run build
 
   rust:
     name: Rust
