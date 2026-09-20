@@ -1,0 +1,50 @@
+/* biome-ignore-all lint/complexity/noImportantStyles: the reduced-motion override has to beat component transitions */
+@import "./tokens.css";
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--surface-base);
+  color: var(--text-body);
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+/* Keyboard users get a visible ring; pointer users do not see it. */
+:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-small);
+}
+
+/**
+ * Motion is cut for anyone who asked the operating system to reduce it. The override has
+ * to win over component transitions, which is the one case !important is the right tool.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
