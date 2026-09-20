@@ -1,4 +1,3 @@
-import { useRef } from "react";
 import "./design/base.css";
 import "./design/scrollbar.css";
 import "./App.css";
@@ -6,9 +5,7 @@ import { BrandMark } from "./components/BrandMark";
 import { EventList } from "./components/EventList";
 import { Notice } from "./components/Notice";
 import { RefreshButton } from "./components/RefreshButton";
-import { Scrollbar } from "./components/Scrollbar";
 import { TitleBar } from "./components/TitleBar";
-import { useSmoothWheel } from "./components/useSmoothWheel";
 import { formatFetchedAt } from "./domain/labels";
 import type { SyncState } from "./feed/sync";
 import { Spotlight } from "./onboarding/Spotlight";
@@ -28,8 +25,6 @@ export interface AppProps {
  * part that scrolls.
  */
 export default function App({ state, onRefresh, tourMemory, now = new Date() }: AppProps) {
-  const scroller = useRef<HTMLElement>(null);
-  useSmoothWheel(scroller);
   const refreshing = state.status === "ready" && state.refreshing;
   const hasEvents = state.status === "ready" && state.cached.feed.events.length > 0;
   const tour = useTour(tourMemory, hasEvents);
@@ -57,12 +52,7 @@ export default function App({ state, onRefresh, tourMemory, now = new Date() }: 
         </div>
       </header>
 
-      <div className="app__body">
-        <main className="app__main scroll-area" ref={scroller}>
-          {renderBody(state, onRefresh, now)}
-        </main>
-        <Scrollbar target={scroller} />
-      </div>
+      <main className="app__main scroll-area">{renderBody(state, onRefresh, now)}</main>
 
       {tour.step && (
         <Spotlight

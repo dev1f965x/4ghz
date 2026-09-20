@@ -12,23 +12,3 @@ vi.mock("@tauri-apps/api/window", () => ({
     close: vi.fn(),
   }),
 }));
-
-/** jsdom has no media queries; nothing under test asks for reduced motion. */
-window.matchMedia = (query: string) =>
-  ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
-    addListener: vi.fn(),
-    removeListener: vi.fn(),
-    dispatchEvent: vi.fn(),
-  }) as MediaQueryList;
-
-/** jsdom has no layout, so nothing resizes; the scrollbar just never gets a measurement. */
-globalThis.ResizeObserver = class {
-  observe() {}
-  unobserve() {}
-  disconnect() {}
-};

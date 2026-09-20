@@ -45,15 +45,8 @@
   white-space: nowrap;
 }
 
-/* Holds the scrolling list and the scrollbar drawn over it. */
-.app__body {
-  position: relative;
-  flex: 1;
-  min-height: 0;
-}
-
 .app__main {
-  height: 100%;
+  flex: 1;
   padding: var(--space-5) var(--space-6) var(--space-6);
 }
 

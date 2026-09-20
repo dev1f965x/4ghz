@@ -1,16 +1,4 @@
-/**
- * The browser's scrollbar is hidden and drawn by `Scrollbar.tsx` instead.
- *
- * Chromium accepts no transitions on `::-webkit-scrollbar` pseudo-elements, so a native
- * scrollbar can only blink in and out. A real element can fade.
- */
+/** The list scrolls; the window does not. */
 .scroll-area {
-  position: relative;
   overflow-y: auto;
-  scrollbar-width: none;
-}
-
-.scroll-area::-webkit-scrollbar {
-  width: 0;
-  height: 0;
 }
