@@ -9,8 +9,7 @@
   align-items: flex-end;
   justify-content: space-between;
   gap: var(--space-4);
-  /* The list reserves room for its scrollbar; the header matches so edges line up. */
-  padding: 0 calc(var(--space-6) + var(--scrollbar-width)) var(--space-4) var(--space-6);
+  padding: 0 var(--space-6) var(--space-4);
   border-bottom: 1px solid var(--border-subtle);
   background: var(--surface-base);
 }
@@ -44,25 +43,6 @@
   color: var(--text-muted);
   font-size: var(--text-small);
   white-space: nowrap;
-}
-
-.app__refresh {
-  padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-pill);
-  background: var(--surface-raised);
-  cursor: pointer;
-  font-size: var(--text-small);
-}
-
-.app__refresh:hover:not(:disabled) {
-  border-color: var(--accent);
-  color: var(--text-strong);
-}
-
-.app__refresh:disabled {
-  color: var(--text-muted);
-  cursor: default;
 }
 
 .app__main {

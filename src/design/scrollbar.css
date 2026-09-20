@@ -8,7 +8,6 @@
  */
 .scroll-area {
   overflow-y: auto;
-  scrollbar-gutter: stable;
 }
 
 .scroll-area::-webkit-scrollbar {

@@ -5,6 +5,7 @@ import "./App.css";
 import { BrandMark } from "./components/BrandMark";
 import { EventList } from "./components/EventList";
 import { Notice } from "./components/Notice";
+import { RefreshButton } from "./components/RefreshButton";
 import { TitleBar } from "./components/TitleBar";
 import { useScrollActivity } from "./components/useScrollActivity";
 import { formatFetchedAt } from "./domain/labels";
@@ -48,19 +49,10 @@ export default function App({ state, onRefresh, tourMemory, now = new Date() }: 
         <div className="app__status" aria-live="polite">
           {state.status === "ready" && (
             <p className="app__fetched">
-              {refreshing ? "새로고침 중…" : `${formatFetchedAt(state.cached.fetchedAt, now)} 기준`}
+              {refreshing ? "새로고침 중…" : formatFetchedAt(state.cached.fetchedAt, now)}
             </p>
           )}
-          <button
-            type="button"
-            className="app__refresh"
-            data-tour="refresh"
-            onClick={onRefresh}
-            disabled={refreshing}
-            aria-busy={refreshing}
-          >
-            새로고침
-          </button>
+          <RefreshButton busy={refreshing} onRefresh={onRefresh} />
         </div>
       </header>
 

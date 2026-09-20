@@ -52,7 +52,7 @@ describe("App", () => {
 
     expect(screen.getByRole("heading", { name: "6.0 특별 방송", level: 3 })).toBeInTheDocument();
     expect(screen.getByText("3일 남음")).toBeInTheDocument();
-    expect(screen.getByText("3시간 전 기준")).toBeInTheDocument();
+    expect(screen.getByText("3시간 전")).toBeInTheDocument();
   });
 
   it("separates what is airing now from what is ahead", () => {
