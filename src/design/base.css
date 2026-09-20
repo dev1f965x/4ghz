@@ -48,3 +48,10 @@ button {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* The spotlight animates its cut-out; reduced motion turns that into an instant move. */
+@media (prefers-reduced-motion: reduce) {
+  .spotlight__hole {
+    transition: none;
+  }
+}

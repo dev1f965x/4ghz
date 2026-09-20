@@ -1,0 +1,82 @@
+.spotlight {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+}
+
+/* One element paints the whole dimming: a huge shadow spreading out of the cut-out. */
+.spotlight__hole {
+  position: absolute;
+  border-radius: var(--radius-medium);
+  box-shadow: 0 0 0 9999px rgb(0 0 0 / 0.66);
+  pointer-events: none;
+  transition:
+    top 160ms ease,
+    left 160ms ease,
+    width 160ms ease,
+    height 160ms ease;
+}
+
+.spotlight__card {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: min(320px, calc(100vw - 48px));
+  padding: var(--space-4);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-medium);
+  background: var(--surface-overlay);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.5);
+}
+
+.spotlight__card:focus {
+  outline: none;
+}
+
+.spotlight__count {
+  color: var(--text-muted);
+  font-size: var(--text-small);
+  font-variant-numeric: tabular-nums;
+}
+
+.spotlight__title {
+  color: var(--text-strong);
+  font-size: var(--text-large);
+  font-weight: 600;
+}
+
+.spotlight__detail {
+  color: var(--text-body);
+  font-size: var(--text-base);
+}
+
+.spotlight__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--space-2);
+}
+
+.spotlight__skip {
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: var(--text-small);
+}
+
+.spotlight__skip:hover {
+  color: var(--text-body);
+}
+
+.spotlight__next {
+  padding: var(--space-2) var(--space-4);
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--accent);
+  color: #0b0d12;
+  cursor: pointer;
+  font-size: var(--text-small);
+  font-weight: 600;
+}

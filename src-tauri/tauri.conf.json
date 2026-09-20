@@ -14,7 +14,11 @@
       {
         "title": "4GHz",
         "width": 920,
-        "height": 640
+        "height": 640,
+        "decorations": false,
+        "minWidth": 560,
+        "minHeight": 420,
+        "backgroundColor": "#0e0f13"
       }
     ],
     "security": {

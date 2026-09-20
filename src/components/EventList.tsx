@@ -31,7 +31,7 @@ export function EventList({ events, now }: Props) {
         </section>
       )}
 
-      <section className="event-list__section" aria-labelledby="ahead-heading">
+      <section className="event-list__section" aria-labelledby="ahead-heading" data-tour="upcoming">
         <h2 className="event-list__heading" id="ahead-heading">
           다가오는 일정
         </h2>

@@ -1,0 +1,4 @@
+/** The list scrolls; the window does not. */
+.scroll-area {
+  overflow-y: auto;
+}

@@ -1,0 +1,39 @@
+.window-controls {
+  display: flex;
+  gap: var(--space-1);
+  -webkit-app-region: no-drag;
+}
+
+.window-controls__button {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-small);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: default;
+  transition:
+    background 120ms ease,
+    color 120ms ease;
+}
+
+.window-controls__button svg {
+  width: 10px;
+  height: 10px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1;
+}
+
+.window-controls__button:hover {
+  background: var(--surface-overlay);
+  color: var(--text-strong);
+}
+
+.window-controls__button--close:hover {
+  background: #c4373b;
+  color: #fff;
+}

@@ -1,49 +1,68 @@
 import "./design/base.css";
+import "./design/scrollbar.css";
 import "./App.css";
+import { BrandMark } from "./components/BrandMark";
 import { EventList } from "./components/EventList";
 import { Notice } from "./components/Notice";
+import { RefreshButton } from "./components/RefreshButton";
+import { TitleBar } from "./components/TitleBar";
 import { formatFetchedAt } from "./domain/labels";
 import type { SyncState } from "./feed/sync";
+import { Spotlight } from "./onboarding/Spotlight";
+import type { TourMemory } from "./onboarding/useTour";
+import { useTour } from "./onboarding/useTour";
 
 export interface AppProps {
   state: SyncState;
   onRefresh: () => void;
+  tourMemory: TourMemory;
   now?: Date;
 }
 
 /**
- * The window. It renders whatever the sync loop is doing, and never an empty frame:
- * every state says what is known and what the viewer can do about it.
+ * The window, in three bands: the strip that replaces the system title bar, the header
+ * that names the app and carries its one action, and the schedule, which is the only
+ * part that scrolls.
  */
-export default function App({ state, onRefresh, now = new Date() }: AppProps) {
+export default function App({ state, onRefresh, tourMemory, now = new Date() }: AppProps) {
+  const refreshing = state.status === "ready" && state.refreshing;
+  const hasEvents = state.status === "ready" && state.cached.feed.events.length > 0;
+  const tour = useTour(tourMemory, hasEvents);
+
   return (
     <div className="app">
+      <TitleBar />
+
       <header className="app__header">
-        <div>
-          <h1 className="app__title">4GHz</h1>
-          <p className="app__subtitle">원신 · 스타레일 · 젠레스 공식 일정</p>
+        <div className="app__identity">
+          <BrandMark />
+          <div>
+            <h1 className="app__title">4GHz</h1>
+            <p className="app__subtitle">원신 · 스타레일 · 젠레스 공식 일정</p>
+          </div>
         </div>
+
         <div className="app__status" aria-live="polite">
           {state.status === "ready" && (
             <p className="app__fetched">
-              {state.refreshing
-                ? "새로고침 중…"
-                : `${formatFetchedAt(state.cached.fetchedAt, now)} 기준`}
+              {refreshing ? "새로고침 중…" : formatFetchedAt(state.cached.fetchedAt, now)}
             </p>
           )}
-          <button
-            type="button"
-            className="app__refresh"
-            onClick={onRefresh}
-            disabled={state.status === "ready" && state.refreshing}
-            aria-busy={state.status === "ready" && state.refreshing}
-          >
-            새로고침
-          </button>
+          <RefreshButton busy={refreshing} onRefresh={onRefresh} />
         </div>
       </header>
 
-      <main className="app__main">{renderBody(state, onRefresh, now)}</main>
+      <main className="app__main scroll-area">{renderBody(state, onRefresh, now)}</main>
+
+      {tour.step && (
+        <Spotlight
+          step={tour.step}
+          position={tour.position}
+          total={tour.total}
+          onNext={tour.next}
+          onSkip={tour.skip}
+        />
+      )}
     </div>
   );
 }

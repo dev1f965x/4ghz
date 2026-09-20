@@ -1,0 +1,19 @@
+.refresh {
+  height: 32px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  background: var(--surface-raised);
+  cursor: pointer;
+  font-size: var(--text-small);
+}
+
+.refresh:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--text-strong);
+}
+
+.refresh:disabled {
+  color: var(--text-muted);
+  cursor: default;
+}
