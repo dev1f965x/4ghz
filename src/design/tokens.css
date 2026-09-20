@@ -46,10 +46,26 @@
   --space-5: 24px;
   --space-6: 32px;
 
+  /* Line heights are fixed here so blocks of type have a height that can be computed. */
+  --leading-title: 1.2;
+  --leading-body: 1.4;
+
+  /* The mark stands exactly as tall as the name and subtitle stacked beside it. Derived
+     from the type scale rather than measured at runtime, so it holds across languages
+     and system fonts. */
+  --icon-brand: calc(
+    var(--text-title) *
+    var(--leading-title) +
+    var(--space-1) +
+    var(--text-small) *
+    var(--leading-body)
+  );
+
   --radius-small: 8px;
   --radius-medium: 12px;
   --radius-pill: 999px;
 
-  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4);
+  /* Two layers: a tight edge that separates the card, and a soft pool that lifts it. */
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.5), 0 6px 16px rgb(0 0 0 / 0.35);
   --focus-ring: 2px solid var(--accent);
 }

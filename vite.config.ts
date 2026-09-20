@@ -26,8 +26,9 @@ export default defineConfig(() => ({
         }
       : undefined,
     watch: {
-      // 3. tell Vite to ignore watching `src-tauri`
-      ignored: ["**/src-tauri/**"],
+      // 3. Ignore what the build writes: Rust output and coverage reports are
+      //    thousands of files, and watching them reloads the window in a loop.
+      ignored: ["**/src-tauri/**", "**/coverage/**", "**/dist/**"],
     },
   },
 }));

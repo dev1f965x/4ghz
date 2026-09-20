@@ -14,6 +14,11 @@
   background: var(--surface-base);
 }
 
+/**
+ * The mark keeps a size of its own and centres on the text beside it. Sizing it from the
+ * rendered height of the name would tie the chrome to font metrics, which differ by
+ * language and by the system font in play.
+ */
 .app__identity {
   display: flex;
   align-items: center;
@@ -25,12 +30,14 @@
   font-size: var(--text-title);
   font-weight: 700;
   letter-spacing: -0.02em;
+  line-height: var(--leading-title);
 }
 
 .app__subtitle {
   margin-top: var(--space-1);
   color: var(--text-muted);
   font-size: var(--text-small);
+  line-height: var(--leading-body);
 }
 
 .app__status {
@@ -47,6 +54,7 @@
 
 .app__main {
   flex: 1;
+  min-height: 0;
   padding: var(--space-5) var(--space-6) var(--space-6);
 }
 
