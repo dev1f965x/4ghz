@@ -22,6 +22,9 @@ export type FeedResult =
  *
  * Parsing never throws: a feed edited by hand is the most likely thing to be wrong, and
  * the window has to say what is wrong instead of disappearing.
+ *
+ * Unknown fields are ignored on purpose. The feed carries editor-only keys such as
+ * `note`, and a future minor version may add more that this build should survive.
  */
 export function parseFeed(raw: unknown): FeedResult {
   if (!isRecord(raw)) return malformed("feed is not an object");
@@ -41,9 +44,14 @@ export function parseFeed(raw: unknown): FeedResult {
   if (!Array.isArray(raw.events)) return malformed("events is missing");
 
   const events: GameEvent[] = [];
+  const seenIds = new Set<string>();
   for (const [index, entry] of raw.events.entries()) {
     const event = parseEvent(entry);
     if (!event.ok) return malformed(`events[${index}]: ${event.detail}`);
+    if (seenIds.has(event.event.id)) {
+      return malformed(`events[${index}]: duplicate id "${event.event.id}"`);
+    }
+    seenIds.add(event.event.id);
     events.push(event.event);
   }
 

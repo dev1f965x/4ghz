@@ -52,8 +52,14 @@ describe("phaseOf", () => {
     expect(phaseOf(running, now)).toEqual({ status: "running" });
   });
 
-  it("treats an event with no end as over once it starts", () => {
+  it("keeps an event with no end on screen while it is likely still going", () => {
     expect(phaseOf(event({ startsAt: new Date("2026-10-01T11:59:00") }), now)).toEqual({
+      status: "running",
+    });
+  });
+
+  it("drops an event with no end once the grace window passes", () => {
+    expect(phaseOf(event({ startsAt: new Date("2026-10-01T09:30:00") }), now)).toEqual({
       status: "over",
     });
   });

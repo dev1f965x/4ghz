@@ -15,7 +15,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "feed:validate": "tsx scripts/validate-feed.ts"
+    "feed:validate": "tsx scripts/validate-feed.ts",
+    "test:timezones": "cross-env TZ=America/New_York vitest run src/domain/schedule.test.ts"
   },
   "dependencies": {
     "@tauri-apps/api": "^2",
@@ -35,6 +36,7 @@
     "@vitest/coverage-v8": "^5.0.1",
     "ajv": "^8.20.0",
     "ajv-formats": "^3.0.1",
+    "cross-env": "^10.1.0",
     "jsdom": "^30.1.0",
     "tsx": "^4.23.15",
     "typescript": "~6.0.3",

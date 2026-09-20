@@ -67,6 +67,21 @@ describe("parseFeed", () => {
     expect(result).toEqual({ ok: false, problem: { kind: "malformed", detail } });
   });
 
+  it("rejects two events sharing an id", () => {
+    const result = parseFeed(feed({ events: [validEvent, validEvent] }));
+
+    expect(result).toEqual({
+      ok: false,
+      problem: { kind: "malformed", detail: `events[1]: duplicate id "${validEvent.id}"` },
+    });
+  });
+
+  it("ignores fields it does not know", () => {
+    const result = parseFeed(feed({ events: [{ ...validEvent, note: "공식 공지 기준" }] }));
+
+    expect(result.ok).toBe(true);
+  });
+
   it("names the entry that is wrong", () => {
     const result = parseFeed(feed({ events: [validEvent, { ...validEvent, title: "" }] }));
 

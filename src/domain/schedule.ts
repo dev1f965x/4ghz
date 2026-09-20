@@ -10,6 +10,15 @@ export type EventPhase =
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 
 /**
+ * How long an event with no announced end stays on screen after it starts.
+ *
+ * A livestream is announced as a single instant, and the viewer looks at this app while
+ * it is airing. Dropping it the second it begins would empty the list at the moment it
+ * matters most. Two hours covers a HoYoverse special program with room to spare.
+ */
+const MOMENTARY_EVENT_GRACE_MS = 2 * 60 * 60 * 1000;
+
+/**
  * Whole calendar days between two instants in the viewer's zone.
  *
  * Counting calendar days rather than 24-hour spans is what makes an event tomorrow
@@ -25,13 +34,13 @@ function startOfDay(instant: Date): Date {
   return midnight;
 }
 
-/** An event with no end instant is over once its start has passed. */
+/** An event with no announced end stays running for a grace window, then is over. */
 export function phaseOf(event: GameEvent, now: Date): EventPhase {
   const hasStarted = event.startsAt.getTime() <= now.getTime();
 
   if (hasStarted) {
-    const stillRunning = event.endsAt !== undefined && event.endsAt.getTime() > now.getTime();
-    return stillRunning ? { status: "running" } : { status: "over" };
+    const endsAt = event.endsAt?.getTime() ?? event.startsAt.getTime() + MOMENTARY_EVENT_GRACE_MS;
+    return endsAt > now.getTime() ? { status: "running" } : { status: "over" };
   }
 
   const daysUntil = calendarDaysBetween(now, event.startsAt);
