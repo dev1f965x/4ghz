@@ -2,6 +2,7 @@ import { useRef } from "react";
 import "./design/base.css";
 import "./design/scrollbar.css";
 import "./App.css";
+import { BrandMark } from "./components/BrandMark";
 import { EventList } from "./components/EventList";
 import { Notice } from "./components/Notice";
 import { TitleBar } from "./components/TitleBar";
@@ -36,9 +37,12 @@ export default function App({ state, onRefresh, tourMemory, now = new Date() }: 
       <TitleBar />
 
       <header className="app__header">
-        <div>
-          <h1 className="app__title">4GHz</h1>
-          <p className="app__subtitle">원신 · 스타레일 · 젠레스 공식 일정</p>
+        <div className="app__identity">
+          <BrandMark />
+          <div>
+            <h1 className="app__title">4GHz</h1>
+            <p className="app__subtitle">원신 · 스타레일 · 젠레스 공식 일정</p>
+          </div>
         </div>
 
         <div className="app__status" aria-live="polite">

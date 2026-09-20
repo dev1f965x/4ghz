@@ -2,8 +2,9 @@
  * A scrollbar that stays out of the way.
  *
  * The native one is thick and light, which made it the loudest thing in a dark window.
- * This draws a thin thumb over the content, invisible until the pointer is in the window
- * or the view is being scrolled, which the app marks with `data-scrolling`.
+ * This draws a thin thumb over the content and times its appearance three ways: it
+ * arrives at once when the view moves, eases in when the pointer wanders over, and fades
+ * out slowly to nothing once reading resumes.
  */
 .scroll-area {
   overflow-y: auto;
@@ -11,7 +12,7 @@
 }
 
 .scroll-area::-webkit-scrollbar {
-  width: 10px;
+  width: var(--scrollbar-width);
 }
 
 .scroll-area::-webkit-scrollbar-track {
@@ -23,14 +24,27 @@
   border-radius: var(--radius-pill);
   background-clip: content-box;
   background-color: transparent;
-  transition: background-color 160ms ease;
+  /* Leaving: a beat to be sure scrolling stopped, then a slow fade to nothing. */
+  transition: background-color 420ms ease 240ms;
 }
 
-.scroll-area:hover::-webkit-scrollbar-thumb,
+.scroll-area:hover::-webkit-scrollbar-thumb {
+  background-color: var(--border-strong);
+  transition: background-color 180ms ease;
+}
+
 .scroll-area[data-scrolling="true"]::-webkit-scrollbar-thumb {
   background-color: var(--border-strong);
+  transition: none;
 }
 
 .scroll-area::-webkit-scrollbar-thumb:hover {
   background-color: var(--text-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-area::-webkit-scrollbar-thumb,
+  .scroll-area:hover::-webkit-scrollbar-thumb {
+    transition: none;
+  }
 }
