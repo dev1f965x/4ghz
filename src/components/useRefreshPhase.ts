@@ -8,9 +8,9 @@ import { useEffect, useState } from "react";
  */
 export type RefreshPhase = "resting" | "collapsing" | "turning" | "expanding";
 
-export const COLLAPSE_MS = 200;
+export const COLLAPSE_MS = 260;
 export const TURN_MS = 700;
-export const EXPAND_MS = 200;
+export const EXPAND_MS = 260;
 
 export function useRefreshPhase(busy: boolean): RefreshPhase {
   const [phase, setPhase] = useState<RefreshPhase>("resting");

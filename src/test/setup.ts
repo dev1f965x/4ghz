@@ -25,3 +25,10 @@ window.matchMedia = (query: string) =>
     removeListener: vi.fn(),
     dispatchEvent: vi.fn(),
   }) as MediaQueryList;
+
+/** jsdom has no layout, so nothing resizes; the scrollbar just never gets a measurement. */
+globalThis.ResizeObserver = class {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+};

@@ -3,16 +3,18 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
+  /* Both widths are fixed: a transition from `auto` would simply jump. */
+  width: 104px;
   height: 32px;
-  padding: 0 var(--space-3);
+  padding: 0;
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-pill);
   background: var(--surface-raised);
   cursor: pointer;
   font-size: var(--text-small);
   transition:
-    padding 200ms ease,
-    gap 200ms ease;
+    width 260ms cubic-bezier(0.4, 0, 0.2, 1),
+    gap 260ms ease;
 }
 
 .refresh:hover:not(:disabled) {
@@ -31,11 +33,11 @@
 }
 
 .refresh__label {
-  max-width: 80px;
+  max-width: 72px;
   overflow: hidden;
   transition:
-    max-width 200ms ease,
-    opacity 140ms ease;
+    max-width 260ms cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 180ms ease;
   white-space: nowrap;
 }
 
@@ -44,7 +46,6 @@
 .refresh[data-phase="turning"],
 .refresh[data-phase="expanding"] {
   width: 32px;
-  padding: 0;
   gap: 0;
   color: var(--text-muted);
   cursor: default;
