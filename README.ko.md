@@ -7,7 +7,11 @@
 
 이름은 *for GHZ*로 읽습니다. **G**enshin, **H**onkai, **Z**enless.
 
-> 아직 만드는 중입니다. 1.0.0에 들어가는 범위는 [제품 정의](docs/product.md)에 있습니다.
+## 설치
+
+[릴리즈](https://github.com/dev1f965x/4ghz/releases)에서 `4GHz_x.y.z_x64-setup.exe`를
+내려받아 실행하면 됩니다. 서명하지 않은 빌드라 Windows SmartScreen이 한 번 경고를 띄웁니다.
+**추가 정보** → **실행**으로 설치할 수 있어요.
 
 ## 실행
 

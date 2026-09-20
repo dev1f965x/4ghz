@@ -7,8 +7,11 @@ Zone Zero events — livestreams, version updates, and in-game events — in one
 
 The name reads as *for GHZ*: **G**enshin, **H**onkai, **Z**enless.
 
-> Work in progress. Nothing is released yet; see [the product definition](docs/product.md)
-> for what 1.0.0 covers.
+## Install
+
+Download the latest `4GHz_x.y.z_x64-setup.exe` from
+[Releases](https://github.com/dev1f965x/4ghz/releases). The build is unsigned, so Windows
+SmartScreen warns once: **More info** → **Run anyway**.
 
 ## Run it
 
