@@ -1,0 +1,10 @@
+.titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 36px;
+  padding: 0 var(--space-2);
+  background: var(--surface-base);
+  /* Nothing inside may be selected: this strip is for dragging the window. */
+  user-select: none;
+}

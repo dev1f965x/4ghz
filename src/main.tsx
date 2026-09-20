@@ -5,6 +5,7 @@ import type { FeedCache, FeedSource } from "./feed/ports";
 import { memoryFeedCache, sampleFeedSource } from "./feed/sample";
 import { httpFeedSource, storeFeedCache } from "./feed/tauri";
 import { useFeedSync } from "./feed/useFeedSync";
+import { storeTourMemory } from "./onboarding/memory";
 
 const [source, cache]: [FeedSource, FeedCache] = import.meta.env.DEV
   ? [sampleFeedSource, memoryFeedCache]
@@ -12,7 +13,7 @@ const [source, cache]: [FeedSource, FeedCache] = import.meta.env.DEV
 
 function Window() {
   const { state, refresh } = useFeedSync(source, cache);
-  return <App state={state} onRefresh={refresh} />;
+  return <App state={state} onRefresh={refresh} tourMemory={storeTourMemory} />;
 }
 
 const root = document.getElementById("root");

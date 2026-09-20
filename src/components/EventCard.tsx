@@ -17,7 +17,9 @@ export function EventCard({ event, phase, now }: Props) {
   return (
     <article className="event" data-game={event.game} data-status={phase.status}>
       <div className="event__meta">
-        <span className="event__game">{GAME_LABELS[event.game]}</span>
+        <span className="event__game" data-tour="game">
+          {GAME_LABELS[event.game]}
+        </span>
         <span className="event__kind">{KIND_LABELS[event.kind]}</span>
       </div>
       <div className="event__body">

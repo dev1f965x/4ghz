@@ -19,6 +19,7 @@ export default defineConfig({
         "src/feed/tauri.ts",
         "src/feed/sample.ts",
         "src/shell/window.ts",
+        "src/onboarding/memory.ts",
       ],
       thresholds: { lines: 80, functions: 80, branches: 75, statements: 80 },
     },

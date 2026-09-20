@@ -5,6 +5,15 @@ import App from "./App";
 import type { GameEvent } from "./domain/event";
 import type { Feed } from "./domain/feed";
 import type { SyncState } from "./feed/sync";
+import type { TourMemory } from "./onboarding/useTour";
+
+/** The walkthrough is covered on its own; here it stays out of the way. */
+const seenTour: TourMemory = {
+  async seen() {
+    return true;
+  },
+  async markSeen() {},
+};
 
 const now = new Date("2026-10-01T12:00:00");
 
@@ -31,13 +40,15 @@ function ready(events: GameEvent[], extras: Partial<Extract<SyncState, { status:
 
 describe("App", () => {
   it("says it is working while the first fetch runs", () => {
-    render(<App state={{ status: "loading" }} onRefresh={() => {}} now={now} />);
+    render(
+      <App state={{ status: "loading" }} onRefresh={() => {}} tourMemory={seenTour} now={now} />,
+    );
 
     expect(screen.getByText("일정을 불러오는 중이에요")).toBeInTheDocument();
   });
 
   it("lists an upcoming event with its countdown", () => {
-    render(<App state={ready([event()])} onRefresh={() => {}} now={now} />);
+    render(<App state={ready([event()])} onRefresh={() => {}} tourMemory={seenTour} now={now} />);
 
     expect(screen.getByRole("heading", { name: "6.0 특별 방송", level: 3 })).toBeInTheDocument();
     expect(screen.getByText("3일 남음")).toBeInTheDocument();
@@ -52,7 +63,9 @@ describe("App", () => {
       startsAt: new Date("2026-10-01T11:30:00"),
     });
 
-    render(<App state={ready([event(), airing])} onRefresh={() => {}} now={now} />);
+    render(
+      <App state={ready([event(), airing])} onRefresh={() => {}} tourMemory={seenTour} now={now} />,
+    );
 
     expect(screen.getByRole("heading", { name: "지금 진행 중" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "다가오는 일정" })).toBeInTheDocument();
@@ -64,6 +77,7 @@ describe("App", () => {
       <App
         state={{ status: "failed", problem: { kind: "offline", detail: "no network" } }}
         onRefresh={onRefresh}
+        tourMemory={seenTour}
         now={now}
       />,
     );
@@ -78,6 +92,7 @@ describe("App", () => {
       <App
         state={{ status: "failed", problem: { kind: "unsupported-schema", found: "2.0" } }}
         onRefresh={() => {}}
+        tourMemory={seenTour}
         now={now}
       />,
     );
@@ -88,7 +103,7 @@ describe("App", () => {
   it("keeps showing the old schedule and says so when a refresh failed", () => {
     const state = ready([event()], { lastProblem: { kind: "offline", detail: "no network" } });
 
-    render(<App state={state} onRefresh={() => {}} now={now} />);
+    render(<App state={state} onRefresh={() => {}} tourMemory={seenTour} now={now} />);
 
     expect(screen.getByRole("heading", { name: "6.0 특별 방송" })).toBeInTheDocument();
     expect(
@@ -97,7 +112,14 @@ describe("App", () => {
   });
 
   it("disables the refresh button while a refresh is running", () => {
-    render(<App state={ready([event()], { refreshing: true })} onRefresh={() => {}} now={now} />);
+    render(
+      <App
+        state={ready([event()], { refreshing: true })}
+        onRefresh={() => {}}
+        tourMemory={seenTour}
+        now={now}
+      />,
+    );
 
     expect(screen.getByRole("button", { name: "새로고침" })).toBeDisabled();
     expect(screen.getByText("새로고침 중…")).toBeInTheDocument();
