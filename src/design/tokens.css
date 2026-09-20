@@ -46,6 +46,12 @@
   --space-5: 24px;
   --space-6: 32px;
 
+  /* Icon sizes. The brand mark is one step above the type block it sits beside: big
+     enough to hold the corner, small enough not to outweigh the name. */
+  --icon-small: 16px;
+  --icon-medium: 24px;
+  --icon-brand: 44px;
+
   --radius-small: 8px;
   --radius-medium: 12px;
   --radius-pill: 999px;
