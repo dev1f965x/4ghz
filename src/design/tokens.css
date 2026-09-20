@@ -65,6 +65,7 @@
   --radius-medium: 12px;
   --radius-pill: 999px;
 
-  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4);
+  /* Two layers: a tight edge that separates the card, and a soft pool that lifts it. */
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.5), 0 6px 16px rgb(0 0 0 / 0.35);
   --focus-ring: 2px solid var(--accent);
 }
