@@ -34,4 +34,5 @@ jobs:
             서명하지 않은 빌드라 Windows SmartScreen이 한 번 경고를 띄웁니다.
             `추가 정보` → `실행`으로 설치할 수 있습니다.
           releaseDraft: true
+          uploadUpdaterJson: false
           args: --bundles nsis
