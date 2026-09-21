@@ -56,3 +56,21 @@ export function upcomingFirst(events: readonly GameEvent[], now: Date): GameEven
         left.startsAt.getTime() - right.startsAt.getTime() || left.title.localeCompare(right.title),
     );
 }
+
+/** Time left until an instant, split the way a countdown prints it. Never negative. */
+export interface TimeLeft {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+}
+
+export function timeLeft(now: Date, until: Date): TimeLeft {
+  const total = Math.max(0, Math.floor((until.getTime() - now.getTime()) / 1000));
+  return {
+    days: Math.floor(total / 86_400),
+    hours: Math.floor((total % 86_400) / 3_600),
+    minutes: Math.floor((total % 3_600) / 60),
+    seconds: total % 60,
+  };
+}

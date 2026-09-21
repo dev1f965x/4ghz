@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { GameEvent } from "./event";
-import { calendarDaysBetween, phaseOf, upcomingFirst } from "./schedule";
+import { calendarDaysBetween, phaseOf, timeLeft, upcomingFirst } from "./schedule";
 
 function event(overrides: Partial<GameEvent> & Pick<GameEvent, "startsAt">): GameEvent {
   return {
@@ -95,5 +95,29 @@ describe("upcomingFirst", () => {
     ];
 
     expect(upcomingFirst(events, now).map((found) => found.id)).toEqual(["a", "b"]);
+  });
+});
+
+describe("timeLeft", () => {
+  it("splits the gap into days and a clock", () => {
+    const now = new Date("2026-09-21T21:00:00+09:00");
+
+    expect(timeLeft(now, new Date("2026-09-23T20:14:22+09:00"))).toEqual({
+      days: 1,
+      hours: 23,
+      minutes: 14,
+      seconds: 22,
+    });
+  });
+
+  it("stops at zero once the moment has passed", () => {
+    const now = new Date("2026-09-21T21:00:00Z");
+
+    expect(timeLeft(now, new Date("2026-09-21T20:00:00Z"))).toEqual({
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+    });
   });
 });

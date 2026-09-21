@@ -1,8 +1,11 @@
+/* Its own band: a raised strip between the app bar above and the content below, running
+   across the header's padding and down onto its bottom border. */
 .tab-bar {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  /* Across the header's padding, and down onto its bottom border. */
   margin: 0 calc(-1 * var(--space-6)) -1px;
+  border-top: 1px solid var(--border-subtle);
+  background: var(--surface-raised);
 }
 
 .tab-bar__tab {
@@ -21,7 +24,7 @@
 }
 
 .tab-bar__tab:hover {
-  background: var(--surface-raised);
+  background: var(--surface-overlay);
   color: var(--text-body);
 }
 

@@ -31,6 +31,7 @@ with a countdown.
 ## Acceptance criteria
 
 - Opening the app shows every upcoming event of the three games, soonest first.
+- The countdown runs to the second: days when there are any, then hours, minutes, and seconds.
 - An event starting today reads as today, not as "in 0 days".
 - An event that has started but not ended reads as running.
 - An event announced without an end, such as a livestream, stays listed as running for

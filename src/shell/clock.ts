@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
-/** Half a minute: fast enough that a one-minute label is never late, cheap enough to ignore. */
-const TICK_MS = 30_000;
+/** A second, because the countdowns print seconds. A re-render of a short list is cheap. */
+const TICK_MS = 1_000;
 
 /**
  * The current time, re-read on a timer.
