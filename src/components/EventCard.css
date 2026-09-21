@@ -76,9 +76,16 @@
 
 .event__countdown {
   display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-2);
+  white-space: nowrap;
+}
+
+.event__time {
+  display: flex;
   align-items: baseline;
   gap: var(--space-1);
-  white-space: nowrap;
 }
 
 .event__days {
@@ -91,6 +98,46 @@
 }
 
 .event__unit {
+  margin-right: var(--space-2);
+  color: var(--text-muted);
+  font-size: var(--text-base);
+  font-weight: 600;
+}
+
+.event__clock {
+  color: var(--text-body);
+  font-size: var(--text-large);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+/* Under a day, the clock is all there is, so it takes the size the days would have. */
+.event__time > .event__clock:only-child {
+  color: var(--text-strong);
+  font-size: 1.625rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.event[data-status="today"] .event__time > .event__clock:only-child {
+  color: var(--soon);
+}
+
+.event__until-end {
+  color: var(--text-muted);
+  font-size: var(--text-small);
+}
+
+.event__until-end .event__days {
+  font-size: var(--text-base);
+}
+
+.event__until-end .event__unit {
+  margin-right: var(--space-1);
+  font-size: var(--text-small);
+}
+
+.event__until-end .event__clock {
   color: var(--text-muted);
   font-size: var(--text-small);
 }

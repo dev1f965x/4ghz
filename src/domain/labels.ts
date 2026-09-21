@@ -2,7 +2,7 @@ import type { Tab } from "../navigation/history";
 import type { Chore, GameDay } from "./dailies";
 import type { EventKind, Game } from "./event";
 import type { GameFilter } from "./filter";
-import type { EventPhase } from "./schedule";
+import type { EventPhase, TimeLeft } from "./schedule";
 
 /**
  * Every Korean string the interface shows, in one place.
@@ -25,9 +25,6 @@ export const KIND_LABELS: Record<EventKind, string> = {
 };
 
 /** What the countdown says. "오늘" beats "0일 남음", which reads like nothing is left. */
-/** Printed small after the number of days, which the card sets large. */
-export const DAYS_LEFT_UNIT = "일 남음";
-
 export function phaseLabel(phase: EventPhase): string {
   switch (phase.status) {
     case "today":
@@ -35,7 +32,7 @@ export function phaseLabel(phase: EventPhase): string {
     case "running":
       return "진행 중";
     case "upcoming":
-      return `${phase.daysUntil}${DAYS_LEFT_UNIT}`;
+      return `${phase.daysUntil}일 남음`;
     case "over":
       return "종료";
   }
@@ -156,4 +153,14 @@ export function formatGameDay(day: GameDay): string {
   }).format(new Date(`${day}T00:00:00Z`));
   const weekday = DAILIES_LABELS.weekdays[new Date(`${day}T00:00:00Z`).getUTCDay()];
   return `${date} (${weekday})`;
+}
+
+export const COUNTDOWN_LABELS = {
+  day: "일",
+  untilEnd: "끝나기까지",
+};
+
+/** The part of a countdown under a day, as `03:14:22`. */
+export function formatClock({ hours, minutes, seconds }: TimeLeft): string {
+  return [hours, minutes, seconds].map((part) => String(part).padStart(2, "0")).join(":");
 }
