@@ -90,3 +90,15 @@ export const NAVIGATION_LABELS = {
   forward: "앞으로",
   tabs: "보기",
 };
+
+export const CODE_LABELS = {
+  copy: "복사",
+  copied: "복사했어요",
+  redeem: "교환",
+  redeemHint: "코드를 복사하고 공식 교환 페이지를 열어요",
+  used: "사용함",
+  noExpiry: "기한 없음",
+  expires: (text: string) => `${text}까지`,
+  empty: "지금 쓸 수 있는 코드가 없어요",
+  emptyDetail: "새 코드가 올라오면 여기에 표시돼요",
+};

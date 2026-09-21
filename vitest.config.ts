@@ -21,6 +21,8 @@ export default defineConfig({
         "src/shell/window.ts",
         "src/onboarding/memory.ts",
         "src/update/tauri.ts",
+        "src/codes/usedCodes.ts",
+        "src/shell/outside.ts",
       ],
       thresholds: { lines: 80, functions: 80, branches: 75, statements: 80 },
     },

@@ -9,6 +9,13 @@ const validEvent = {
   startsAt: "2026-10-02T11:00:00Z",
 };
 
+const validCode = {
+  code: "GENSHINGIFT",
+  game: "genshin",
+  rewards: "원석 50 외",
+  addedAt: "2026-09-21T00:00:00Z",
+};
+
 function feed(overrides: Record<string, unknown> = {}) {
   return {
     schemaVersion: "1.0",
@@ -90,5 +97,47 @@ describe("parseFeed", () => {
     expect(result.ok).toBe(false);
     if (result.ok) return;
     expect(result.problem).toEqual({ kind: "malformed", detail: "events[1]: title is missing" });
+  });
+
+  it("reads a 1.0 feed, which has no codes, as having none", () => {
+    const result = parseFeed(feed());
+
+    expect(result.ok && result.feed.codes).toEqual([]);
+  });
+
+  it("reads codes from a 1.1 feed", () => {
+    const expiring = { ...validCode, code: "LIVE", expiresAt: "2026-09-30T00:00:00Z" };
+    const result = parseFeed(feed({ schemaVersion: "1.1", codes: [validCode, expiring] }));
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.feed.codes.map((c) => c.code)).toEqual(["GENSHINGIFT", "LIVE"]);
+    expect(result.feed.codes[1].expiresAt?.toISOString()).toBe("2026-09-30T00:00:00.000Z");
+  });
+
+  it("names the code that is wrong", () => {
+    const result = parseFeed(
+      feed({ codes: [validCode, { ...validCode, code: "B", rewards: "" }] }),
+    );
+
+    expect(result).toEqual({
+      ok: false,
+      problem: { kind: "malformed", detail: "codes[1]: rewards is missing" },
+    });
+  });
+
+  it("rejects the same code twice for one game", () => {
+    const result = parseFeed(feed({ codes: [validCode, validCode] }));
+
+    expect(result).toEqual({
+      ok: false,
+      problem: { kind: "malformed", detail: `codes[1]: duplicate code "genshin:GENSHINGIFT"` },
+    });
+  });
+
+  it("allows the same code for two games", () => {
+    const result = parseFeed(feed({ codes: [validCode, { ...validCode, game: "zenless" }] }));
+
+    expect(result.ok).toBe(true);
   });
 });

@@ -30,7 +30,17 @@ function main(): void {
     ids.add(event.id);
   }
 
-  console.log(`feed/events.json is valid (${feed.events.length} events)`);
+  const codes = new Set<string>();
+  for (const code of (feed.codes ?? []) as { game: string; code: string }[]) {
+    const key = `${code.game}:${code.code}`;
+    if (codes.has(key)) {
+      console.error(`feed/events.json duplicate code "${key}"`);
+      process.exit(1);
+    }
+    codes.add(key);
+  }
+
+  console.log(`feed/events.json is valid (${feed.events.length} events, ${codes.size} codes)`);
 }
 
 main();

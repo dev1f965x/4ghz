@@ -56,6 +56,11 @@ export const storeFeedCache: FeedCache = {
           startsAt: event.startsAt.toISOString(),
           endsAt: event.endsAt?.toISOString(),
         })),
+        codes: cached.feed.codes.map((code) => ({
+          ...code,
+          addedAt: code.addedAt.toISOString(),
+          expiresAt: code.expiresAt?.toISOString(),
+        })),
       },
       fetchedAt: cached.fetchedAt.toISOString(),
     });

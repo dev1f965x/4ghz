@@ -6,6 +6,7 @@ import type { GameEvent } from "./domain/event";
 import type { Feed } from "./domain/feed";
 import type { SyncState } from "./feed/sync";
 import type { TourMemory } from "./onboarding/useTour";
+import { noUsedCodes } from "./test/memories";
 
 /** The walkthrough is covered on its own; here it stays out of the way. */
 const seenTour: TourMemory = {
@@ -29,7 +30,7 @@ function event(overrides: Partial<GameEvent> = {}): GameEvent {
 }
 
 function ready(events: GameEvent[], extras: Partial<Extract<SyncState, { status: "ready" }>> = {}) {
-  const feed: Feed = { schemaVersion: "1.0", publishedAt: now, events };
+  const feed: Feed = { schemaVersion: "1.0", publishedAt: now, events, codes: [] };
   return {
     status: "ready",
     cached: { feed, fetchedAt: new Date("2026-10-01T09:00:00") },
@@ -41,14 +42,28 @@ function ready(events: GameEvent[], extras: Partial<Extract<SyncState, { status:
 describe("App", () => {
   it("says it is working while the first fetch runs", () => {
     render(
-      <App state={{ status: "loading" }} onRefresh={() => {}} tourMemory={seenTour} now={now} />,
+      <App
+        state={{ status: "loading" }}
+        onRefresh={() => {}}
+        tourMemory={seenTour}
+        usedCodesMemory={noUsedCodes}
+        now={now}
+      />,
     );
 
-    expect(screen.getByText("일정을 불러오는 중이에요")).toBeInTheDocument();
+    expect(screen.getByText("불러오는 중이에요")).toBeInTheDocument();
   });
 
   it("lists an upcoming event with its countdown", () => {
-    render(<App state={ready([event()])} onRefresh={() => {}} tourMemory={seenTour} now={now} />);
+    render(
+      <App
+        state={ready([event()])}
+        onRefresh={() => {}}
+        tourMemory={seenTour}
+        usedCodesMemory={noUsedCodes}
+        now={now}
+      />,
+    );
 
     expect(
       screen.getByRole("heading", { name: "6.0 Special Program", level: 3 }),
@@ -66,7 +81,13 @@ describe("App", () => {
     });
 
     render(
-      <App state={ready([event(), airing])} onRefresh={() => {}} tourMemory={seenTour} now={now} />,
+      <App
+        state={ready([event(), airing])}
+        onRefresh={() => {}}
+        tourMemory={seenTour}
+        usedCodesMemory={noUsedCodes}
+        now={now}
+      />,
     );
 
     expect(screen.getByRole("heading", { name: "지금 진행 중" })).toBeInTheDocument();
@@ -80,11 +101,12 @@ describe("App", () => {
         state={{ status: "failed", problem: { kind: "offline", detail: "no network" } }}
         onRefresh={onRefresh}
         tourMemory={seenTour}
+        usedCodesMemory={noUsedCodes}
         now={now}
       />,
     );
 
-    expect(screen.getByText("일정을 가져오지 못했어요")).toBeInTheDocument();
+    expect(screen.getByText("가져오지 못했어요")).toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "다시 시도" }));
     expect(onRefresh).toHaveBeenCalledOnce();
   });
@@ -95,6 +117,7 @@ describe("App", () => {
         state={{ status: "failed", problem: { kind: "unsupported-schema", found: "2.0" } }}
         onRefresh={() => {}}
         tourMemory={seenTour}
+        usedCodesMemory={noUsedCodes}
         now={now}
       />,
     );
@@ -105,11 +128,19 @@ describe("App", () => {
   it("keeps showing the old schedule and says so when a refresh failed", () => {
     const state = ready([event()], { lastProblem: { kind: "offline", detail: "no network" } });
 
-    render(<App state={state} onRefresh={() => {}} tourMemory={seenTour} now={now} />);
+    render(
+      <App
+        state={state}
+        onRefresh={() => {}}
+        tourMemory={seenTour}
+        usedCodesMemory={noUsedCodes}
+        now={now}
+      />,
+    );
 
     expect(screen.getByRole("heading", { name: "6.0 Special Program" })).toBeInTheDocument();
     expect(
-      screen.getByText("최신 일정을 받지 못해 마지막으로 받은 내용을 보여주고 있어요"),
+      screen.getByText("최신 내용을 받지 못해 마지막으로 받은 내용을 보여주고 있어요"),
     ).toBeInTheDocument();
   });
 
@@ -119,6 +150,7 @@ describe("App", () => {
         state={ready([event()], { refreshing: true })}
         onRefresh={() => {}}
         tourMemory={seenTour}
+        usedCodesMemory={noUsedCodes}
         now={now}
       />,
     );
@@ -128,7 +160,15 @@ describe("App", () => {
   });
 
   it("moves between tabs and back again, like a browser", async () => {
-    render(<App state={ready([event()])} onRefresh={() => {}} tourMemory={seenTour} now={now} />);
+    render(
+      <App
+        state={ready([event()])}
+        onRefresh={() => {}}
+        tourMemory={seenTour}
+        usedCodesMemory={noUsedCodes}
+        now={now}
+      />,
+    );
     const backButton = screen.getByRole("button", { name: "뒤로" });
     expect(screen.getByRole("tab", { name: "일정" })).toHaveAttribute("aria-selected", "true");
     expect(backButton).toBeDisabled();
@@ -142,7 +182,15 @@ describe("App", () => {
   });
 
   it("moves between tabs with the arrow keys", async () => {
-    render(<App state={ready([event()])} onRefresh={() => {}} tourMemory={seenTour} now={now} />);
+    render(
+      <App
+        state={ready([event()])}
+        onRefresh={() => {}}
+        tourMemory={seenTour}
+        usedCodesMemory={noUsedCodes}
+        now={now}
+      />,
+    );
 
     screen.getByRole("tab", { name: "일정" }).focus();
     await userEvent.keyboard("{ArrowRight}");
@@ -152,7 +200,15 @@ describe("App", () => {
   });
 
   it("hides the refresh on the tab that does not use the feed", async () => {
-    render(<App state={ready([event()])} onRefresh={() => {}} tourMemory={seenTour} now={now} />);
+    render(
+      <App
+        state={ready([event()])}
+        onRefresh={() => {}}
+        tourMemory={seenTour}
+        usedCodesMemory={noUsedCodes}
+        now={now}
+      />,
+    );
 
     await userEvent.click(screen.getByRole("tab", { name: "숙제" }));
 
