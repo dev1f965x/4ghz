@@ -22,7 +22,7 @@ const MOMENTARY_EVENT_GRACE_MS = 2 * 60 * 60 * 1000;
  * Whole calendar days between two instants in the viewer's zone.
  *
  * Counting calendar days rather than 24-hour spans is what makes an event tomorrow
- * morning read as "1일 남음" instead of "0일 남음" late tonight.
+ * morning read as one day away, not zero, when it is looked at late tonight.
  */
 export function calendarDaysBetween(from: Date, to: Date): number {
   return Math.round((startOfDay(to).getTime() - startOfDay(from).getTime()) / MILLISECONDS_PER_DAY);
