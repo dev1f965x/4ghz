@@ -1,4 +1,4 @@
-/** The rectangle the spotlight cuts out of the dimming, in viewport coordinates. */
+/** A rectangle in viewport coordinates. */
 export interface Hole {
   top: number;
   left: number;
@@ -6,22 +6,48 @@ export interface Hole {
   height: number;
 }
 
+interface Size {
+  width: number;
+  height: number;
+}
+
 interface Placement {
   hole: Hole;
-  cardHeight: number;
-  viewportHeight: number;
+  card: Size;
+  viewport: Size;
 }
 
 /** Breathing room between the cut-out, the card, and the window edge. */
 export const GAP = 16;
 
 /**
- * Puts the explanation under the element it describes, or over it when the element sits
- * too low for the card to fit underneath.
+ * Where the explanation goes: under the element it describes, or over it when there is
+ * no room below; lined up with the element's left edge, or with its right edge when the
+ * element sits too far right for the card to open that way. Either way, never past the
+ * window.
  */
-export function cardTop({ hole, cardHeight, viewportHeight }: Placement): number {
-  const below = hole.top + hole.height + GAP;
-  if (below + cardHeight + GAP <= viewportHeight) return below;
+export function placeCard({ hole, card, viewport }: Placement): { top: number; left: number } {
+  return {
+    top: cardTop(hole, card.height, viewport.height),
+    left: cardLeft(hole, card.width, viewport.width),
+  };
+}
 
-  return Math.max(hole.top - GAP - cardHeight, GAP);
+function cardTop(hole: Hole, height: number, viewportHeight: number): number {
+  const below = hole.top + hole.height + GAP;
+  if (below + height + GAP <= viewportHeight) return below;
+
+  return clamp(hole.top - GAP - height, GAP, viewportHeight - height - GAP);
+}
+
+function cardLeft(hole: Hole, width: number, viewportWidth: number): number {
+  const opensRight = hole.left;
+  const opensLeft = hole.left + hole.width - width;
+  const fitsRight = opensRight + width + GAP <= viewportWidth;
+
+  return clamp(fitsRight ? opensRight : opensLeft, GAP, viewportWidth - width - GAP);
+}
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(Math.max(value, min), Math.max(min, max));
 }

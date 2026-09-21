@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { cardTop, GAP, type Hole } from "./placement";
+import { type Hole, placeCard } from "./placement";
 import type { TourStep } from "./steps";
 import "./Spotlight.css";
 
@@ -23,7 +23,7 @@ const PADDING = 8;
 export function Spotlight({ step, position, total, onNext, onSkip }: Props) {
   const target = useTargetRect(step.target);
   const card = useRef<HTMLDivElement>(null);
-  const cardHeight = useCardHeight(card, step.id);
+  const cardSize = useCardSize(card, step.id);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: focus has to follow the step
   useEffect(() => card.current?.focus(), [step.id]);
@@ -52,10 +52,11 @@ export function Spotlight({ step, position, total, onNext, onSkip }: Props) {
       <div className="spotlight__hole" style={hole} />
       <div
         className="spotlight__card"
-        style={{
-          top: cardTop({ hole, cardHeight, viewportHeight: window.innerHeight }),
-          left: Math.max(hole.left, GAP),
-        }}
+        style={placeCard({
+          hole,
+          card: cardSize,
+          viewport: { width: window.innerWidth, height: window.innerHeight },
+        })}
         role="dialog"
         aria-modal="true"
         aria-labelledby={`tour-${step.id}-title`}
@@ -106,14 +107,17 @@ function useTargetRect(selector: string): Hole | undefined {
   return rect;
 }
 
-/** Measures before paint, so a card that has to flip above never shows below first. */
-function useCardHeight(card: React.RefObject<HTMLDivElement | null>, stepId: string): number {
-  const [height, setHeight] = useState(0);
+/** Measures before paint, so a card that has to move never shows in the wrong place first. */
+function useCardSize(
+  card: React.RefObject<HTMLDivElement | null>,
+  stepId: string,
+): { width: number; height: number } {
+  const [size, setSize] = useState({ width: 0, height: 0 });
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: each step gets its own card
   useLayoutEffect(() => {
-    setHeight(card.current?.offsetHeight ?? 0);
+    setSize({ width: card.current?.offsetWidth ?? 0, height: card.current?.offsetHeight ?? 0 });
   }, [card, stepId]);
 
-  return height;
+  return size;
 }

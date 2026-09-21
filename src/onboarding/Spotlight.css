@@ -4,10 +4,13 @@
   z-index: 10;
 }
 
-/* One element paints the whole dimming: a huge shadow spreading out of the cut-out. */
+/* One element paints the whole dimming, a huge shadow spreading out of the cut-out, and
+   its outline marks the edge of what is being explained. */
 .spotlight__hole {
   position: absolute;
   border-radius: var(--radius-medium);
+  outline: 2px dashed var(--accent);
+  outline-offset: 3px;
   box-shadow: 0 0 0 9999px rgb(0 0 0 / 0.66);
   pointer-events: none;
   transition:
