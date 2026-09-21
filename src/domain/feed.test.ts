@@ -5,7 +5,7 @@ const validEvent = {
   id: "genshin-6-0-livestream",
   game: "genshin",
   kind: "livestream",
-  title: "6.0 특별 방송",
+  title: "6.0 Special Program",
   startsAt: "2026-10-02T11:00:00Z",
 };
 
@@ -77,7 +77,9 @@ describe("parseFeed", () => {
   });
 
   it("ignores fields it does not know", () => {
-    const result = parseFeed(feed({ events: [{ ...validEvent, note: "공식 공지 기준" }] }));
+    const result = parseFeed(
+      feed({ events: [{ ...validEvent, note: "From the official notice" }] }),
+    );
 
     expect(result.ok).toBe(true);
   });
