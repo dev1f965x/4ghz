@@ -126,4 +126,36 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "새로고침" })).toBeDisabled();
     expect(screen.getByText("새로고침 중…")).toBeInTheDocument();
   });
+
+  it("moves between tabs and back again, like a browser", async () => {
+    render(<App state={ready([event()])} onRefresh={() => {}} tourMemory={seenTour} now={now} />);
+    const backButton = screen.getByRole("button", { name: "뒤로" });
+    expect(screen.getByRole("tab", { name: "일정" })).toHaveAttribute("aria-selected", "true");
+    expect(backButton).toBeDisabled();
+
+    await userEvent.click(screen.getByRole("tab", { name: "리딤 코드" }));
+    expect(screen.getByRole("tabpanel")).toHaveAttribute("aria-labelledby", "tab-codes");
+
+    await userEvent.click(backButton);
+    expect(screen.getByRole("tab", { name: "일정" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("button", { name: "앞으로" })).toBeEnabled();
+  });
+
+  it("moves between tabs with the arrow keys", async () => {
+    render(<App state={ready([event()])} onRefresh={() => {}} tourMemory={seenTour} now={now} />);
+
+    screen.getByRole("tab", { name: "일정" }).focus();
+    await userEvent.keyboard("{ArrowRight}");
+
+    expect(screen.getByRole("tab", { name: "리딤 코드" })).toHaveFocus();
+    expect(screen.getByRole("tab", { name: "리딤 코드" })).toHaveAttribute("aria-selected", "true");
+  });
+
+  it("hides the refresh on the tab that does not use the feed", async () => {
+    render(<App state={ready([event()])} onRefresh={() => {}} tourMemory={seenTour} now={now} />);
+
+    await userEvent.click(screen.getByRole("tab", { name: "숙제" }));
+
+    expect(screen.queryByRole("button", { name: "새로고침" })).not.toBeInTheDocument();
+  });
 });

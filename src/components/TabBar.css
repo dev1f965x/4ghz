@@ -1,0 +1,29 @@
+.tab-bar {
+  display: flex;
+  gap: var(--space-5);
+  /* The active underline sits on the header's bottom border rather than above it. */
+  margin-bottom: -1px;
+}
+
+.tab-bar__tab {
+  padding: var(--space-2) 0 var(--space-3);
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: var(--text-base);
+  font-weight: 600;
+  transition:
+    color 120ms ease,
+    border-color 120ms ease;
+}
+
+.tab-bar__tab:hover {
+  color: var(--text-body);
+}
+
+.tab-bar__tab[aria-selected="true"] {
+  border-bottom-color: var(--accent);
+  color: var(--text-strong);
+}
