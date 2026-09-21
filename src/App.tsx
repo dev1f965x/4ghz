@@ -13,11 +13,13 @@ import type { SyncState } from "./feed/sync";
 import { Spotlight } from "./onboarding/Spotlight";
 import type { TourMemory } from "./onboarding/useTour";
 import { useTour } from "./onboarding/useTour";
+import { useNow } from "./shell/clock";
 
 export interface AppProps {
   state: SyncState;
   onRefresh: () => void;
   tourMemory: TourMemory;
+  /** Fixed by tests; the window reads a ticking clock. */
   now?: Date;
 }
 
@@ -26,7 +28,9 @@ export interface AppProps {
  * that names the app and carries its one action, and the schedule, which is the only
  * part that scrolls.
  */
-export default function App({ state, onRefresh, tourMemory, now = new Date() }: AppProps) {
+export default function App({ state, onRefresh, tourMemory, now }: AppProps) {
+  const clock = useNow();
+  const current = now ?? clock;
   const refreshing = state.status === "ready" && state.refreshing;
   const hasEvents = state.status === "ready" && state.cached.feed.events.length > 0;
   const tour = useTour(tourMemory, hasEvents);
@@ -47,7 +51,7 @@ export default function App({ state, onRefresh, tourMemory, now = new Date() }: 
         <div className="app__status" aria-live="polite">
           {state.status === "ready" && (
             <p className="app__fetched">
-              {refreshing ? "새로고침 중…" : formatFetchedAt(state.cached.fetchedAt, now)}
+              {refreshing ? "새로고침 중…" : formatFetchedAt(state.cached.fetchedAt, current)}
             </p>
           )}
           <RefreshButton busy={refreshing} onRefresh={onRefresh} />
@@ -62,7 +66,7 @@ export default function App({ state, onRefresh, tourMemory, now = new Date() }: 
           scrollbars: { theme: "os-theme-4ghz", autoHide: "move", autoHideDelay: 700 },
         }}
       >
-        {renderBody(state, onRefresh, now)}
+        {renderBody(state, onRefresh, current)}
       </OverlayScrollbarsComponent>
 
       {tour.step && (

@@ -39,3 +39,12 @@ describe("formatStart", () => {
     expect(formatStart(new Date("2027-01-08T20:00:00"), now)).toBe("2027년 1월 8일 20:00");
   });
 });
+
+describe("formatFetchedAt across years", () => {
+  it("names the year once the cache is older than one", () => {
+    const fetchedAt = new Date("2026-12-31T10:00:00Z");
+    const now = new Date("2027-01-02T10:00:00Z");
+
+    expect(formatFetchedAt(fetchedAt, now)).toContain("2026년");
+  });
+});
