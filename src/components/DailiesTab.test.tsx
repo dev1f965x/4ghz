@@ -31,7 +31,7 @@ describe("DailiesTab", () => {
   it("heads today's list with the game day", () => {
     renderTab();
 
-    expect(screen.getByRole("heading", { name: "9월 21일 (월)" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "오늘 · 9월 21일 (월)" })).toBeInTheDocument();
   });
 
   it("checks a chore off for today", async () => {

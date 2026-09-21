@@ -56,10 +56,10 @@ export function DailiesTab({ records, filter, now, onToggleChore, onToggleGame }
       ) : games.length === 0 ? (
         <Notice title={DAILIES_LABELS.noGames} />
       ) : (
-        <>
+        <div className="dailies__panels">
           <section className="dailies__today" aria-labelledby="dailies-today">
             <header className="dailies__heading">
-              <h2 id="dailies-today">{formatGameDay(today)}</h2>
+              <h2 id="dailies-today">{DAILIES_LABELS.today(formatGameDay(today))}</h2>
               <p>{DAILIES_LABELS.resetHint}</p>
             </header>
 
@@ -88,7 +88,7 @@ export function DailiesTab({ records, filter, now, onToggleChore, onToggleGame }
           </section>
 
           <MonthCalendar records={records} games={games} today={today} />
-        </>
+        </div>
       )}
     </div>
   );

@@ -1,4 +1,8 @@
 /* biome-ignore-all lint/complexity/noImportantStyles: the reduced-motion override has to beat component transitions */
+/* Pretendard ships with the app (licenses/Pretendard-OFL.txt), so every machine sets the
+   same type instead of falling back to Malgun Gothic for Hangul and Segoe UI for digits. */
+@import "pretendard/dist/web/variable/pretendardvariable.css";
+
 @import "./tokens.css";
 
 *,

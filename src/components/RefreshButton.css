@@ -1,11 +1,24 @@
 .refresh {
+  display: grid;
+  place-items: center;
+  width: 32px;
   height: 32px;
-  padding: 0 var(--space-3);
+  padding: 0;
   border: 1px solid var(--border-strong);
-  border-radius: var(--radius-pill);
+  border-radius: 50%;
   background: var(--surface-raised);
+  color: var(--text-body);
   cursor: pointer;
-  font-size: var(--text-small);
+}
+
+.refresh svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.6;
 }
 
 .refresh:hover:not(:disabled) {

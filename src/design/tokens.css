@@ -35,7 +35,8 @@
   /* Type scale. One family, four sizes, three weights. */
   --font-family:
     "Pretendard Variable", Pretendard, "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
-  --font-numeric: "SF Mono", "Cascadia Mono", ui-monospace, monospace;
+  /* For codes, where 0 and O or 1 and I must not be confused. */
+  --font-mono: "Cascadia Mono", Consolas, ui-monospace, monospace;
   --text-title: 1.5rem;
   --text-large: 1.0625rem;
   --text-base: 0.875rem;

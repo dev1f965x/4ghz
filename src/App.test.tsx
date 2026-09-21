@@ -72,7 +72,7 @@ describe("App", () => {
     expect(
       screen.getByRole("heading", { name: "6.0 Special Program", level: 3 }),
     ).toBeInTheDocument();
-    expect(screen.getByText("3일 남음")).toBeInTheDocument();
+    expect(screen.getByRole("article")).toHaveTextContent("3일 남음");
     expect(screen.getByText("3시간 전")).toBeInTheDocument();
   });
 

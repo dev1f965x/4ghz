@@ -31,12 +31,12 @@ export function EventList({ events, now }: Props) {
         </section>
       )}
 
-      <section className="event-list__section" aria-labelledby="ahead-heading" data-tour="upcoming">
+      <section className="event-list__section" aria-labelledby="ahead-heading">
         <h2 className="event-list__heading" id="ahead-heading">
           다가오는 일정
         </h2>
         {ahead.map(({ event, phase }) => (
-          <EventCard key={event.id} event={event} phase={phase} now={now} />
+          <EventCard key={event.id} event={event} phase={phase} now={now} tourAnchor="upcoming" />
         ))}
       </section>
     </div>

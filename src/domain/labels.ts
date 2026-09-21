@@ -25,6 +25,9 @@ export const KIND_LABELS: Record<EventKind, string> = {
 };
 
 /** What the countdown says. "오늘" beats "0일 남음", which reads like nothing is left. */
+/** Printed small after the number of days, which the card sets large. */
+export const DAYS_LEFT_UNIT = "일 남음";
+
 export function phaseLabel(phase: EventPhase): string {
   switch (phase.status) {
     case "today":
@@ -32,7 +35,7 @@ export function phaseLabel(phase: EventPhase): string {
     case "running":
       return "진행 중";
     case "upcoming":
-      return `${phase.daysUntil}일 남음`;
+      return `${phase.daysUntil}${DAYS_LEFT_UNIT}`;
     case "over":
       return "종료";
   }
@@ -93,6 +96,8 @@ export const FILTER_LABELS: { menu: string } & Record<GameFilter, string> = {
   ...GAME_LABELS,
 };
 
+export const REFRESH_LABEL = "새로고침";
+
 export const NAVIGATION_LABELS = {
   back: "뒤로",
   forward: "앞으로",
@@ -125,6 +130,7 @@ export const DAILIES_LABELS = {
   noGames: "하는 게임을 하나 이상 골라 주세요",
   notTracked: (game: string) => `${game}은 숙제 목록에서 꺼져 있어요`,
   track: "켜기",
+  today: (date: string) => `오늘 · ${date}`,
   resetHint: "매일 오전 5시에 새 하루가 시작돼요",
   streak: (days: number) => `${days}일 연속`,
   month: (year: number, month: number) => `${year}년 ${month}월`,
