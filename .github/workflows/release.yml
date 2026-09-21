@@ -25,6 +25,8 @@ jobs:
       - uses: tauri-apps/tauri-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
           tagName: ${{ github.ref_name }}
           releaseName: ${{ github.ref_name }}
@@ -32,7 +34,6 @@ jobs:
             The installer is `4GHz_*_x64-setup.exe` below.
 
             The build is unsigned, so Windows SmartScreen warns once:
-            `More info` → `Run anyway`.
+            `More info` → `Run anyway`. Installed copies update themselves from here on.
           releaseDraft: true
-          uploadUpdaterJson: false
-          args: --bundles nsis
+          args: --bundles nsis --config src-tauri/tauri.release.conf.json

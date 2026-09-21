@@ -20,6 +20,7 @@ describe("token contrast", () => {
     ["text-body", "surface-raised"],
     ["text-muted", "surface-base"],
     ["text-muted", "surface-raised"],
+    ["surface-base", "accent"],
   ])("%s on %s clears AA for body text", (foreground, background) => {
     expect(contrastRatio(tokens[foreground], tokens[background])).toBeGreaterThanOrEqual(
       AA_NORMAL_TEXT,

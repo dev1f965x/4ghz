@@ -49,5 +49,16 @@
         "sidebarImage": "installer/sidebar.bmp"
       }
     }
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEZEQkUzODZEMEY0MjJGRDkKUldUWkwwSVBiVGkrL1Q1NFJSem9WbW9OWVMyWm9Xekc0U1BsNHlGa2tpaE84UWZwS3pZcmpmVWUK",
+      "endpoints": [
+        "https://github.com/dev1f965x/4ghz/releases/latest/download/latest.json"
+      ],
+      "windows": {
+        "installMode": "passive"
+      }
+    }
   }
 }

@@ -52,7 +52,7 @@ export function formatStart(instant: Date, now: Date): string {
   }).format(instant);
 }
 
-/** How long ago the feed was fetched, as `방금`, `12분 전`, `3시간 전`, or a date. */
+/** How long ago the feed was fetched: just now, in minutes, in hours, or as a date. */
 export function formatFetchedAt(fetchedAt: Date, now: Date): string {
   const minutes = Math.floor((now.getTime() - fetchedAt.getTime()) / 60_000);
   if (minutes < 1) return "방금";
@@ -68,3 +68,12 @@ export function formatFetchedAt(fetchedAt: Date, now: Date): string {
     day: "numeric",
   }).format(fetchedAt);
 }
+
+export const UPDATE_LABELS = {
+  available: (version: string) => `${version} 버전이 나왔어요`,
+  install: "업데이트",
+  installing: (progress: number | null) =>
+    progress === null ? "업데이트 받는 중…" : `업데이트 받는 중… ${Math.round(progress * 100)}%`,
+  failed: "업데이트하지 못했어요",
+  retry: "다시 시도",
+};
