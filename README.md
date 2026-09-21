@@ -63,7 +63,7 @@ The name reads as *for GHZ*: **G**enshin, **H**onkai, **Z**enless.
 - Fetches on launch, every six hours, and on demand; the last good schedule is cached for offline
 - A window the app draws itself, and a walkthrough on first run
 - Updates itself: a signed release is announced in the window and installed in place
-- No account, no telemetry, one outbound request
+- No account, no telemetry; it only ever reads the schedule and checks for a release, both on GitHub
 
 Dates are not scraped. They live in [`feed/events.json`](https://github.com/dev1f965x/4ghz/blob/main/feed/events.json), are reviewed like code, and are published to GitHub Pages, so a new schedule needs no new installer.
 

@@ -54,8 +54,10 @@ times.
 - The window is usable with the keyboard alone, and the countdown is announced to screen
   readers as text, not as color.
 - Cold start to a readable list is under two seconds on the cached path.
-- Nothing about the player is collected, stored, or sent. The only outbound request is the
-  feed fetch.
+- Nothing about the player is collected, stored, or sent. The app makes two kinds of request,
+  both reads from GitHub: the schedule feed, and the release manifest with the installer
+  it points to. GitHub sees the address a request comes from, as any server would; the
+  developer sees nothing.
 
 ## Out of scope for 1.0.0
 
