@@ -116,6 +116,13 @@ export const CODE_LABELS = {
   emptyDetail: "새 코드가 올라오면 여기에 표시돼요",
 };
 
+/** 은 after a final consonant, 는 after a vowel: 원신은, 젠레스는. */
+export function topicParticle(word: string): "은" | "는" {
+  const last = word.charCodeAt(word.length - 1) - 0xac00;
+  const hasFinalConsonant = last >= 0 && last < 11172 && last % 28 !== 0;
+  return hasFinalConsonant ? "은" : "는";
+}
+
 export const CHORE_LABELS: Record<Chore, string> = {
   commissions: "일일 의뢰",
   resin: "레진 소모",
@@ -128,7 +135,7 @@ export const CHORE_LABELS: Record<Chore, string> = {
 export const DAILIES_LABELS = {
   games: "하는 게임",
   noGames: "하는 게임을 하나 이상 골라 주세요",
-  notTracked: (game: string) => `${game}은 숙제 목록에서 꺼져 있어요`,
+  notTracked: (game: string) => `${game}${topicParticle(game)} 숙제 목록에서 꺼져 있어요`,
   track: "켜기",
   today: (date: string) => `오늘 · ${date}`,
   resetHint: "매일 오전 5시에 새 하루가 시작돼요",

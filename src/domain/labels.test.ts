@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatFetchedAt, formatStart, phaseLabel } from "./labels";
+import { formatFetchedAt, formatStart, phaseLabel, topicParticle } from "./labels";
 
 describe("phaseLabel", () => {
   it.each([
@@ -46,5 +46,13 @@ describe("formatFetchedAt across years", () => {
     const now = new Date("2027-01-02T10:00:00Z");
 
     expect(formatFetchedAt(fetchedAt, now)).toContain("2026년");
+  });
+});
+
+describe("topicParticle", () => {
+  it("picks 은 after a final consonant and 는 after a vowel", () => {
+    expect(topicParticle("원신")).toBe("은");
+    expect(topicParticle("스타레일")).toBe("은");
+    expect(topicParticle("젠레스")).toBe("는");
   });
 });
