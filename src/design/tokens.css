@@ -6,6 +6,9 @@
  * window beside it is the thing people close first.
  */
 :root {
+  /* Native controls, such as a select's open list, follow the dark window. */
+  color-scheme: dark;
+
   /* Surfaces, from the window background up to a raised card. */
   --surface-base: #0e0f13;
   --surface-raised: #16181f;
@@ -68,4 +71,29 @@
   /* Two layers: a tight edge that separates the card, and a soft pool that lifts it. */
   --shadow-card: 0 1px 2px rgb(0 0 0 / 0.5), 0 6px 16px rgb(0 0 0 / 0.35);
   --focus-ring: 2px solid var(--accent);
+}
+
+/*
+ * The window wears the chosen game's colour: every accent — the selected tab, buttons,
+ * focus, highlights — reads from --accent, so swapping it here re-themes all of them.
+ * Tokens built from --accent are restated on .app, since a custom property is resolved
+ * where it is declared and :root would keep the default colour.
+ */
+.app {
+  --focus-ring: 2px solid var(--accent);
+}
+
+.app[data-game="genshin"] {
+  --accent: var(--game-genshin);
+  --accent-quiet: color-mix(in srgb, var(--game-genshin) 12%, transparent);
+}
+
+.app[data-game="starrail"] {
+  --accent: var(--game-starrail);
+  --accent-quiet: color-mix(in srgb, var(--game-starrail) 12%, transparent);
+}
+
+.app[data-game="zenless"] {
+  --accent: var(--game-zenless);
+  --accent-quiet: color-mix(in srgb, var(--game-zenless) 12%, transparent);
 }

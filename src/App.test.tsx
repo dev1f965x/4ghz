@@ -6,7 +6,7 @@ import type { GameEvent } from "./domain/event";
 import type { Feed } from "./domain/feed";
 import type { SyncState } from "./feed/sync";
 import type { TourMemory } from "./onboarding/useTour";
-import { noDailies, noUsedCodes } from "./test/memories";
+import { noDailies, noTheme, noUsedCodes } from "./test/memories";
 
 /** The walkthrough is covered on its own; here it stays out of the way. */
 const seenTour: TourMemory = {
@@ -48,6 +48,7 @@ describe("App", () => {
         tourMemory={seenTour}
         usedCodesMemory={noUsedCodes}
         dailiesMemory={noDailies}
+        themeMemory={noTheme}
         now={now}
       />,
     );
@@ -63,6 +64,7 @@ describe("App", () => {
         tourMemory={seenTour}
         usedCodesMemory={noUsedCodes}
         dailiesMemory={noDailies}
+        themeMemory={noTheme}
         now={now}
       />,
     );
@@ -89,6 +91,7 @@ describe("App", () => {
         tourMemory={seenTour}
         usedCodesMemory={noUsedCodes}
         dailiesMemory={noDailies}
+        themeMemory={noTheme}
         now={now}
       />,
     );
@@ -106,6 +109,7 @@ describe("App", () => {
         tourMemory={seenTour}
         usedCodesMemory={noUsedCodes}
         dailiesMemory={noDailies}
+        themeMemory={noTheme}
         now={now}
       />,
     );
@@ -123,6 +127,7 @@ describe("App", () => {
         tourMemory={seenTour}
         usedCodesMemory={noUsedCodes}
         dailiesMemory={noDailies}
+        themeMemory={noTheme}
         now={now}
       />,
     );
@@ -140,6 +145,7 @@ describe("App", () => {
         tourMemory={seenTour}
         usedCodesMemory={noUsedCodes}
         dailiesMemory={noDailies}
+        themeMemory={noTheme}
         now={now}
       />,
     );
@@ -158,6 +164,7 @@ describe("App", () => {
         tourMemory={seenTour}
         usedCodesMemory={noUsedCodes}
         dailiesMemory={noDailies}
+        themeMemory={noTheme}
         now={now}
       />,
     );
@@ -174,6 +181,7 @@ describe("App", () => {
         tourMemory={seenTour}
         usedCodesMemory={noUsedCodes}
         dailiesMemory={noDailies}
+        themeMemory={noTheme}
         now={now}
       />,
     );
@@ -197,6 +205,7 @@ describe("App", () => {
         tourMemory={seenTour}
         usedCodesMemory={noUsedCodes}
         dailiesMemory={noDailies}
+        themeMemory={noTheme}
         now={now}
       />,
     );
@@ -216,6 +225,7 @@ describe("App", () => {
         tourMemory={seenTour}
         usedCodesMemory={noUsedCodes}
         dailiesMemory={noDailies}
+        themeMemory={noTheme}
         now={now}
       />,
     );
@@ -225,7 +235,7 @@ describe("App", () => {
     expect(screen.queryByRole("button", { name: "새로고침" })).not.toBeInTheDocument();
   });
 
-  it("shows each tab as an emoji, keeping its name for screen readers and tooltips", () => {
+  it("shows each tab as an icon, keeping its name for screen readers and tooltips", () => {
     render(
       <App
         state={ready([event()])}
@@ -233,12 +243,48 @@ describe("App", () => {
         tourMemory={seenTour}
         usedCodesMemory={noUsedCodes}
         dailiesMemory={noDailies}
+        themeMemory={noTheme}
         now={now}
       />,
     );
 
     const codes = screen.getByRole("tab", { name: "리딤 코드" });
-    expect(codes).toHaveTextContent("🎁");
+    expect(codes.querySelector("svg")).toBeInTheDocument();
     expect(codes).toHaveAttribute("title", "리딤 코드");
+  });
+
+  it("wears the colour of the game picked", async () => {
+    const { container } = render(
+      <App
+        state={ready([event()])}
+        onRefresh={() => {}}
+        tourMemory={seenTour}
+        usedCodesMemory={noUsedCodes}
+        dailiesMemory={noDailies}
+        themeMemory={noTheme}
+        now={now}
+      />,
+    );
+    expect(container.firstChild).toHaveAttribute("data-game", "genshin");
+
+    await userEvent.selectOptions(screen.getByRole("combobox", { name: "테마 게임" }), "zenless");
+
+    expect(container.firstChild).toHaveAttribute("data-game", "zenless");
+  });
+
+  it("shows the version under the name", () => {
+    render(
+      <App
+        state={ready([event()])}
+        onRefresh={() => {}}
+        tourMemory={seenTour}
+        usedCodesMemory={noUsedCodes}
+        dailiesMemory={noDailies}
+        themeMemory={noTheme}
+        now={now}
+      />,
+    );
+
+    expect(screen.getByText(/^v[0-9]+[.][0-9]+[.][0-9]+$/)).toBeInTheDocument();
   });
 });

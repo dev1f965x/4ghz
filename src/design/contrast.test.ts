@@ -21,6 +21,9 @@ describe("token contrast", () => {
     ["text-muted", "surface-base"],
     ["text-muted", "surface-raised"],
     ["surface-base", "accent"],
+    ["surface-base", "game-genshin"],
+    ["surface-base", "game-starrail"],
+    ["surface-base", "game-zenless"],
   ])("%s on %s clears AA for body text", (foreground, background) => {
     expect(contrastRatio(tokens[foreground], tokens[background])).toBeGreaterThanOrEqual(
       AA_NORMAL_TEXT,

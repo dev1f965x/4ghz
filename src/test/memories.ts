@@ -1,5 +1,6 @@
 import type { UsedCodesMemory } from "../codes/usedCodes";
 import type { DailyRecordsMemory } from "../dailies/dailyRecords";
+import type { ThemeMemory } from "../theme/themeMemory";
 
 /** A player who has used no codes, and whose marks go nowhere. */
 export const noUsedCodes: UsedCodesMemory = {
@@ -9,6 +10,12 @@ export const noUsedCodes: UsedCodesMemory = {
 
 /** A first run: every game picked, nothing done, and changes kept nowhere. */
 export const noDailies: DailyRecordsMemory = {
+  load: async () => undefined,
+  save: async () => {},
+};
+
+/** No theme chosen yet, and a choice kept nowhere. */
+export const noTheme: ThemeMemory = {
   load: async () => undefined,
   save: async () => {},
 };

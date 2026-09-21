@@ -86,12 +86,7 @@ export const TAB_LABELS: Record<Tab, string> = {
   dailies: "숙제",
 };
 
-/** What each tab shows on screen. The names above stay as their accessible names and tooltips. */
-export const TAB_ICONS: Record<Tab, string> = {
-  schedule: "📅",
-  codes: "🎁",
-  dailies: "✅",
-};
+export const THEME_LABEL = "테마 게임";
 
 export const NAVIGATION_LABELS = {
   back: "뒤로",

@@ -9,6 +9,7 @@ import { BrandMark } from "./components/BrandMark";
 import { CodeList } from "./components/CodeList";
 import { DailiesTab } from "./components/DailiesTab";
 import { EventList } from "./components/EventList";
+import { GamePicker } from "./components/GamePicker";
 import { Notice } from "./components/Notice";
 import { RefreshButton } from "./components/RefreshButton";
 import { panelId, TabBar, tabId } from "./components/TabBar";
@@ -26,6 +27,8 @@ import { Spotlight } from "./onboarding/Spotlight";
 import type { TourMemory } from "./onboarding/useTour";
 import { useTour } from "./onboarding/useTour";
 import { useNow } from "./shell/clock";
+import type { ThemeMemory } from "./theme/themeMemory";
+import { useThemeGame } from "./theme/useThemeGame";
 import type { UpdateState } from "./update/useUpdate";
 
 /** Long enough to read the refreshing label before the fetch time replaces it. */
@@ -37,6 +40,7 @@ export interface AppProps {
   tourMemory: TourMemory;
   usedCodesMemory: UsedCodesMemory;
   dailiesMemory: DailyRecordsMemory;
+  themeMemory: ThemeMemory;
   update?: UpdateState;
   onInstallUpdate?: () => void;
   /** Fixed by tests; the window reads a ticking clock. */
@@ -54,6 +58,7 @@ export default function App({
   tourMemory,
   usedCodesMemory,
   dailiesMemory,
+  themeMemory,
   update = { status: "current" },
   onInstallUpdate = () => {},
   now,
@@ -69,9 +74,10 @@ export default function App({
   const navigation = useNavigation();
   const usedCodes = useUsedCodes(usedCodesMemory);
   const dailies = useDailyRecords(dailiesMemory);
+  const theme = useThemeGame(themeMemory);
 
   return (
-    <div className="app">
+    <div className="app" data-game={theme.game}>
       <TitleBar
         canGoBack={navigation.canGoBack}
         canGoForward={navigation.canGoForward}
@@ -85,17 +91,20 @@ export default function App({
             <BrandMark />
             <div>
               <h1 className="app__title">4GHz</h1>
-              <p className="app__subtitle">원신 · 스타레일 · 젠레스</p>
+              <p className="app__subtitle">v{__APP_VERSION__}</p>
             </div>
           </div>
 
-          <div className="app__status" aria-live="polite" hidden={navigation.tab === "dailies"}>
-            {state.status === "ready" && (
-              <p className="app__fetched">
-                {refreshing ? "새로고침 중…" : formatFetchedAt(state.cached.fetchedAt, current)}
-              </p>
-            )}
-            <RefreshButton busy={refreshing} onRefresh={onRefresh} />
+          <div className="app__controls">
+            <div className="app__status" aria-live="polite" hidden={navigation.tab === "dailies"}>
+              {state.status === "ready" && (
+                <p className="app__fetched">
+                  {refreshing ? "새로고침 중…" : formatFetchedAt(state.cached.fetchedAt, current)}
+                </p>
+              )}
+              <RefreshButton busy={refreshing} onRefresh={onRefresh} />
+            </div>
+            <GamePicker game={theme.game} onChoose={theme.choose} />
           </div>
         </div>
 

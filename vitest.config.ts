@@ -1,8 +1,12 @@
+import { readFileSync } from "node:fs";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vitest/config";
 
+const { version } = JSON.parse(readFileSync("package.json", "utf8"));
+
 export default defineConfig({
   plugins: [react()],
+  define: { __APP_VERSION__: JSON.stringify(version) },
   test: {
     environment: "jsdom",
     setupFiles: ["src/test/setup.ts"],
@@ -23,6 +27,7 @@ export default defineConfig({
         "src/update/tauri.ts",
         "src/codes/usedCodes.ts",
         "src/dailies/dailyRecords.ts",
+        "src/theme/themeMemory.ts",
         "src/shell/outside.ts",
       ],
       thresholds: { lines: 80, functions: 80, branches: 75, statements: 80 },
