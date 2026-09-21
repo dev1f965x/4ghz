@@ -32,8 +32,8 @@ export function DailiesTab({ records, filter, now, onToggleChore, onToggleGame }
 
   return (
     <div className="dailies">
-      <fieldset className="dailies__games">
-        <legend className="visually-hidden">{DAILIES_LABELS.games}</legend>
+      <fieldset className="dailies__games" hidden={filter !== "all"}>
+        <legend className="dailies__legend">{DAILIES_LABELS.games}</legend>
         {GAMES.map((game) => (
           <button
             key={game}
@@ -43,6 +43,9 @@ export function DailiesTab({ records, filter, now, onToggleChore, onToggleGame }
             aria-pressed={records.games.includes(game)}
             onClick={() => onToggleGame(game)}
           >
+            <svg className="dailies__check" viewBox="0 0 12 12" aria-hidden="true">
+              <path d="m2.5 6.5 2.5 2.5 4.5-6" />
+            </svg>
             {GAME_LABELS[game]}
           </button>
         ))}
@@ -66,7 +69,12 @@ export function DailiesTab({ records, filter, now, onToggleChore, onToggleGame }
             <ul className="dailies__rows">
               {games.map((game) => (
                 <li key={game} className="dailies__row" data-game={game}>
-                  <span className="dailies__name">{GAME_LABELS[game]}</span>
+                  <div className="dailies__game-name">
+                    <span className="dailies__name">{GAME_LABELS[game]}</span>
+                    <span className="dailies__streak">
+                      {DAILIES_LABELS.streak(streak(records, game, today))}
+                    </span>
+                  </div>
                   <div className="dailies__chores">
                     {CHORES[game].map((chore) => (
                       <label key={chore} className="dailies__chore">
@@ -79,9 +87,6 @@ export function DailiesTab({ records, filter, now, onToggleChore, onToggleGame }
                       </label>
                     ))}
                   </div>
-                  <span className="dailies__streak">
-                    {DAILIES_LABELS.streak(streak(records, game, today))}
-                  </span>
                 </li>
               ))}
             </ul>

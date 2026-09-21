@@ -12,7 +12,7 @@ interface Props {
 }
 
 /** How far the cut-out reaches past the element it highlights. */
-const PADDING = 8;
+const PADDING = 4;
 
 /**
  * Dims the window except for one element, and explains that element.
@@ -40,12 +40,12 @@ export function Spotlight({ step, position, total, onNext, onSkip }: Props) {
 
   if (!target) return null;
 
-  const hole: Hole = {
+  const hole = insideWindow({
     top: target.top - PADDING,
     left: target.left - PADDING,
     width: target.width + PADDING * 2,
     height: target.height + PADDING * 2,
-  };
+  });
 
   return (
     <div className="spotlight" role="presentation">
@@ -124,4 +124,20 @@ function useCardSize(
   }, [card, target]);
 
   return size;
+}
+
+/** How close the cut-out may come to the window's edge: its outline, and 8px clear. */
+const EDGE = 12;
+
+/**
+ * Trims the cut-out to the window, for targets that run the full width, like the tabs:
+ * the sides come in, the top and bottom keep their padding, so the ring still takes in
+ * everything the target shows, such as the selected tab's underline.
+ */
+function insideWindow(hole: Hole): Hole {
+  const left = Math.max(hole.left, EDGE);
+  const top = Math.max(hole.top, EDGE);
+  const right = Math.min(hole.left + hole.width, window.innerWidth - EDGE);
+  const bottom = Math.min(hole.top + hole.height, window.innerHeight - EDGE);
+  return { top, left, width: right - left, height: bottom - top };
 }

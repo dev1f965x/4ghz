@@ -20,10 +20,14 @@
   --text-strong: #f4f5f8;
   --text-body: #c3c7d1;
   --text-muted: #8b91a0;
+  /* For what is present but not yet relevant, like days still to come. */
+  --text-faint: #767c8c;
 
-  /* One accent for interaction, plus the states that carry meaning. */
-  --accent: #7aa2ff;
-  --accent-quiet: #7aa2ff1f;
+  /* One accent for interaction, plus the states that carry meaning. Neutral while all
+     games are in view, so no single game's colour speaks for the three; picking a game
+     swaps it for that game's hue (below). */
+  --accent: #dde2ec;
+  --accent-quiet: #dde2ec1f;
   --live: #4ade80;
   --soon: #fbbf24;
 
@@ -37,7 +41,7 @@
     "Pretendard Variable", Pretendard, "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
   /* For codes, where 0 and O or 1 and I must not be confused. */
   --font-mono: "Cascadia Mono", Consolas, ui-monospace, monospace;
-  --text-title: 1.5rem;
+  --text-title: 1.125rem;
   --text-large: 1.0625rem;
   --text-base: 0.875rem;
   --text-small: 0.75rem;
@@ -54,16 +58,9 @@
   --leading-title: 1.2;
   --leading-body: 1.4;
 
-  /* The mark stands exactly as tall as the name and subtitle stacked beside it. Derived
-     from the type scale rather than measured at runtime, so it holds across languages
-     and system fonts. */
-  --icon-brand: calc(
-    var(--text-title) *
-    var(--leading-title) +
-    var(--space-1) +
-    var(--text-small) *
-    var(--leading-body)
-  );
+  /* The mark stands exactly as tall as the name beside it, derived from the type scale
+     rather than measured, so it holds across languages and system fonts. */
+  --icon-brand: calc(var(--text-title) * var(--leading-title));
 
   --radius-small: 8px;
   --radius-medium: 12px;

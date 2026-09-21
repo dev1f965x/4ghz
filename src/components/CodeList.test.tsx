@@ -29,7 +29,9 @@ describe("CodeList", () => {
     render(<CodeList codes={[expiring]} used={new Set()} now={now} onToggleUsed={() => {}} />);
 
     expect(screen.getByRole("heading", { name: "LIVE" })).toBeInTheDocument();
-    expect(screen.getByText(/원석 50, 대영웅의 경험 3/)).toHaveTextContent("9월 30일 23:59까지");
+    expect(screen.getByText(/원석 50, 대영웅의 경험 3/).closest("p")).toHaveTextContent(
+      "9월 30일 23:59까지",
+    );
   });
 
   it("says so when no code is left", () => {

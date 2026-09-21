@@ -1,10 +1,9 @@
-/* Its own band: a raised strip between the app bar above and the content below, running
-   across the header's padding and down onto its bottom border. */
+/* Its own band, raised between the bar above and the content below. */
 .tab-bar {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  margin: 0 calc(-1 * var(--space-6)) -1px;
   border-top: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
   background: var(--surface-raised);
 }
 
@@ -34,8 +33,8 @@
 }
 
 .tab-icon {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   fill: none;
   stroke: currentColor;
   stroke-linecap: round;

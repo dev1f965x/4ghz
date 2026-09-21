@@ -26,8 +26,20 @@ test("a game switched off can be switched back on from the filter", async ({ pag
   });
   await page.getByRole("tab", { name: "숙제" }).click();
 
-  await expect(page.getByText("젠레스는 숙제 목록에서 꺼져 있어요")).toBeVisible();
+  await expect(page.getByText("젠레스는 챙길 게임에서 꺼져 있어요")).toBeVisible();
   await page.getByRole("button", { name: "켜기" }).click();
 
   await expect(page.getByRole("checkbox", { name: "배터리 소모" })).toBeVisible();
+});
+
+test("the dailies' game picker steps aside under a one-game filter, in the real browser", async ({
+  page,
+}) => {
+  await openApp(page, {
+    "settings.json": { ...SEEN_TOUR["settings.json"], "game-filter": "starrail" },
+  });
+  await page.getByRole("tab", { name: "숙제" }).click();
+
+  await expect(page.getByRole("group", { name: "챙길 게임" })).toBeHidden();
+  await expect(page.getByRole("button", { name: "새로고침" })).toBeVisible();
 });

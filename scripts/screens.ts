@@ -1,4 +1,4 @@
-import { mkdirSync } from "node:fs";
+import { mkdirSync, rmSync } from "node:fs";
 import { chromium, type Page } from "@playwright/test";
 import { createServer } from "vite";
 import { type Stores, tauriStandIn } from "../e2e/tauri";
@@ -14,7 +14,9 @@ import { type Stores, tauriStandIn } from "../e2e/tauri";
  *   npm run screens        → screens/*.png
  */
 
+/** The window's default size, and the smallest it can be dragged to. */
 const WINDOW = { width: 920, height: 640 };
+const SMALLEST = { width: 560, height: 420 };
 const NOW = new Date("2026-09-21T21:00:00+09:00");
 const PORT = 1430;
 const OUT = "screens";
@@ -23,21 +25,33 @@ interface Shot {
   name: string;
   stores?: Stores;
   act?: (page: Page) => Promise<void>;
+  viewport?: { width: number; height: number };
 }
 
 const tourSeen: Stores = { "settings.json": { "tour-seen": true } };
 
-const finishedDays = ["2026-09-15", "2026-09-16", "2026-09-17", "2026-09-19", "2026-09-20"];
+const everything = {
+  genshin: ["commissions", "resin"],
+  starrail: ["training", "power"],
+  zenless: ["activity", "battery"],
+};
+
+/** A week of mixed days: two perfect, the rest partial, today half done. */
 const dailies = {
   games: ["genshin", "starrail", "zenless"],
-  done: Object.fromEntries([
-    ...finishedDays.map((day) => [
-      day,
-      { genshin: ["commissions", "resin"], starrail: ["training", "power"] },
-    ]),
-    ["2026-09-21", { genshin: ["commissions"], zenless: ["activity", "battery"] }],
-  ]),
+  done: {
+    "2026-09-14": { genshin: everything.genshin },
+    "2026-09-15": everything,
+    "2026-09-16": { genshin: everything.genshin, starrail: everything.starrail },
+    "2026-09-17": everything,
+    "2026-09-18": { zenless: everything.zenless },
+    "2026-09-19": { genshin: everything.genshin, starrail: everything.starrail },
+    "2026-09-20": everything,
+    "2026-09-21": { genshin: ["commissions"], zenless: everything.zenless },
+  },
 };
+
+const withDailies: Stores = { ...tourSeen, "records.json": { dailies } };
 
 const tab = (name: string) => (page: Page) => page.getByRole("tab", { name }).click();
 
@@ -52,7 +66,15 @@ const SHOTS: Shot[] = [
     },
     act: tab("리딤 코드"),
   },
-  { name: "dailies", stores: { ...tourSeen, "records.json": { dailies } }, act: tab("숙제") },
+  { name: "dailies", stores: withDailies, act: tab("숙제") },
+  {
+    name: "dailies-one-off",
+    stores: {
+      ...tourSeen,
+      "records.json": { dailies: { ...dailies, games: ["genshin", "zenless"] } },
+    },
+    act: tab("숙제"),
+  },
   {
     name: "filter-menu",
     stores: tourSeen,
@@ -70,10 +92,26 @@ const SHOTS: Shot[] = [
     },
     act: tab("숙제"),
   },
-  { name: "tour" },
+  {
+    name: "filter-genshin-codes",
+    stores: { "settings.json": { "tour-seen": true, "game-filter": "genshin" } },
+    act: tab("리딤 코드"),
+  },
+  ...[1, 2, 3, 4].map((step) => ({
+    name: `tour-${step}`,
+    act: async (page: Page) => {
+      await page.getByRole("dialog").waitFor();
+      for (let next = 1; next < step; next++)
+        await page.getByRole("button", { name: "다음" }).click();
+    },
+  })),
+  { name: "small-schedule", stores: tourSeen, viewport: SMALLEST },
+  { name: "small-codes", stores: tourSeen, viewport: SMALLEST, act: tab("리딤 코드") },
+  { name: "small-dailies", stores: withDailies, viewport: SMALLEST, act: tab("숙제") },
 ];
 
 async function main() {
+  rmSync(OUT, { recursive: true, force: true });
   mkdirSync(OUT, { recursive: true });
   const server = await createServer({
     server: { port: PORT, strictPort: true },
@@ -84,12 +122,17 @@ async function main() {
 
   try {
     for (const shot of SHOTS) {
-      const page = await browser.newPage({ viewport: WINDOW, deviceScaleFactor: 2 });
+      const page = await browser.newPage({
+        viewport: shot.viewport ?? WINDOW,
+        deviceScaleFactor: 2,
+      });
       await page.clock.setFixedTime(NOW);
       await page.addInitScript({ content: tauriStandIn(shot.stores ?? {}) });
       await page.goto(`http://localhost:${PORT}`);
       await page.getByRole("tablist").waitFor();
       await shot.act?.(page);
+      // Park the pointer where nothing reacts to it, so no hover state is photographed.
+      await page.mouse.move(1, (shot.viewport ?? WINDOW).height - 1);
       await page.waitForTimeout(300);
       await page.screenshot({ path: `${OUT}/${shot.name}.png` });
       await page.close();

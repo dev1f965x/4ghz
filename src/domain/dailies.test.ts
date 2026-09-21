@@ -1,10 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
   addDays,
+  CHORES as CHORES_OF,
   type DailyRecords,
   EMPTY_RECORDS,
   gameDay,
   isComplete,
+  isPerfectDay,
   monthGrid,
   streak,
   toggleChore,
@@ -107,5 +109,29 @@ describe("monthGrid", () => {
   it("adds days across month ends", () => {
     expect(addDays("2026-09-30", 1)).toBe("2026-10-01");
     expect(addDays("2026-03-01", -1)).toBe("2026-02-28");
+  });
+});
+
+describe("isPerfectDay", () => {
+  const day = "2026-09-21";
+  const all = (["genshin", "starrail", "zenless"] as const).reduce(
+    (records, game) =>
+      CHORES_OF[game].reduce((r, chore) => toggleChore(r, day, game, chore), records),
+    EMPTY_RECORDS,
+  );
+
+  it("needs every game in view finished", () => {
+    expect(isPerfectDay(all, day, ["genshin", "starrail", "zenless"])).toBe(true);
+    expect(
+      isPerfectDay(toggleChore(all, day, "zenless", "battery"), day, ["genshin", "zenless"]),
+    ).toBe(false);
+  });
+
+  it("takes only the one game when one is in view", () => {
+    expect(isPerfectDay(all, day, ["genshin"])).toBe(true);
+  });
+
+  it("needs something in view", () => {
+    expect(isPerfectDay(all, day, [])).toBe(false);
   });
 });

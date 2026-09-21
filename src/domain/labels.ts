@@ -55,6 +55,21 @@ export function formatStart(instant: Date, now: Date): string {
   }).format(instant);
 }
 
+/** When an event with an end runs: `9월 16일 11:00 – 9월 29일 11:00`, or `9월 27일 06:00 – 10:00`. */
+export function formatPeriod(start: Date, end: Date, now: Date): string {
+  const sameDay = start.toDateString() === end.toDateString();
+  const until = sameDay ? formatTime(end) : formatStart(end, now);
+  return `${formatStart(start, now)} – ${until}`;
+}
+
+function formatTime(instant: Date): string {
+  return new Intl.DateTimeFormat("ko-KR", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(instant);
+}
+
 /** How long ago the feed was fetched: just now, in minutes, in hours, or as a date. */
 export function formatFetchedAt(fetchedAt: Date, now: Date): string {
   const minutes = Math.floor((now.getTime() - fetchedAt.getTime()) / 60_000);
@@ -95,6 +110,11 @@ export const FILTER_LABELS: { menu: string } & Record<GameFilter, string> = {
 
 export const REFRESH_LABEL = "새로고침";
 
+export const FETCH_LABELS = {
+  refreshing: "새로고침 중…",
+  fetched: (when: string) => `${when} 업데이트`,
+};
+
 export const NAVIGATION_LABELS = {
   back: "뒤로",
   forward: "앞으로",
@@ -130,9 +150,9 @@ export const CHORE_LABELS: Record<Chore, string> = {
 };
 
 export const DAILIES_LABELS = {
-  games: "하는 게임",
-  noGames: "하는 게임을 하나 이상 골라 주세요",
-  notTracked: (game: string) => `${game}${topicParticle(game)} 숙제 목록에서 꺼져 있어요`,
+  games: "챙길 게임",
+  noGames: "챙길 게임을 하나 이상 골라 주세요",
+  notTracked: (game: string) => `${game}${topicParticle(game)} 챙길 게임에서 꺼져 있어요`,
   track: "켜기",
   today: (date: string) => `오늘 · ${date}`,
   resetHint: "매일 오전 5시에 새 하루가 시작돼요",
@@ -141,6 +161,10 @@ export const DAILIES_LABELS = {
   previousMonth: "지난달",
   nextMonth: "다음 달",
   weekdays: ["일", "월", "화", "수", "목", "금", "토"],
+  perfect: "모두 완료한 날",
+  legendSome: "게임별 완료",
+  legendAll: "모두 완료",
+  legendOne: "완료",
   finished: (games: string[]) => (games.length ? `${games.join(", ")} 완료` : "기록 없음"),
 };
 
@@ -157,6 +181,7 @@ export function formatGameDay(day: GameDay): string {
 
 export const COUNTDOWN_LABELS = {
   day: "일",
+  untilStart: "시작까지",
   untilEnd: "끝나기까지",
 };
 

@@ -11,10 +11,13 @@
 }
 
 .calendar__steps button {
+  display: grid;
+  place-items: center;
   width: 28px;
   height: 28px;
+  padding: 0;
   border: 1px solid var(--border-strong);
-  border-radius: var(--radius-small);
+  border-radius: 50%;
   background: transparent;
   color: var(--text-body);
   cursor: pointer;
@@ -63,18 +66,18 @@
 }
 
 .calendar__day[data-future="true"] {
-  color: var(--border-strong);
+  color: var(--text-faint);
 }
 
 .calendar__dots {
   display: flex;
-  gap: 2px;
-  height: 5px;
+  gap: 3px;
+  height: 6px;
 }
 
 .calendar__dot {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
 }
 
@@ -88,4 +91,46 @@
 
 .calendar__dot[data-game="zenless"] {
   background: var(--game-zenless);
+}
+
+/* A filled day has no dots, so their row's space goes above the number to centre it. */
+.calendar__day[data-perfect="true"] {
+  padding: 9px 0 0;
+  color: var(--surface-base);
+  font-weight: 700;
+  box-shadow: 0 2px 10px rgb(0 0 0 / 0.35);
+}
+
+.calendar__day[data-perfect="true"][data-today="true"] {
+  outline-offset: 2px;
+}
+
+.calendar__steps svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.6;
+}
+
+.calendar__legend {
+  display: flex;
+  gap: var(--space-4);
+  margin-top: var(--space-3);
+  color: var(--text-muted);
+  font-size: var(--text-small);
+}
+
+.calendar__key {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.calendar__key-fill {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
 }

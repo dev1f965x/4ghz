@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatFetchedAt, formatStart, phaseLabel, topicParticle } from "./labels";
+import { formatFetchedAt, formatPeriod, formatStart, phaseLabel, topicParticle } from "./labels";
 
 describe("phaseLabel", () => {
   it.each([
@@ -54,5 +54,21 @@ describe("topicParticle", () => {
     expect(topicParticle("원신")).toBe("은");
     expect(topicParticle("스타레일")).toBe("은");
     expect(topicParticle("젠레스")).toBe("는");
+  });
+});
+
+describe("formatPeriod", () => {
+  const now = new Date(2026, 8, 21, 21);
+
+  it("writes the date once for a period inside one day", () => {
+    expect(formatPeriod(new Date(2026, 8, 27, 6), new Date(2026, 8, 27, 10), now)).toBe(
+      "9월 27일 06:00 – 10:00",
+    );
+  });
+
+  it("writes both dates for a period across days", () => {
+    expect(formatPeriod(new Date(2026, 8, 16, 11), new Date(2026, 8, 29, 11), now)).toBe(
+      "9월 16일 11:00 – 9월 29일 11:00",
+    );
   });
 });

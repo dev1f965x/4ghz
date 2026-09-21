@@ -32,15 +32,20 @@ test("redeem copies the code, then opens only the game's official page", async (
   expect(await clipboard(page)).toBe("STARRAILGIFT");
 });
 
-test("a used code sinks to the bottom and is remembered", async ({ page }) => {
+test("a used code stays under the pointer, then sinks the next time", async ({ page }) => {
+  await expect(page.getByRole("article").first()).toContainText("GENSHINGIFT");
   await card(page, "GENSHINGIFT").getByRole("button", { name: "사용함" }).click();
 
-  await expect(page.getByRole("article").last()).toContainText("GENSHINGIFT");
+  await expect(page.getByRole("article").first()).toContainText("GENSHINGIFT");
   await expect(card(page, "GENSHINGIFT").getByRole("button", { name: "사용함" })).toHaveAttribute(
     "aria-pressed",
     "true",
   );
   expect(await stored(page, "records.json", "used-codes")).toEqual(["genshin:GENSHINGIFT"]);
+
+  await page.getByRole("tab", { name: "일정" }).click();
+  await page.getByRole("tab", { name: "리딤 코드" }).click();
+  await expect(page.getByRole("article").last()).toContainText("GENSHINGIFT");
 });
 
 test("used marks from last time are there on launch", async ({ page }) => {

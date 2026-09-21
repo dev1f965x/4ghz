@@ -67,11 +67,36 @@
 }
 
 .code__detail {
-  overflow: hidden;
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: var(--space-2);
   color: var(--text-muted);
   font-size: var(--text-small);
-  text-overflow: ellipsis;
-  white-space: nowrap;
+}
+
+.code__expiry::before {
+  content: "·";
+  margin-right: var(--space-2);
+}
+
+@media (max-width: 720px) {
+  .code {
+    grid-template-columns: 1fr auto;
+    row-gap: var(--space-2);
+  }
+
+  .code__game {
+    grid-column: 1 / -1;
+    padding-left: 0;
+  }
+
+  .code__detail {
+    flex-direction: column;
+  }
+
+  .code__expiry::before {
+    content: none;
+  }
 }
 
 .code__actions {
@@ -101,17 +126,20 @@
 
 .code__action--primary {
   border-color: var(--accent);
-  background: var(--accent);
-  color: var(--surface-base);
+  background: transparent;
+  color: var(--accent);
   font-weight: 600;
 }
 
 .code__action--primary:hover {
-  color: var(--surface-base);
+  border-color: var(--accent);
+  background: var(--accent-quiet);
+  color: var(--accent);
 }
 
 /* A toggle, drawn as a box that gains a check, so it does not read as a third action. */
 .code__used {
+  padding-right: 0;
   display: flex;
   align-items: center;
   gap: var(--space-2);
@@ -146,4 +174,9 @@
 .code__used[aria-pressed="true"] svg path {
   visibility: visible;
   stroke: var(--surface-base);
+}
+
+.code[data-used="true"] .code__action {
+  border-color: var(--border-subtle);
+  color: var(--text-muted);
 }

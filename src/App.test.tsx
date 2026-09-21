@@ -73,7 +73,7 @@ describe("App", () => {
       screen.getByRole("heading", { name: "6.0 Special Program", level: 3 }),
     ).toBeInTheDocument();
     expect(screen.getByRole("article")).toHaveTextContent(/3일\s*08:00:00/);
-    expect(screen.getByText("3시간 전")).toBeInTheDocument();
+    expect(screen.getByText("3시간 전 업데이트")).toBeInTheDocument();
   });
 
   it("separates what is airing now from what is ahead", () => {
@@ -96,7 +96,7 @@ describe("App", () => {
       />,
     );
 
-    expect(screen.getByRole("heading", { name: "지금 진행 중" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "진행 중인 일정" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "다가오는 일정" })).toBeInTheDocument();
   });
 
@@ -217,7 +217,7 @@ describe("App", () => {
     expect(screen.getByRole("tab", { name: "리딤 코드" })).toHaveAttribute("aria-selected", "true");
   });
 
-  it("hides the refresh on the tab that does not use the feed", async () => {
+  it("keeps refresh in the bar on every tab", async () => {
     render(
       <App
         state={ready([event()])}
@@ -232,7 +232,7 @@ describe("App", () => {
 
     await userEvent.click(screen.getByRole("tab", { name: "숙제" }));
 
-    expect(screen.queryByRole("button", { name: "새로고침" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "새로고침" })).toBeInTheDocument();
   });
 
   it("shows each tab as an icon, keeping its name for screen readers and tooltips", () => {
