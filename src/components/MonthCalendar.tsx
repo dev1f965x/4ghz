@@ -1,15 +1,18 @@
 import { useState } from "react";
 import { type DailyRecords, type GameDay, isComplete, monthGrid } from "../domain/dailies";
+import type { Game } from "../domain/event";
 import { DAILIES_LABELS, GAME_LABELS } from "../domain/labels";
 import "./MonthCalendar.css";
 
 interface Props {
   records: DailyRecords;
+  /** The games on screen; a day shows a dot for each of these it finished. */
+  games: readonly Game[];
   today: GameDay;
 }
 
 /** A month of game days, each marked with a dot per game finished that day. */
-export function MonthCalendar({ records, today }: Props) {
+export function MonthCalendar({ records, games, today }: Props) {
   const [year, month] = today.split("-").map(Number);
   const [shown, setShown] = useState({ year, month });
 
@@ -48,7 +51,7 @@ export function MonthCalendar({ records, today }: Props) {
             <tr key={week.find(Boolean)}>
               {week.map((day, index) => (
                 <td key={day ?? `blank-${index}`}>
-                  {day && <Day day={day} records={records} today={today} />}
+                  {day && <Day day={day} records={records} games={games} today={today} />}
                 </td>
               ))}
             </tr>
@@ -59,8 +62,15 @@ export function MonthCalendar({ records, today }: Props) {
   );
 }
 
-function Day({ day, records, today }: { day: GameDay; records: DailyRecords; today: GameDay }) {
-  const finished = records.games.filter((game) => isComplete(records, day, game));
+interface DayProps {
+  day: GameDay;
+  records: DailyRecords;
+  games: readonly Game[];
+  today: GameDay;
+}
+
+function Day({ day, records, games, today }: DayProps) {
+  const finished = games.filter((game) => isComplete(records, day, game));
 
   return (
     <div className="calendar__day" data-today={day === today} data-future={day > today}>

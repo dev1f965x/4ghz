@@ -1,6 +1,7 @@
 import type { Tab } from "../navigation/history";
 import type { Chore, GameDay } from "./dailies";
 import type { EventKind, Game } from "./event";
+import type { GameFilter } from "./filter";
 import type { EventPhase } from "./schedule";
 
 /**
@@ -86,7 +87,11 @@ export const TAB_LABELS: Record<Tab, string> = {
   dailies: "숙제",
 };
 
-export const THEME_LABEL = "테마 게임";
+export const FILTER_LABELS: { menu: string } & Record<GameFilter, string> = {
+  menu: "게임",
+  all: "전체",
+  ...GAME_LABELS,
+};
 
 export const NAVIGATION_LABELS = {
   back: "뒤로",
@@ -118,6 +123,8 @@ export const CHORE_LABELS: Record<Chore, string> = {
 export const DAILIES_LABELS = {
   games: "하는 게임",
   noGames: "하는 게임을 하나 이상 골라 주세요",
+  notTracked: (game: string) => `${game}은 숙제 목록에서 꺼져 있어요`,
+  track: "켜기",
   resetHint: "매일 오전 5시에 새 하루가 시작돼요",
   streak: (days: number) => `${days}일 연속`,
   month: (year: number, month: number) => `${year}년 ${month}월`,

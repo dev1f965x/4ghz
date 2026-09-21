@@ -74,7 +74,7 @@
 }
 
 /*
- * The window wears the chosen game's colour: every accent — the selected tab, buttons,
+ * With one game picked, the window wears its colour: every accent — the selected tab, buttons,
  * focus, highlights — reads from --accent, so swapping it here re-themes all of them.
  * Tokens built from --accent are restated on .app, since a custom property is resolved
  * where it is declared and :root would keep the default colour.

@@ -2,6 +2,7 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { type DailyRecords, EMPTY_RECORDS, toggleChore } from "../domain/dailies";
+import type { GameFilter } from "../domain/filter";
 import { DailiesTab } from "./DailiesTab";
 
 /** 21:00 in Korea on Monday 21 September 2026: well inside the game day of the 21st. */
@@ -11,12 +12,13 @@ function finish(records: DailyRecords, day: string): DailyRecords {
   return toggleChore(toggleChore(records, day, "genshin", "commissions"), day, "genshin", "resin");
 }
 
-function renderTab(records: DailyRecords = EMPTY_RECORDS) {
+function renderTab(records: DailyRecords = EMPTY_RECORDS, filter: GameFilter = "all") {
   const onToggleChore = vi.fn();
   const onToggleGame = vi.fn();
   render(
     <DailiesTab
       records={records}
+      filter={filter}
       now={now}
       onToggleChore={onToggleChore}
       onToggleGame={onToggleGame}
@@ -60,6 +62,23 @@ describe("DailiesTab", () => {
     renderTab({ ...EMPTY_RECORDS, games: [] });
 
     expect(screen.getByText("하는 게임을 하나 이상 골라 주세요")).toBeInTheDocument();
+  });
+});
+
+describe("DailiesTab with one game picked", () => {
+  it("lists only that game", () => {
+    renderTab(EMPTY_RECORDS, "starrail");
+
+    expect(screen.getByRole("checkbox", { name: "일일 훈련" })).toBeInTheDocument();
+    expect(screen.queryByRole("checkbox", { name: "레진 소모" })).not.toBeInTheDocument();
+  });
+
+  it("offers to track the game when it is switched off", async () => {
+    const { onToggleGame } = renderTab({ ...EMPTY_RECORDS, games: ["genshin"] }, "zenless");
+
+    expect(screen.getByText("젠레스은 숙제 목록에서 꺼져 있어요")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "켜기" }));
+    expect(onToggleGame).toHaveBeenCalledWith("zenless");
   });
 });
 

@@ -8,6 +8,7 @@ import {
   streak,
 } from "../domain/dailies";
 import { GAMES, type Game } from "../domain/event";
+import { type GameFilter, matchesFilter } from "../domain/filter";
 import { CHORE_LABELS, DAILIES_LABELS, formatGameDay, GAME_LABELS } from "../domain/labels";
 import { MonthCalendar } from "./MonthCalendar";
 import { Notice } from "./Notice";
@@ -15,14 +16,19 @@ import "./DailiesTab.css";
 
 interface Props {
   records: DailyRecords;
+  filter: GameFilter;
   now: Date;
   onToggleChore: (day: GameDay, game: Game, chore: Chore) => void;
   onToggleGame: (game: Game) => void;
 }
 
-/** Today's chores for the games the player picked, and a month of finished days. */
-export function DailiesTab({ records, now, onToggleChore, onToggleGame }: Props) {
+/**
+ * Today's chores and a month of finished days, for the games the player tracks — narrowed
+ * to one when the window is looking at one.
+ */
+export function DailiesTab({ records, filter, now, onToggleChore, onToggleGame }: Props) {
   const today = gameDay(now);
+  const games = records.games.filter((game) => matchesFilter(game, filter));
 
   return (
     <div className="dailies">
@@ -42,7 +48,12 @@ export function DailiesTab({ records, now, onToggleChore, onToggleGame }: Props)
         ))}
       </fieldset>
 
-      {records.games.length === 0 ? (
+      {filter !== "all" && games.length === 0 ? (
+        <Notice
+          title={DAILIES_LABELS.notTracked(GAME_LABELS[filter])}
+          action={{ label: DAILIES_LABELS.track, onAction: () => onToggleGame(filter) }}
+        />
+      ) : games.length === 0 ? (
         <Notice title={DAILIES_LABELS.noGames} />
       ) : (
         <>
@@ -53,7 +64,7 @@ export function DailiesTab({ records, now, onToggleChore, onToggleGame }: Props)
             </header>
 
             <ul className="dailies__rows">
-              {records.games.map((game) => (
+              {games.map((game) => (
                 <li key={game} className="dailies__row" data-game={game}>
                   <span className="dailies__name">{GAME_LABELS[game]}</span>
                   <div className="dailies__chores">
@@ -76,7 +87,7 @@ export function DailiesTab({ records, now, onToggleChore, onToggleGame }: Props)
             </ul>
           </section>
 
-          <MonthCalendar records={records} today={today} />
+          <MonthCalendar records={records} games={games} today={today} />
         </>
       )}
     </div>
