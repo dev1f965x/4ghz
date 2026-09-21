@@ -6,7 +6,7 @@ import type { GameEvent } from "./domain/event";
 import type { Feed } from "./domain/feed";
 import type { SyncState } from "./feed/sync";
 import type { TourMemory } from "./onboarding/useTour";
-import { noUsedCodes } from "./test/memories";
+import { noDailies, noUsedCodes } from "./test/memories";
 
 /** The walkthrough is covered on its own; here it stays out of the way. */
 const seenTour: TourMemory = {
@@ -47,6 +47,7 @@ describe("App", () => {
         onRefresh={() => {}}
         tourMemory={seenTour}
         usedCodesMemory={noUsedCodes}
+        dailiesMemory={noDailies}
         now={now}
       />,
     );
@@ -61,6 +62,7 @@ describe("App", () => {
         onRefresh={() => {}}
         tourMemory={seenTour}
         usedCodesMemory={noUsedCodes}
+        dailiesMemory={noDailies}
         now={now}
       />,
     );
@@ -86,6 +88,7 @@ describe("App", () => {
         onRefresh={() => {}}
         tourMemory={seenTour}
         usedCodesMemory={noUsedCodes}
+        dailiesMemory={noDailies}
         now={now}
       />,
     );
@@ -102,6 +105,7 @@ describe("App", () => {
         onRefresh={onRefresh}
         tourMemory={seenTour}
         usedCodesMemory={noUsedCodes}
+        dailiesMemory={noDailies}
         now={now}
       />,
     );
@@ -118,6 +122,7 @@ describe("App", () => {
         onRefresh={() => {}}
         tourMemory={seenTour}
         usedCodesMemory={noUsedCodes}
+        dailiesMemory={noDailies}
         now={now}
       />,
     );
@@ -134,6 +139,7 @@ describe("App", () => {
         onRefresh={() => {}}
         tourMemory={seenTour}
         usedCodesMemory={noUsedCodes}
+        dailiesMemory={noDailies}
         now={now}
       />,
     );
@@ -151,6 +157,7 @@ describe("App", () => {
         onRefresh={() => {}}
         tourMemory={seenTour}
         usedCodesMemory={noUsedCodes}
+        dailiesMemory={noDailies}
         now={now}
       />,
     );
@@ -166,6 +173,7 @@ describe("App", () => {
         onRefresh={() => {}}
         tourMemory={seenTour}
         usedCodesMemory={noUsedCodes}
+        dailiesMemory={noDailies}
         now={now}
       />,
     );
@@ -188,6 +196,7 @@ describe("App", () => {
         onRefresh={() => {}}
         tourMemory={seenTour}
         usedCodesMemory={noUsedCodes}
+        dailiesMemory={noDailies}
         now={now}
       />,
     );
@@ -206,6 +215,7 @@ describe("App", () => {
         onRefresh={() => {}}
         tourMemory={seenTour}
         usedCodesMemory={noUsedCodes}
+        dailiesMemory={noDailies}
         now={now}
       />,
     );

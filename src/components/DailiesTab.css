@@ -1,0 +1,128 @@
+.dailies {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.dailies__games {
+  display: flex;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.dailies__game {
+  height: 30px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: var(--text-small);
+  font-weight: 600;
+}
+
+.dailies__game[aria-pressed="true"] {
+  border-color: var(--game-color);
+  background: color-mix(in srgb, var(--game-color) 14%, transparent);
+  color: var(--text-strong);
+}
+
+.dailies__game[data-game="genshin"],
+.dailies__row[data-game="genshin"] {
+  --game-color: var(--game-genshin);
+}
+
+.dailies__game[data-game="starrail"],
+.dailies__row[data-game="starrail"] {
+  --game-color: var(--game-starrail);
+}
+
+.dailies__game[data-game="zenless"],
+.dailies__row[data-game="zenless"] {
+  --game-color: var(--game-zenless);
+}
+
+.dailies__today,
+.calendar {
+  padding: var(--space-4);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-medium);
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-card);
+}
+
+.dailies__heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.dailies__heading h2,
+.calendar__header h2 {
+  color: var(--text-strong);
+  font-size: var(--text-base);
+  font-weight: 600;
+}
+
+.dailies__heading p {
+  color: var(--text-muted);
+  font-size: var(--text-small);
+}
+
+.dailies__rows {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dailies__row {
+  display: grid;
+  grid-template-columns: 76px 1fr auto;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3) 0;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.dailies__name {
+  color: var(--game-color);
+  font-size: var(--text-small);
+  font-weight: 600;
+}
+
+.dailies__chores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+}
+
+.dailies__chore {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--text-body);
+  cursor: pointer;
+  font-size: var(--text-base);
+}
+
+.dailies__chore input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--game-color);
+  cursor: pointer;
+}
+
+.dailies__streak {
+  color: var(--text-muted);
+  font-size: var(--text-small);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}

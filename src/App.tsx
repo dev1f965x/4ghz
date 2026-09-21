@@ -7,6 +7,7 @@ import type { UsedCodesMemory } from "./codes/usedCodes";
 import { useUsedCodes } from "./codes/useUsedCodes";
 import { BrandMark } from "./components/BrandMark";
 import { CodeList } from "./components/CodeList";
+import { DailiesTab } from "./components/DailiesTab";
 import { EventList } from "./components/EventList";
 import { Notice } from "./components/Notice";
 import { RefreshButton } from "./components/RefreshButton";
@@ -14,6 +15,8 @@ import { panelId, TabBar, tabId } from "./components/TabBar";
 import { TitleBar } from "./components/TitleBar";
 import { UpdateBanner } from "./components/UpdateBanner";
 import { useMinimumDuration } from "./components/useMinimumDuration";
+import type { DailyRecordsMemory } from "./dailies/dailyRecords";
+import { useDailyRecords } from "./dailies/useDailyRecords";
 import type { GameEvent } from "./domain/event";
 import { formatFetchedAt } from "./domain/labels";
 import type { SyncState } from "./feed/sync";
@@ -33,6 +36,7 @@ export interface AppProps {
   onRefresh: () => void;
   tourMemory: TourMemory;
   usedCodesMemory: UsedCodesMemory;
+  dailiesMemory: DailyRecordsMemory;
   update?: UpdateState;
   onInstallUpdate?: () => void;
   /** Fixed by tests; the window reads a ticking clock. */
@@ -49,6 +53,7 @@ export default function App({
   onRefresh,
   tourMemory,
   usedCodesMemory,
+  dailiesMemory,
   update = { status: "current" },
   onInstallUpdate = () => {},
   now,
@@ -63,6 +68,7 @@ export default function App({
   const tour = useTour(tourMemory, hasEvents);
   const navigation = useNavigation();
   const usedCodes = useUsedCodes(usedCodesMemory);
+  const dailies = useDailyRecords(dailiesMemory);
 
   return (
     <div className="app">
@@ -109,7 +115,7 @@ export default function App({
           scrollbars: { theme: "os-theme-4ghz", autoHide: "move", autoHideDelay: 700 },
         }}
       >
-        {renderTab(navigation.tab, { state, onRefresh, now: current, usedCodes })}
+        {renderTab(navigation.tab, { state, onRefresh, now: current, usedCodes, dailies })}
       </OverlayScrollbarsComponent>
 
       {tour.step && (
@@ -129,11 +135,21 @@ interface TabContext {
   state: SyncState;
   onRefresh: () => void;
   now: Date;
-  usedCodes: { used: ReadonlySet<string>; toggle: (key: string) => void };
+  usedCodes: ReturnType<typeof useUsedCodes>;
+  dailies: ReturnType<typeof useDailyRecords>;
 }
 
-function renderTab(tab: Tab, { state, onRefresh, now, usedCodes }: TabContext) {
-  if (tab === "dailies") return <Notice title="준비 중이에요" />;
+function renderTab(tab: Tab, { state, onRefresh, now, usedCodes, dailies }: TabContext) {
+  if (tab === "dailies") {
+    return (
+      <DailiesTab
+        records={dailies.records}
+        now={now}
+        onToggleChore={dailies.toggleChore}
+        onToggleGame={dailies.toggleGame}
+      />
+    );
+  }
 
   if (state.status === "loading") {
     return <Notice title="불러오는 중이에요" />;

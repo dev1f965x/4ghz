@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import App from "../App";
 import type { GameEvent } from "../domain/event";
 import type { SyncState } from "../feed/sync";
-import { noUsedCodes } from "../test/memories";
+import { noDailies, noUsedCodes } from "../test/memories";
 import { TOUR_STEPS } from "./steps";
 import type { TourMemory } from "./useTour";
 
@@ -48,6 +48,7 @@ describe("first run walkthrough", () => {
         onRefresh={() => {}}
         tourMemory={memory(false)}
         usedCodesMemory={noUsedCodes}
+        dailiesMemory={noDailies}
         now={now}
       />,
     );
@@ -63,6 +64,7 @@ describe("first run walkthrough", () => {
         onRefresh={() => {}}
         tourMemory={memory(true)}
         usedCodesMemory={noUsedCodes}
+        dailiesMemory={noDailies}
         now={now}
       />,
     );
@@ -77,6 +79,7 @@ describe("first run walkthrough", () => {
         onRefresh={() => {}}
         tourMemory={memory(false)}
         usedCodesMemory={noUsedCodes}
+        dailiesMemory={noDailies}
         now={now}
       />,
     );
@@ -92,6 +95,7 @@ describe("first run walkthrough", () => {
         onRefresh={() => {}}
         tourMemory={remembered}
         usedCodesMemory={noUsedCodes}
+        dailiesMemory={noDailies}
         now={now}
       />,
     );
@@ -115,6 +119,7 @@ describe("first run walkthrough", () => {
         onRefresh={() => {}}
         tourMemory={remembered}
         usedCodesMemory={noUsedCodes}
+        dailiesMemory={noDailies}
         now={now}
       />,
     );
@@ -133,6 +138,7 @@ describe("first run walkthrough", () => {
         onRefresh={() => {}}
         tourMemory={memory(false)}
         usedCodesMemory={noUsedCodes}
+        dailiesMemory={noDailies}
         now={now}
       />,
     );
@@ -150,6 +156,7 @@ describe("first run walkthrough", () => {
         onRefresh={() => {}}
         tourMemory={memory(false)}
         usedCodesMemory={noUsedCodes}
+        dailiesMemory={noDailies}
         now={now}
       />,
     );
