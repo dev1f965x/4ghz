@@ -18,7 +18,8 @@
     "feed:validate": "tsx scripts/validate-feed.ts",
     "test:timezones": "cross-env TZ=America/New_York vitest run src/domain/schedule.test.ts",
     "check:tauri": "tsx scripts/check-tauri-versions.ts",
-    "art:installer": "tsx scripts/draw-installer-art.ts"
+    "art:installer": "tsx scripts/draw-installer-art.ts",
+    "screens": "tsx scripts/screens.ts"
   },
   "dependencies": {
     "@tauri-apps/api": "^2",
@@ -47,6 +48,7 @@
     "ajv-formats": "^3.0.1",
     "cross-env": "^10.1.0",
     "jsdom": "^30.1.0",
+    "playwright-core": "^1.63.0",
     "tsx": "^4.23.15",
     "typescript": "~7.0.2",
     "vite": "^8.0.16",
