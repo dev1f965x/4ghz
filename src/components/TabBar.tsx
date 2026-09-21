@@ -1,5 +1,5 @@
 import type { KeyboardEvent } from "react";
-import { NAVIGATION_LABELS, TAB_LABELS } from "../domain/labels";
+import { NAVIGATION_LABELS, TAB_ICONS, TAB_LABELS } from "../domain/labels";
 import { TABS, type Tab } from "../navigation/history";
 import "./TabBar.css";
 
@@ -12,8 +12,9 @@ export const tabId = (tab: Tab) => `tab-${tab}`;
 export const panelId = (tab: Tab) => `panel-${tab}`;
 
 /**
- * The three views, as ARIA tabs: arrow keys move between them and open the one they
- * land on. Alt with an arrow is left alone for back and forward.
+ * The three views, as ARIA tabs splitting the width in three. Each shows an emoji and is
+ * named for screen readers and tooltips. Arrow keys move between them and open the one
+ * they land on; Alt with an arrow is left alone for back and forward.
  */
 export function TabBar({ tab, onOpen }: Props) {
   const onKeyDown = (event: KeyboardEvent) => {
@@ -45,9 +46,11 @@ export function TabBar({ tab, onOpen }: Props) {
           aria-selected={each === tab}
           aria-controls={panelId(each)}
           tabIndex={each === tab ? 0 : -1}
+          aria-label={TAB_LABELS[each]}
+          title={TAB_LABELS[each]}
           onClick={() => onOpen(each)}
         >
-          {TAB_LABELS[each]}
+          <span aria-hidden="true">{TAB_ICONS[each]}</span>
         </button>
       ))}
     </div>
