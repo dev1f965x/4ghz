@@ -21,6 +21,20 @@
           "url": "https://dev1f965x.github.io/*"
         }
       ]
+    },
+    {
+      "identifier": "opener:allow-open-url",
+      "allow": [
+        {
+          "url": "https://genshin.hoyoverse.com/*"
+        },
+        {
+          "url": "https://hsr.hoyoverse.com/*"
+        },
+        {
+          "url": "https://zenless.hoyoverse.com/*"
+        }
+      ]
     }
   ]
 }

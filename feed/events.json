@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "1.0",
-  "publishedAt": "2026-09-20T13:20:00Z",
+  "schemaVersion": "1.1",
+  "publishedAt": "2026-09-21T06:53:40Z",
   "events": [
     {
       "id": "genshin-7-1",
@@ -29,6 +29,29 @@
       "startsAt": "2026-10-21T03:00:00Z",
       "url": "https://zenless.hoyoverse.com/ko-kr/news",
       "note": "Live at 11:00 (UTC+8) after maintenance."
+    }
+  ],
+  "codes": [
+    {
+      "code": "GENSHINGIFT",
+      "game": "genshin",
+      "rewards": "원석 50, 대영웅의 경험 3",
+      "addedAt": "2026-09-21T00:00:00Z",
+      "note": "Standing code, no expiry."
+    },
+    {
+      "code": "STARRAILGIFT",
+      "game": "starrail",
+      "rewards": "성옥 50 외",
+      "addedAt": "2026-09-21T00:00:00Z",
+      "note": "Standing code, no expiry."
+    },
+    {
+      "code": "ZENLESSGIFT",
+      "game": "zenless",
+      "rewards": "폴리크롬 50 외",
+      "addedAt": "2026-09-21T00:00:00Z",
+      "note": "Standing code, no expiry."
     }
   ]
 }

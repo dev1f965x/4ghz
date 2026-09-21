@@ -7,6 +7,7 @@ const feed: Feed = {
   schemaVersion: "1.0",
   publishedAt: new Date("2026-09-20T00:00:00Z"),
   events: [],
+  codes: [],
 };
 
 const offline = { ok: false, problem: { kind: "offline", detail: "no network" } } as const;

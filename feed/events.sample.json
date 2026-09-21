@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.0",
+  "schemaVersion": "1.1",
   "publishedAt": "2026-09-20T10:46:42.428Z",
   "events": [
     {
@@ -43,6 +43,45 @@
       "title": "2.4 정기 점검",
       "startsAt": "2026-09-26T21:00:00.000Z",
       "endsAt": "2026-09-27T01:00:00.000Z",
+      "note": "Sample data"
+    }
+  ],
+  "codes": [
+    {
+      "code": "GENSHINGIFT",
+      "game": "genshin",
+      "rewards": "원석 50, 대영웅의 경험 3",
+      "addedAt": "2026-09-21T00:00:00Z",
+      "note": "Standing code, no expiry."
+    },
+    {
+      "code": "STARRAILGIFT",
+      "game": "starrail",
+      "rewards": "성옥 50 외",
+      "addedAt": "2026-09-21T00:00:00Z",
+      "note": "Standing code, no expiry."
+    },
+    {
+      "code": "ZENLESSGIFT",
+      "game": "zenless",
+      "rewards": "폴리크롬 50 외",
+      "addedAt": "2026-09-21T00:00:00Z",
+      "note": "Standing code, no expiry."
+    },
+    {
+      "code": "SAMPLE71LIVE",
+      "game": "genshin",
+      "rewards": "원석 100, 모라 50,000",
+      "addedAt": "2026-09-20T12:00:00Z",
+      "expiresAt": "2026-10-05T15:59:00Z",
+      "note": "Sample data"
+    },
+    {
+      "code": "SAMPLEEXPIRED",
+      "game": "starrail",
+      "rewards": "성옥 60",
+      "addedAt": "2026-09-01T00:00:00Z",
+      "expiresAt": "2026-09-02T00:00:00Z",
       "note": "Sample data"
     }
   ]

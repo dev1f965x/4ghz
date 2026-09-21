@@ -1,0 +1,116 @@
+.code {
+  position: relative;
+  display: grid;
+  grid-template-columns: 92px 1fr auto;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-medium);
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  transition: opacity 160ms ease;
+}
+
+/* The same colored edge as an event card, so a game reads the same on every tab. */
+.code::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: var(--game-color);
+}
+
+.code[data-game="genshin"] {
+  --game-color: var(--game-genshin);
+}
+
+.code[data-game="starrail"] {
+  --game-color: var(--game-starrail);
+}
+
+.code[data-game="zenless"] {
+  --game-color: var(--game-zenless);
+}
+
+.code[data-used="true"] {
+  opacity: 0.5;
+}
+
+.code__game {
+  padding-left: var(--space-2);
+  color: var(--game-color);
+  font-size: var(--text-small);
+  font-weight: 600;
+}
+
+.code__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.code__value {
+  overflow: hidden;
+  color: var(--text-strong);
+  font-family: var(--font-numeric);
+  font-size: var(--text-large);
+  letter-spacing: 0.04em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.code[data-used="true"] .code__value {
+  text-decoration: line-through;
+}
+
+.code__detail {
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: var(--text-small);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.code__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.code__action,
+.code__used {
+  height: 28px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  background: var(--surface-base);
+  color: var(--text-body);
+  cursor: pointer;
+  font-size: var(--text-small);
+  white-space: nowrap;
+}
+
+.code__action:hover,
+.code__used:hover {
+  border-color: var(--accent);
+  color: var(--text-strong);
+}
+
+.code__action--primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--surface-base);
+  font-weight: 600;
+}
+
+.code__action--primary:hover {
+  color: var(--surface-base);
+}
+
+.code__used[aria-pressed="true"] {
+  border-color: var(--text-muted);
+  color: var(--text-strong);
+}

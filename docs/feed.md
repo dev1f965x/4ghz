@@ -1,6 +1,6 @@
 # Editing the schedule
 
-Events live in [`feed/events.json`](../feed/events.json). Merging a change to `main`
+Events and redeem codes live in [`feed/events.json`](../feed/events.json). Merging a change to `main`
 publishes the file to <https://dev1f965x.github.io/4ghz/events.json>, which every
 installed app fetches on launch and every six hours.
 
@@ -36,6 +36,34 @@ installed app fetches on launch and every six hours.
 | `endsAt` | no | UTC instant. Without it an event drops off the list two hours after it starts, which suits a livestream. |
 | `url` | no | Official announcement. |
 | `note` | no | For editors. The app ignores it. |
+
+## Adding a redeem code
+
+Codes go in the same file, under `codes` (ADR 11):
+
+```json
+{
+  "code": "GENSHINGIFT",
+  "game": "genshin",
+  "rewards": "원석 50, 대영웅의 경험 3",
+  "addedAt": "2026-09-21T00:00:00Z",
+  "expiresAt": "2026-09-30T15:59:00Z",
+  "source": "https://genshin.hoyoverse.com/ko/news"
+}
+```
+
+| Field | Required | Meaning |
+|---|---|---|
+| `code` | yes | Letters and digits, exactly as announced. |
+| `game` | yes | `genshin`, `starrail`, or `zenless`. The same code may appear once per game. |
+| `rewards` | yes | Shown as written, in Korean. |
+| `addedAt` | yes | When it went into the feed. The app lists the newest first. |
+| `expiresAt` | no | UTC instant. The app hides the code after it. Leave it out only for codes that never expire. |
+| `source` | no | Where it was announced. For editors. |
+| `note` | no | For editors. The app ignores it. |
+
+Livestream codes usually expire within a day or two; when the announcement gives no time,
+check a second source before publishing rather than guessing.
 
 ## Times
 

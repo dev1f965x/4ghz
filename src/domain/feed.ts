@@ -1,3 +1,4 @@
+import { codeKey, type RedeemCode } from "./code";
 import { EVENT_KINDS, type EventKind, GAMES, type Game, type GameEvent } from "./event";
 
 /** Feed layouts this build understands. A newer major version means the app is too old. */
@@ -7,6 +8,8 @@ export interface Feed {
   schemaVersion: string;
   publishedAt: Date;
   events: GameEvent[];
+  /** Added in schema 1.1; a 1.0 feed has none. */
+  codes: RedeemCode[];
 }
 
 export type FeedProblem =
@@ -55,7 +58,53 @@ export function parseFeed(raw: unknown): FeedResult {
     events.push(event.event);
   }
 
-  return { ok: true, feed: { schemaVersion, publishedAt, events } };
+  const codes = parseCodes(raw.codes);
+  if (!codes.ok) return malformed(codes.detail);
+
+  return { ok: true, feed: { schemaVersion, publishedAt, events, codes: codes.codes } };
+}
+
+type CodesResult = { ok: true; codes: RedeemCode[] } | { ok: false; detail: string };
+
+function parseCodes(raw: unknown): CodesResult {
+  if (raw === undefined) return { ok: true, codes: [] };
+  if (!Array.isArray(raw)) return { ok: false, detail: "codes is not a list" };
+
+  const codes: RedeemCode[] = [];
+  const seen = new Set<string>();
+  for (const [index, entry] of raw.entries()) {
+    const code = parseCode(entry);
+    if (!code.ok) return { ok: false, detail: `codes[${index}]: ${code.detail}` };
+
+    const key = codeKey(code.code);
+    if (seen.has(key)) return { ok: false, detail: `codes[${index}]: duplicate code "${key}"` };
+    seen.add(key);
+    codes.push(code.code);
+  }
+  return { ok: true, codes };
+}
+
+type CodeResult = { ok: true; code: RedeemCode } | { ok: false; detail: string };
+
+function parseCode(raw: unknown): CodeResult {
+  if (!isRecord(raw)) return { ok: false, detail: "not an object" };
+
+  const { code, game, rewards } = raw;
+  if (typeof code !== "string" || code === "") return { ok: false, detail: "code is missing" };
+  if (!isGame(game)) return { ok: false, detail: `unknown game "${String(game)}"` };
+  if (typeof rewards !== "string" || rewards === "") {
+    return { ok: false, detail: "rewards is missing" };
+  }
+
+  const addedAt = parseInstant(raw.addedAt);
+  if (!addedAt) return { ok: false, detail: "addedAt is not an instant" };
+
+  const expiresAt = raw.expiresAt === undefined ? undefined : parseInstant(raw.expiresAt);
+  if (raw.expiresAt !== undefined && !expiresAt) {
+    return { ok: false, detail: "expiresAt is not an instant" };
+  }
+
+  return { ok: true, code: { code, game, rewards, addedAt, expiresAt } };
 }
 
 type EventResult = { ok: true; event: GameEvent } | { ok: false; detail: string };

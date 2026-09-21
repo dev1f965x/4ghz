@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import App from "../App";
 import type { GameEvent } from "../domain/event";
 import type { SyncState } from "../feed/sync";
+import { noUsedCodes } from "../test/memories";
 import { TOUR_STEPS } from "./steps";
 import type { TourMemory } from "./useTour";
 
@@ -20,7 +21,7 @@ const event: GameEvent = {
 const ready: SyncState = {
   status: "ready",
   cached: {
-    feed: { schemaVersion: "1.0", publishedAt: now, events: [event] },
+    feed: { schemaVersion: "1.0", publishedAt: now, events: [event], codes: [] },
     fetchedAt: now,
   },
   refreshing: false,
@@ -41,14 +42,30 @@ function memory(seen: boolean): TourMemory & { marked: boolean } {
 
 describe("first run walkthrough", () => {
   it("opens on the first step once there is something to point at", async () => {
-    render(<App state={ready} onRefresh={() => {}} tourMemory={memory(false)} now={now} />);
+    render(
+      <App
+        state={ready}
+        onRefresh={() => {}}
+        tourMemory={memory(false)}
+        usedCodesMemory={noUsedCodes}
+        now={now}
+      />,
+    );
 
     expect(await screen.findByRole("dialog")).toHaveTextContent(TOUR_STEPS[0].title);
     expect(screen.getByText(`1 / ${TOUR_STEPS.length}`)).toBeInTheDocument();
   });
 
   it("stays away once it has been seen", async () => {
-    render(<App state={ready} onRefresh={() => {}} tourMemory={memory(true)} now={now} />);
+    render(
+      <App
+        state={ready}
+        onRefresh={() => {}}
+        tourMemory={memory(true)}
+        usedCodesMemory={noUsedCodes}
+        now={now}
+      />,
+    );
 
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
   });
@@ -59,6 +76,7 @@ describe("first run walkthrough", () => {
         state={{ status: "loading" }}
         onRefresh={() => {}}
         tourMemory={memory(false)}
+        usedCodesMemory={noUsedCodes}
         now={now}
       />,
     );
@@ -68,7 +86,15 @@ describe("first run walkthrough", () => {
 
   it("walks the steps and remembers that it finished", async () => {
     const remembered = memory(false);
-    render(<App state={ready} onRefresh={() => {}} tourMemory={remembered} now={now} />);
+    render(
+      <App
+        state={ready}
+        onRefresh={() => {}}
+        tourMemory={remembered}
+        usedCodesMemory={noUsedCodes}
+        now={now}
+      />,
+    );
 
     await screen.findByRole("dialog");
     for (const step of TOUR_STEPS.slice(1)) {
@@ -83,7 +109,15 @@ describe("first run walkthrough", () => {
 
   it("skips out of the way and does not come back", async () => {
     const remembered = memory(false);
-    render(<App state={ready} onRefresh={() => {}} tourMemory={remembered} now={now} />);
+    render(
+      <App
+        state={ready}
+        onRefresh={() => {}}
+        tourMemory={remembered}
+        usedCodesMemory={noUsedCodes}
+        now={now}
+      />,
+    );
 
     await screen.findByRole("dialog");
     await userEvent.click(screen.getByRole("button", { name: "건너뛰기" }));
@@ -93,7 +127,15 @@ describe("first run walkthrough", () => {
   });
 
   it("closes on Escape", async () => {
-    render(<App state={ready} onRefresh={() => {}} tourMemory={memory(false)} now={now} />);
+    render(
+      <App
+        state={ready}
+        onRefresh={() => {}}
+        tourMemory={memory(false)}
+        usedCodesMemory={noUsedCodes}
+        now={now}
+      />,
+    );
 
     await screen.findByRole("dialog");
     await userEvent.keyboard("{Escape}");
@@ -102,7 +144,15 @@ describe("first run walkthrough", () => {
   });
 
   it("moves on with Enter", async () => {
-    render(<App state={ready} onRefresh={() => {}} tourMemory={memory(false)} now={now} />);
+    render(
+      <App
+        state={ready}
+        onRefresh={() => {}}
+        tourMemory={memory(false)}
+        usedCodesMemory={noUsedCodes}
+        now={now}
+      />,
+    );
 
     await screen.findByRole("dialog");
     await userEvent.keyboard("{Enter}");

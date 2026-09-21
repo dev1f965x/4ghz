@@ -3,7 +3,10 @@ import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 import "./design/base.css";
 import "./design/scrollbar.css";
 import "./App.css";
+import type { UsedCodesMemory } from "./codes/usedCodes";
+import { useUsedCodes } from "./codes/useUsedCodes";
 import { BrandMark } from "./components/BrandMark";
+import { CodeList } from "./components/CodeList";
 import { EventList } from "./components/EventList";
 import { Notice } from "./components/Notice";
 import { RefreshButton } from "./components/RefreshButton";
@@ -11,6 +14,7 @@ import { panelId, TabBar, tabId } from "./components/TabBar";
 import { TitleBar } from "./components/TitleBar";
 import { UpdateBanner } from "./components/UpdateBanner";
 import { useMinimumDuration } from "./components/useMinimumDuration";
+import type { GameEvent } from "./domain/event";
 import { formatFetchedAt } from "./domain/labels";
 import type { SyncState } from "./feed/sync";
 import type { Tab } from "./navigation/history";
@@ -28,6 +32,7 @@ export interface AppProps {
   state: SyncState;
   onRefresh: () => void;
   tourMemory: TourMemory;
+  usedCodesMemory: UsedCodesMemory;
   update?: UpdateState;
   onInstallUpdate?: () => void;
   /** Fixed by tests; the window reads a ticking clock. */
@@ -43,6 +48,7 @@ export default function App({
   state,
   onRefresh,
   tourMemory,
+  usedCodesMemory,
   update = { status: "current" },
   onInstallUpdate = () => {},
   now,
@@ -56,6 +62,7 @@ export default function App({
   const hasEvents = state.status === "ready" && state.cached.feed.events.length > 0;
   const tour = useTour(tourMemory, hasEvents);
   const navigation = useNavigation();
+  const usedCodes = useUsedCodes(usedCodesMemory);
 
   return (
     <div className="app">
@@ -102,7 +109,7 @@ export default function App({
           scrollbars: { theme: "os-theme-4ghz", autoHide: "move", autoHideDelay: 700 },
         }}
       >
-        {renderTab(navigation.tab, state, onRefresh, current)}
+        {renderTab(navigation.tab, { state, onRefresh, now: current, usedCodes })}
       </OverlayScrollbarsComponent>
 
       {tour.step && (
@@ -118,42 +125,53 @@ export default function App({
   );
 }
 
-function renderTab(tab: Tab, state: SyncState, onRefresh: () => void, now: Date) {
-  if (tab !== "schedule") return <Notice title="준비 중이에요" />;
-  return renderSchedule(state, onRefresh, now);
+interface TabContext {
+  state: SyncState;
+  onRefresh: () => void;
+  now: Date;
+  usedCodes: { used: ReadonlySet<string>; toggle: (key: string) => void };
 }
 
-function renderSchedule(state: SyncState, onRefresh: () => void, now: Date) {
+function renderTab(tab: Tab, { state, onRefresh, now, usedCodes }: TabContext) {
+  if (tab === "dailies") return <Notice title="준비 중이에요" />;
+
   if (state.status === "loading") {
-    return <Notice title="일정을 불러오는 중이에요" />;
+    return <Notice title="불러오는 중이에요" />;
   }
 
   if (state.status === "failed") {
     return state.problem.kind === "unsupported-schema" ? (
       <Notice
         title="앱을 업데이트해 주세요"
-        detail="일정 형식이 바뀌어서 이 버전으로는 읽을 수 없어요"
+        detail="정보 형식이 바뀌어서 이 버전으로는 읽을 수 없어요"
       />
     ) : (
       <Notice
-        title="일정을 가져오지 못했어요"
+        title="가져오지 못했어요"
         detail={state.problem.detail}
         action={{ label: "다시 시도", onAction: onRefresh }}
       />
     );
   }
 
-  const { events } = state.cached.feed;
-  if (events.length === 0) {
-    return <Notice title="예정된 일정이 없어요" detail="새 일정이 올라오면 여기에 표시돼요" />;
-  }
-
+  const { events, codes } = state.cached.feed;
   return (
     <>
       {state.lastProblem && (
-        <p className="app__stale">최신 일정을 받지 못해 마지막으로 받은 내용을 보여주고 있어요</p>
+        <p className="app__stale">최신 내용을 받지 못해 마지막으로 받은 내용을 보여주고 있어요</p>
       )}
-      <EventList events={events} now={now} />
+      {tab === "schedule" ? (
+        renderSchedule(events, now)
+      ) : (
+        <CodeList codes={codes} used={usedCodes.used} now={now} onToggleUsed={usedCodes.toggle} />
+      )}
     </>
   );
+}
+
+function renderSchedule(events: readonly GameEvent[], now: Date) {
+  if (events.length === 0) {
+    return <Notice title="예정된 일정이 없어요" detail="새 일정이 올라오면 여기에 표시돼요" />;
+  }
+  return <EventList events={events} now={now} />;
 }
