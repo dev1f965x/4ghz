@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import { storeUsedCodes } from "./codes/usedCodes";
+import { storeDailyRecords } from "./dailies/dailyRecords";
 import type { FeedCache, FeedSource } from "./feed/ports";
 import { memoryFeedCache, sampleFeedSource } from "./feed/sample";
 import { httpFeedSource, storeFeedCache } from "./feed/tauri";
@@ -25,6 +26,7 @@ function Window() {
       onRefresh={refresh}
       tourMemory={storeTourMemory}
       usedCodesMemory={storeUsedCodes}
+      dailiesMemory={storeDailyRecords}
       update={update}
       onInstallUpdate={() => void install()}
     />

@@ -1,0 +1,91 @@
+.calendar__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+
+.calendar__steps {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.calendar__steps button {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-small);
+  background: transparent;
+  color: var(--text-body);
+  cursor: pointer;
+  font-size: var(--text-base);
+}
+
+.calendar__steps button:hover {
+  border-color: var(--accent);
+  color: var(--text-strong);
+}
+
+.calendar__grid {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.calendar__grid th {
+  padding-bottom: var(--space-2);
+  color: var(--text-muted);
+  font-size: var(--text-small);
+  font-weight: 500;
+}
+
+.calendar__grid td {
+  padding: 2px;
+  vertical-align: top;
+}
+
+.calendar__day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2) 0;
+  border-radius: var(--radius-small);
+  color: var(--text-body);
+  font-size: var(--text-small);
+  font-variant-numeric: tabular-nums;
+}
+
+.calendar__day[data-today="true"] {
+  outline: 1px solid var(--accent);
+  color: var(--text-strong);
+  font-weight: 600;
+}
+
+.calendar__day[data-future="true"] {
+  color: var(--border-strong);
+}
+
+.calendar__dots {
+  display: flex;
+  gap: 3px;
+  height: 6px;
+}
+
+.calendar__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.calendar__dot[data-game="genshin"] {
+  background: var(--game-genshin);
+}
+
+.calendar__dot[data-game="starrail"] {
+  background: var(--game-starrail);
+}
+
+.calendar__dot[data-game="zenless"] {
+  background: var(--game-zenless);
+}

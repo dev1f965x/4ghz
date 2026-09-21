@@ -1,4 +1,5 @@
 import type { Tab } from "../navigation/history";
+import type { Chore, GameDay } from "./dailies";
 import type { EventKind, Game } from "./event";
 import type { EventPhase } from "./schedule";
 
@@ -102,3 +103,35 @@ export const CODE_LABELS = {
   empty: "지금 쓸 수 있는 코드가 없어요",
   emptyDetail: "새 코드가 올라오면 여기에 표시돼요",
 };
+
+export const CHORE_LABELS: Record<Chore, string> = {
+  commissions: "일일 의뢰",
+  resin: "레진 소모",
+  training: "일일 훈련",
+  power: "개척력 소모",
+  activity: "일일 활약도",
+  battery: "배터리 소모",
+};
+
+export const DAILIES_LABELS = {
+  games: "하는 게임",
+  noGames: "하는 게임을 하나 이상 골라 주세요",
+  resetHint: "매일 오전 5시에 새 하루가 시작돼요",
+  streak: (days: number) => `${days}일 연속`,
+  month: (year: number, month: number) => `${year}년 ${month}월`,
+  previousMonth: "지난달",
+  nextMonth: "다음 달",
+  weekdays: ["일", "월", "화", "수", "목", "금", "토"],
+  finished: (games: string[]) => (games.length ? `${games.join(", ")} 완료` : "기록 없음"),
+};
+
+/** A game day as `9월 21일 (월)`. The day is a calendar date, so it is read in UTC. */
+export function formatGameDay(day: GameDay): string {
+  const date = new Intl.DateTimeFormat("ko-KR", {
+    timeZone: "UTC",
+    month: "long",
+    day: "numeric",
+  }).format(new Date(`${day}T00:00:00Z`));
+  const weekday = DAILIES_LABELS.weekdays[new Date(`${day}T00:00:00Z`).getUTCDay()];
+  return `${date} (${weekday})`;
+}
