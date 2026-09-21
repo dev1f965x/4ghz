@@ -7,11 +7,14 @@ import { BrandMark } from "./components/BrandMark";
 import { EventList } from "./components/EventList";
 import { Notice } from "./components/Notice";
 import { RefreshButton } from "./components/RefreshButton";
+import { panelId, TabBar, tabId } from "./components/TabBar";
 import { TitleBar } from "./components/TitleBar";
 import { UpdateBanner } from "./components/UpdateBanner";
 import { useMinimumDuration } from "./components/useMinimumDuration";
 import { formatFetchedAt } from "./domain/labels";
 import type { SyncState } from "./feed/sync";
+import type { Tab } from "./navigation/history";
+import { useNavigation } from "./navigation/useNavigation";
 import { Spotlight } from "./onboarding/Spotlight";
 import type { TourMemory } from "./onboarding/useTour";
 import { useTour } from "./onboarding/useTour";
@@ -52,28 +55,38 @@ export default function App({
   );
   const hasEvents = state.status === "ready" && state.cached.feed.events.length > 0;
   const tour = useTour(tourMemory, hasEvents);
+  const navigation = useNavigation();
 
   return (
     <div className="app">
-      <TitleBar />
+      <TitleBar
+        canGoBack={navigation.canGoBack}
+        canGoForward={navigation.canGoForward}
+        onBack={navigation.goBack}
+        onForward={navigation.goForward}
+      />
 
       <header className="app__header">
-        <div className="app__identity">
-          <BrandMark />
-          <div>
-            <h1 className="app__title">4GHz</h1>
-            <p className="app__subtitle">원신 · 스타레일 · 젠레스 공식 일정</p>
+        <div className="app__masthead">
+          <div className="app__identity">
+            <BrandMark />
+            <div>
+              <h1 className="app__title">4GHz</h1>
+              <p className="app__subtitle">원신 · 스타레일 · 젠레스</p>
+            </div>
+          </div>
+
+          <div className="app__status" aria-live="polite" hidden={navigation.tab === "dailies"}>
+            {state.status === "ready" && (
+              <p className="app__fetched">
+                {refreshing ? "새로고침 중…" : formatFetchedAt(state.cached.fetchedAt, current)}
+              </p>
+            )}
+            <RefreshButton busy={refreshing} onRefresh={onRefresh} />
           </div>
         </div>
 
-        <div className="app__status" aria-live="polite">
-          {state.status === "ready" && (
-            <p className="app__fetched">
-              {refreshing ? "새로고침 중…" : formatFetchedAt(state.cached.fetchedAt, current)}
-            </p>
-          )}
-          <RefreshButton busy={refreshing} onRefresh={onRefresh} />
-        </div>
+        <TabBar tab={navigation.tab} onOpen={navigation.open} />
       </header>
 
       <UpdateBanner update={update} onInstall={onInstallUpdate} />
@@ -81,12 +94,15 @@ export default function App({
       <OverlayScrollbarsComponent
         element="main"
         className="app__main"
+        id={panelId(navigation.tab)}
+        role="tabpanel"
+        aria-labelledby={tabId(navigation.tab)}
         defer
         options={{
           scrollbars: { theme: "os-theme-4ghz", autoHide: "move", autoHideDelay: 700 },
         }}
       >
-        {renderBody(state, onRefresh, current)}
+        {renderTab(navigation.tab, state, onRefresh, current)}
       </OverlayScrollbarsComponent>
 
       {tour.step && (
@@ -102,7 +118,12 @@ export default function App({
   );
 }
 
-function renderBody(state: SyncState, onRefresh: () => void, now: Date) {
+function renderTab(tab: Tab, state: SyncState, onRefresh: () => void, now: Date) {
+  if (tab !== "schedule") return <Notice title="준비 중이에요" />;
+  return renderSchedule(state, onRefresh, now);
+}
+
+function renderSchedule(state: SyncState, onRefresh: () => void, now: Date) {
   if (state.status === "loading") {
     return <Notice title="일정을 불러오는 중이에요" />;
   }

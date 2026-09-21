@@ -29,4 +29,10 @@ export const TOUR_STEPS: readonly TourStep[] = [
     title: "알아서 새로고침",
     detail: "6시간마다 일정을 다시 받아와요. 지금 확인하고 싶으면 이 버튼을 눌러요.",
   },
+  {
+    id: "tabs",
+    target: '[data-tour="tabs"]',
+    title: "리딤 코드와 숙제도 여기에",
+    detail: "탭으로 옮겨 다녀요. 왼쪽 위 화살표나 Alt+←/→로 보던 탭으로 돌아갈 수 있어요.",
+  },
 ];

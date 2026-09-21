@@ -1,3 +1,4 @@
+import type { Tab } from "../navigation/history";
 import type { EventKind, Game } from "./event";
 import type { EventPhase } from "./schedule";
 
@@ -76,4 +77,16 @@ export const UPDATE_LABELS = {
     progress === null ? "업데이트 받는 중…" : `업데이트 받는 중… ${Math.round(progress * 100)}%`,
   failed: "업데이트하지 못했어요",
   retry: "다시 시도",
+};
+
+export const TAB_LABELS: Record<Tab, string> = {
+  schedule: "일정",
+  codes: "리딤 코드",
+  dailies: "숙제",
+};
+
+export const NAVIGATION_LABELS = {
+  back: "뒤로",
+  forward: "앞으로",
+  tabs: "보기",
 };

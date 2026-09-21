@@ -44,7 +44,7 @@ describe("first run walkthrough", () => {
     render(<App state={ready} onRefresh={() => {}} tourMemory={memory(false)} now={now} />);
 
     expect(await screen.findByRole("dialog")).toHaveTextContent(TOUR_STEPS[0].title);
-    expect(screen.getByText("1 / 3")).toBeInTheDocument();
+    expect(screen.getByText(`1 / ${TOUR_STEPS.length}`)).toBeInTheDocument();
   });
 
   it("stays away once it has been seen", async () => {
@@ -71,10 +71,10 @@ describe("first run walkthrough", () => {
     render(<App state={ready} onRefresh={() => {}} tourMemory={remembered} now={now} />);
 
     await screen.findByRole("dialog");
-    await userEvent.click(screen.getByRole("button", { name: "다음" }));
-    expect(screen.getByRole("dialog")).toHaveTextContent(TOUR_STEPS[1].title);
-
-    await userEvent.click(screen.getByRole("button", { name: "다음" }));
+    for (const step of TOUR_STEPS.slice(1)) {
+      await userEvent.click(screen.getByRole("button", { name: "다음" }));
+      expect(screen.getByRole("dialog")).toHaveTextContent(step.title);
+    }
     await userEvent.click(screen.getByRole("button", { name: "시작하기" }));
 
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
