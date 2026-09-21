@@ -224,4 +224,21 @@ describe("App", () => {
 
     expect(screen.queryByRole("button", { name: "새로고침" })).not.toBeInTheDocument();
   });
+
+  it("shows each tab as an emoji, keeping its name for screen readers and tooltips", () => {
+    render(
+      <App
+        state={ready([event()])}
+        onRefresh={() => {}}
+        tourMemory={seenTour}
+        usedCodesMemory={noUsedCodes}
+        dailiesMemory={noDailies}
+        now={now}
+      />,
+    );
+
+    const codes = screen.getByRole("tab", { name: "리딤 코드" });
+    expect(codes).toHaveTextContent("🎁");
+    expect(codes).toHaveAttribute("title", "리딤 코드");
+  });
 });

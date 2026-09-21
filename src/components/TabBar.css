@@ -1,8 +1,8 @@
 .tab-bar {
-  display: flex;
-  gap: var(--space-5);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   /* The active underline sits on the header's bottom border rather than above it. */
-  margin-bottom: -1px;
+  margin: 0 calc(-1 * var(--space-6)) -1px;
 }
 
 .tab-bar__tab {
@@ -10,20 +10,23 @@
   border: none;
   border-bottom: 2px solid transparent;
   background: none;
-  color: var(--text-muted);
   cursor: pointer;
-  font-size: var(--text-base);
-  font-weight: 600;
+  font-size: 1.25rem;
+  line-height: 1;
+  /* Colour emoji ignore the text colour, so the unselected ones are faded instead. */
+  opacity: 0.45;
   transition:
-    color 120ms ease,
-    border-color 120ms ease;
+    opacity 120ms ease,
+    border-color 120ms ease,
+    background 120ms ease;
 }
 
 .tab-bar__tab:hover {
-  color: var(--text-body);
+  background: var(--surface-raised);
+  opacity: 0.8;
 }
 
 .tab-bar__tab[aria-selected="true"] {
   border-bottom-color: var(--accent);
-  color: var(--text-strong);
+  opacity: 1;
 }
