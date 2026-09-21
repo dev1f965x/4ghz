@@ -100,7 +100,9 @@ function cover(shape: RoundedRect, px: number, py: number): number {
 }
 
 function mix(under: Rgb, over: Rgb, amount: number): Rgb {
-  return [0, 1, 2].map((i) => Math.round(under[i] + (over[i] - under[i]) * amount)) as unknown as Rgb;
+  return [0, 1, 2].map((i) =>
+    Math.round(under[i] + (over[i] - under[i]) * amount),
+  ) as unknown as Rgb;
 }
 
 /** 24-bit bottom-up BMP, the one layout every NSIS build reads. */
@@ -136,6 +138,12 @@ function hex(value: string): Rgb {
   return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
 }
 
-writeFileSync("src-tauri/installer/sidebar.bmp", bmp(164, 314, paint(164, 314, palette.surface, sidebar())));
-writeFileSync("src-tauri/installer/header.bmp", bmp(150, 57, paint(150, 57, palette.white, header())));
+writeFileSync(
+  "src-tauri/installer/sidebar.bmp",
+  bmp(164, 314, paint(164, 314, palette.surface, sidebar())),
+);
+writeFileSync(
+  "src-tauri/installer/header.bmp",
+  bmp(150, 57, paint(150, 57, palette.white, header())),
+);
 console.log("src-tauri/installer/{sidebar,header}.bmp");

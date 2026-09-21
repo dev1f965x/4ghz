@@ -1,6 +1,7 @@
 import { mkdirSync } from "node:fs";
-import { chromium, type Page } from "playwright-core";
+import { chromium, type Page } from "@playwright/test";
 import { createServer } from "vite";
+import { type Stores, tauriStandIn } from "../e2e/tauri";
 
 /**
  * Photographs every tab and state of the window, for design review and the README.
@@ -17,8 +18,6 @@ const WINDOW = { width: 920, height: 640 };
 const NOW = new Date("2026-09-21T21:00:00+09:00");
 const PORT = 1430;
 const OUT = "screens";
-
-type Stores = Record<string, Record<string, unknown>>;
 
 interface Shot {
   name: string;
@@ -74,38 +73,12 @@ const SHOTS: Shot[] = [
   { name: "tour" },
 ];
 
-/**
- * Answers the IPC calls the window makes, with each store file kept in memory. Written as
- * plain JavaScript text: it runs in the page, where the helpers a TypeScript transform
- * would add do not exist.
- */
-function tauriStandIn(stores: Stores): string {
-  return `(() => {
-    const data = ${JSON.stringify(stores)};
-    const files = new Map();
-    let next = 1;
-    const invoke = async (command, args = {}) => {
-      if (command === "plugin:store|load") {
-        data[args.path] ??= {};
-        files.set(next, args.path);
-        return next++;
-      }
-      const file = data[files.get(args.rid)] ?? {};
-      if (command === "plugin:store|get") return [file[args.key] ?? null, args.key in file];
-      if (command === "plugin:store|set") file[args.key] = args.value;
-      return null;
-    };
-    window.__TAURI_INTERNALS__ = {
-      invoke,
-      transformCallback: () => 0,
-      metadata: { currentWindow: { label: "main" }, currentWebview: { label: "main" } },
-    };
-  })();`;
-}
-
 async function main() {
   mkdirSync(OUT, { recursive: true });
-  const server = await createServer({ server: { port: PORT, strictPort: true }, logLevel: "error" });
+  const server = await createServer({
+    server: { port: PORT, strictPort: true },
+    logLevel: "error",
+  });
   await server.listen();
   const browser = await chromium.launch({ channel: "msedge" });
 
