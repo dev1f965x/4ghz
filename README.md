@@ -129,9 +129,10 @@ Adding an event to the published schedule is [docs/feed.md](https://github.com/d
 
 - [x] 1.0.0 — official event countdowns
 - [x] 1.0.0 — updates itself from GitHub Releases
-- [ ] 1.1.0 — notifications 24 hours and 1 hour before an event
-- [ ] 1.1.0 — redeem codes
-- [ ] 1.2.0 — daily quests and streaks
+- [ ] 1.1.0 — tabs with browser-style back and forward
+- [ ] 1.1.0 — redeem codes, copied or opened on the official page
+- [ ] 1.1.0 — dailies checklist, month calendar, and streaks
+- [ ] 1.2.0 — notifications 24 hours and 1 hour before an event
 
 See the [open issues](https://github.com/dev1f965x/4ghz/issues) for the full list.
 
