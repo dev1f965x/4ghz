@@ -8,6 +8,7 @@ import { EventList } from "./components/EventList";
 import { Notice } from "./components/Notice";
 import { RefreshButton } from "./components/RefreshButton";
 import { TitleBar } from "./components/TitleBar";
+import { UpdateBanner } from "./components/UpdateBanner";
 import { useMinimumDuration } from "./components/useMinimumDuration";
 import { formatFetchedAt } from "./domain/labels";
 import type { SyncState } from "./feed/sync";
@@ -15,6 +16,7 @@ import { Spotlight } from "./onboarding/Spotlight";
 import type { TourMemory } from "./onboarding/useTour";
 import { useTour } from "./onboarding/useTour";
 import { useNow } from "./shell/clock";
+import type { UpdateState } from "./update/useUpdate";
 
 /** Long enough to read the refreshing label before the fetch time replaces it. */
 const REFRESH_FEEDBACK_MS = 600;
@@ -23,6 +25,8 @@ export interface AppProps {
   state: SyncState;
   onRefresh: () => void;
   tourMemory: TourMemory;
+  update?: UpdateState;
+  onInstallUpdate?: () => void;
   /** Fixed by tests; the window reads a ticking clock. */
   now?: Date;
 }
@@ -32,7 +36,14 @@ export interface AppProps {
  * that names the app and carries its one action, and the schedule, which is the only
  * part that scrolls.
  */
-export default function App({ state, onRefresh, tourMemory, now }: AppProps) {
+export default function App({
+  state,
+  onRefresh,
+  tourMemory,
+  update = { status: "current" },
+  onInstallUpdate = () => {},
+  now,
+}: AppProps) {
   const clock = useNow();
   const current = now ?? clock;
   const refreshing = useMinimumDuration(
@@ -64,6 +75,8 @@ export default function App({ state, onRefresh, tourMemory, now }: AppProps) {
           <RefreshButton busy={refreshing} onRefresh={onRefresh} />
         </div>
       </header>
+
+      <UpdateBanner update={update} onInstall={onInstallUpdate} />
 
       <OverlayScrollbarsComponent
         element="main"

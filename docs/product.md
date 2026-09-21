@@ -25,6 +25,8 @@ with a countdown.
   for the next cycle.
 - The last good feed is cached, so the window still shows the last known schedule with no
   network, alongside when it was fetched.
+- The app checks for a newer release on launch and every six hours, and installs it in place
+  when asked. Releases are signed; an update that fails the signature check is refused.
 
 ## Acceptance criteria
 
@@ -39,6 +41,7 @@ with a countdown.
   refresh.
 - On a first run with no network and no cache, the window explains that the schedule could
   not be fetched and offers to retry, rather than showing an empty list.
+- A published release reaches an installed copy without a manual download.
 
 ## Interface language
 

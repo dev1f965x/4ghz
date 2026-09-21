@@ -62,6 +62,7 @@ The name reads as *for GHZ*: **G**enshin, **H**onkai, **Z**enless.
 - Running events are separated from the ones that have not started
 - Fetches on launch, every six hours, and on demand; the last good schedule is cached for offline
 - A window the app draws itself, and a walkthrough on first run
+- Updates itself: a signed release is announced in the window and installed in place
 - No account, no telemetry, one outbound request
 
 Dates are not scraped. They live in [`feed/events.json`](https://github.com/dev1f965x/4ghz/blob/main/feed/events.json), are reviewed like code, and are published to GitHub Pages, so a new schedule needs no new installer.
@@ -120,16 +121,16 @@ npm run tauri build   # installer in src-tauri/target/release/bundle
 
 Rust side, in `src-tauri`: `cargo fmt --check`, `cargo clippy`, `cargo test`.
 
-Adding an event to the published schedule is [docs/feed.md](https://github.com/dev1f965x/4ghz/blob/main/docs/feed.md). Why it is built this way is in [docs/adr](https://github.com/dev1f965x/4ghz/tree/main/docs/adr).
+Adding an event to the published schedule is [docs/feed.md](https://github.com/dev1f965x/4ghz/blob/main/docs/feed.md). Cutting a release is [docs/release.md](https://github.com/dev1f965x/4ghz/blob/main/docs/release.md). Why it is built this way is in [docs/adr](https://github.com/dev1f965x/4ghz/tree/main/docs/adr).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Roadmap
 
 - [x] 1.0.0 — official event countdowns
+- [x] 1.0.0 — updates itself from GitHub Releases
 - [ ] 1.1.0 — notifications 24 hours and 1 hour before an event
 - [ ] 1.1.0 — redeem codes
-- [ ] 1.1.0 — updates through the Tauri updater
 - [ ] 1.2.0 — daily quests and streaks
 
 See the [open issues](https://github.com/dev1f965x/4ghz/issues) for the full list.
