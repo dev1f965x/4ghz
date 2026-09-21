@@ -13,7 +13,7 @@ const event: GameEvent = {
   id: "genshin-livestream",
   game: "genshin",
   kind: "livestream",
-  title: "6.0 특별 방송",
+  title: "6.0 Special Program",
   startsAt: new Date("2026-10-04T20:00:00"),
 };
 

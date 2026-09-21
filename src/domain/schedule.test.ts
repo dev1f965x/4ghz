@@ -7,7 +7,7 @@ function event(overrides: Partial<GameEvent> & Pick<GameEvent, "startsAt">): Gam
     id: "e1",
     game: "genshin",
     kind: "livestream",
-    title: "특별 방송",
+    title: "Special Program",
     ...overrides,
   };
 }
@@ -81,7 +81,7 @@ describe("upcomingFirst", () => {
     const events = [
       event({ id: "later", title: "버전 업데이트", startsAt: new Date("2026-10-08T03:00:00") }),
       event({ id: "over", title: "지난 방송", startsAt: new Date("2026-09-01T09:00:00") }),
-      event({ id: "soon", title: "특별 방송", startsAt: new Date("2026-10-02T09:00:00") }),
+      event({ id: "soon", title: "Special Program", startsAt: new Date("2026-10-02T09:00:00") }),
     ];
 
     expect(upcomingFirst(events, now).map((found) => found.id)).toEqual(["soon", "later"]);

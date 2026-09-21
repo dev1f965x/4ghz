@@ -22,7 +22,7 @@ function event(overrides: Partial<GameEvent> = {}): GameEvent {
     id: "genshin-livestream",
     game: "genshin",
     kind: "livestream",
-    title: "6.0 특별 방송",
+    title: "6.0 Special Program",
     startsAt: new Date("2026-10-04T20:00:00"),
     ...overrides,
   };
@@ -50,7 +50,9 @@ describe("App", () => {
   it("lists an upcoming event with its countdown", () => {
     render(<App state={ready([event()])} onRefresh={() => {}} tourMemory={seenTour} now={now} />);
 
-    expect(screen.getByRole("heading", { name: "6.0 특별 방송", level: 3 })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "6.0 Special Program", level: 3 }),
+    ).toBeInTheDocument();
     expect(screen.getByText("3일 남음")).toBeInTheDocument();
     expect(screen.getByText("3시간 전")).toBeInTheDocument();
   });
@@ -59,7 +61,7 @@ describe("App", () => {
     const airing = event({
       id: "starrail-stream",
       game: "starrail",
-      title: "3.5 특별 방송",
+      title: "3.5 Special Program",
       startsAt: new Date("2026-10-01T11:30:00"),
     });
 
@@ -105,7 +107,7 @@ describe("App", () => {
 
     render(<App state={state} onRefresh={() => {}} tourMemory={seenTour} now={now} />);
 
-    expect(screen.getByRole("heading", { name: "6.0 특별 방송" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "6.0 Special Program" })).toBeInTheDocument();
     expect(
       screen.getByText("최신 일정을 받지 못해 마지막으로 받은 내용을 보여주고 있어요"),
     ).toBeInTheDocument();
