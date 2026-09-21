@@ -96,6 +96,9 @@
 }
 
 .event__badge {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
   padding: var(--space-1) var(--space-3);
   border-radius: var(--radius-pill);
   font-size: var(--text-small);
@@ -106,6 +109,26 @@
 .event[data-status="running"] .event__badge {
   background: color-mix(in srgb, var(--live) 14%, transparent);
   color: var(--live);
+}
+
+/* A dot that sends out a fading ring, the way "on air" lights are drawn. */
+.event[data-status="running"] .event__badge::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--live);
+  animation: live-pulse 1.6s ease-out infinite;
+}
+
+@keyframes live-pulse {
+  from {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--live) 70%, transparent);
+  }
+
+  to {
+    box-shadow: 0 0 0 7px transparent;
+  }
 }
 
 .event[data-status="today"] .event__badge {

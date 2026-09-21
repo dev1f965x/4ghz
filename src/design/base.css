@@ -49,6 +49,8 @@ button {
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    /* A looping animation cut to 0.01ms would flicker instead of stopping. */
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
 }
