@@ -26,11 +26,15 @@ function main(): void {
     );
   }
   for (const name of npmMissing) {
-    console.error(`tauri-plugin-${name} (${crates.get(name)}) : @tauri-apps/plugin-${name} (missing)`);
+    console.error(
+      `tauri-plugin-${name} (${crates.get(name)}) : @tauri-apps/plugin-${name} (missing)`,
+    );
   }
 
   if (mismatched.length > 0 || npmMissing.length > 0) {
-    console.error("Every Tauri plugin needs its crate and its npm package on the same minor release.");
+    console.error(
+      "Every Tauri plugin needs its crate and its npm package on the same minor release.",
+    );
     process.exit(1);
   }
 
@@ -65,7 +69,10 @@ function readPackages(): Map<string, string> {
   return new Map(
     installed
       .filter(([path]) => path.startsWith("node_modules/@tauri-apps/plugin-"))
-      .map(([path, entry]) => [path.replace("node_modules/@tauri-apps/plugin-", ""), entry.version]),
+      .map(([path, entry]) => [
+        path.replace("node_modules/@tauri-apps/plugin-", ""),
+        entry.version,
+      ]),
   );
 }
 
