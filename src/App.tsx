@@ -8,12 +8,16 @@ import { EventList } from "./components/EventList";
 import { Notice } from "./components/Notice";
 import { RefreshButton } from "./components/RefreshButton";
 import { TitleBar } from "./components/TitleBar";
+import { useMinimumDuration } from "./components/useMinimumDuration";
 import { formatFetchedAt } from "./domain/labels";
 import type { SyncState } from "./feed/sync";
 import { Spotlight } from "./onboarding/Spotlight";
 import type { TourMemory } from "./onboarding/useTour";
 import { useTour } from "./onboarding/useTour";
 import { useNow } from "./shell/clock";
+
+/** Long enough to read the refreshing label before the fetch time replaces it. */
+const REFRESH_FEEDBACK_MS = 600;
 
 export interface AppProps {
   state: SyncState;
@@ -31,7 +35,10 @@ export interface AppProps {
 export default function App({ state, onRefresh, tourMemory, now }: AppProps) {
   const clock = useNow();
   const current = now ?? clock;
-  const refreshing = state.status === "ready" && state.refreshing;
+  const refreshing = useMinimumDuration(
+    state.status === "ready" && state.refreshing,
+    REFRESH_FEEDBACK_MS,
+  );
   const hasEvents = state.status === "ready" && state.cached.feed.events.length > 0;
   const tour = useTour(tourMemory, hasEvents);
 
