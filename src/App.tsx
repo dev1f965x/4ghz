@@ -9,7 +9,7 @@ import { BrandMark } from "./components/BrandMark";
 import { CodeList } from "./components/CodeList";
 import { DailiesTab } from "./components/DailiesTab";
 import { EventList } from "./components/EventList";
-import { GamePicker } from "./components/GamePicker";
+import { GameFilterMenu } from "./components/GameFilterMenu";
 import { Notice } from "./components/Notice";
 import { RefreshButton } from "./components/RefreshButton";
 import { panelId, TabBar, tabId } from "./components/TabBar";
@@ -19,16 +19,17 @@ import { useMinimumDuration } from "./components/useMinimumDuration";
 import type { DailyRecordsMemory } from "./dailies/dailyRecords";
 import { useDailyRecords } from "./dailies/useDailyRecords";
 import type { GameEvent } from "./domain/event";
+import { type GameFilter, matchesFilter } from "./domain/filter";
 import { formatFetchedAt } from "./domain/labels";
 import type { SyncState } from "./feed/sync";
+import type { FilterMemory } from "./filter/filterMemory";
+import { useGameFilter } from "./filter/useGameFilter";
 import type { Tab } from "./navigation/history";
 import { useNavigation } from "./navigation/useNavigation";
 import { Spotlight } from "./onboarding/Spotlight";
 import type { TourMemory } from "./onboarding/useTour";
 import { useTour } from "./onboarding/useTour";
 import { useNow } from "./shell/clock";
-import type { ThemeMemory } from "./theme/themeMemory";
-import { useThemeGame } from "./theme/useThemeGame";
 import type { UpdateState } from "./update/useUpdate";
 
 /** Long enough to read the refreshing label before the fetch time replaces it. */
@@ -40,7 +41,7 @@ export interface AppProps {
   tourMemory: TourMemory;
   usedCodesMemory: UsedCodesMemory;
   dailiesMemory: DailyRecordsMemory;
-  themeMemory: ThemeMemory;
+  filterMemory: FilterMemory;
   update?: UpdateState;
   onInstallUpdate?: () => void;
   /** Fixed by tests; the window reads a ticking clock. */
@@ -58,7 +59,7 @@ export default function App({
   tourMemory,
   usedCodesMemory,
   dailiesMemory,
-  themeMemory,
+  filterMemory,
   update = { status: "current" },
   onInstallUpdate = () => {},
   now,
@@ -74,10 +75,10 @@ export default function App({
   const navigation = useNavigation();
   const usedCodes = useUsedCodes(usedCodesMemory);
   const dailies = useDailyRecords(dailiesMemory);
-  const theme = useThemeGame(themeMemory);
+  const { filter, choose } = useGameFilter(filterMemory);
 
   return (
-    <div className="app" data-game={theme.game}>
+    <div className="app" data-game={filter === "all" ? undefined : filter}>
       <TitleBar
         canGoBack={navigation.canGoBack}
         canGoForward={navigation.canGoForward}
@@ -104,7 +105,7 @@ export default function App({
               )}
               <RefreshButton busy={refreshing} onRefresh={onRefresh} />
             </div>
-            <GamePicker game={theme.game} onChoose={theme.choose} />
+            <GameFilterMenu filter={filter} onChoose={choose} />
           </div>
         </div>
 
@@ -124,7 +125,7 @@ export default function App({
           scrollbars: { theme: "os-theme-4ghz", autoHide: "move", autoHideDelay: 700 },
         }}
       >
-        {renderTab(navigation.tab, { state, onRefresh, now: current, usedCodes, dailies })}
+        {renderTab(navigation.tab, { state, onRefresh, now: current, usedCodes, dailies, filter })}
       </OverlayScrollbarsComponent>
 
       {tour.step && (
@@ -146,13 +147,15 @@ interface TabContext {
   now: Date;
   usedCodes: ReturnType<typeof useUsedCodes>;
   dailies: ReturnType<typeof useDailyRecords>;
+  filter: GameFilter;
 }
 
-function renderTab(tab: Tab, { state, onRefresh, now, usedCodes, dailies }: TabContext) {
+function renderTab(tab: Tab, { state, onRefresh, now, usedCodes, dailies, filter }: TabContext) {
   if (tab === "dailies") {
     return (
       <DailiesTab
         records={dailies.records}
+        filter={filter}
         now={now}
         onToggleChore={dailies.toggleChore}
         onToggleGame={dailies.toggleGame}
@@ -179,7 +182,8 @@ function renderTab(tab: Tab, { state, onRefresh, now, usedCodes, dailies }: TabC
     );
   }
 
-  const { events, codes } = state.cached.feed;
+  const events = state.cached.feed.events.filter((event) => matchesFilter(event.game, filter));
+  const codes = state.cached.feed.codes.filter((code) => matchesFilter(code.game, filter));
   return (
     <>
       {state.lastProblem && (

@@ -27,7 +27,7 @@ export default defineConfig({
         "src/update/tauri.ts",
         "src/codes/usedCodes.ts",
         "src/dailies/dailyRecords.ts",
-        "src/theme/themeMemory.ts",
+        "src/filter/filterMemory.ts",
         "src/shell/outside.ts",
       ],
       thresholds: { lines: 80, functions: 80, branches: 75, statements: 80 },

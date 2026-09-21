@@ -7,8 +7,8 @@ import type { FeedCache, FeedSource } from "./feed/ports";
 import { memoryFeedCache, sampleFeedSource } from "./feed/sample";
 import { httpFeedSource, storeFeedCache } from "./feed/tauri";
 import { useFeedSync } from "./feed/useFeedSync";
+import { storeFilterMemory } from "./filter/filterMemory";
 import { storeTourMemory } from "./onboarding/memory";
-import { storeThemeMemory } from "./theme/themeMemory";
 import type { UpdateSource } from "./update/ports";
 import { alwaysCurrent, tauriUpdateSource } from "./update/tauri";
 import { useUpdate } from "./update/useUpdate";
@@ -28,7 +28,7 @@ function Window() {
       tourMemory={storeTourMemory}
       usedCodesMemory={storeUsedCodes}
       dailiesMemory={storeDailyRecords}
-      themeMemory={storeThemeMemory}
+      filterMemory={storeFilterMemory}
       update={update}
       onInstallUpdate={() => void install()}
     />

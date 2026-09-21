@@ -6,7 +6,7 @@ import type { GameEvent } from "./domain/event";
 import type { Feed } from "./domain/feed";
 import type { SyncState } from "./feed/sync";
 import type { TourMemory } from "./onboarding/useTour";
-import { noDailies, noTheme, noUsedCodes } from "./test/memories";
+import { noDailies, noFilter, noUsedCodes } from "./test/memories";
 
 /** The walkthrough is covered on its own; here it stays out of the way. */
 const seenTour: TourMemory = {
@@ -48,7 +48,7 @@ describe("App", () => {
         tourMemory={seenTour}
         usedCodesMemory={noUsedCodes}
         dailiesMemory={noDailies}
-        themeMemory={noTheme}
+        filterMemory={noFilter}
         now={now}
       />,
     );
@@ -64,7 +64,7 @@ describe("App", () => {
         tourMemory={seenTour}
         usedCodesMemory={noUsedCodes}
         dailiesMemory={noDailies}
-        themeMemory={noTheme}
+        filterMemory={noFilter}
         now={now}
       />,
     );
@@ -91,7 +91,7 @@ describe("App", () => {
         tourMemory={seenTour}
         usedCodesMemory={noUsedCodes}
         dailiesMemory={noDailies}
-        themeMemory={noTheme}
+        filterMemory={noFilter}
         now={now}
       />,
     );
@@ -109,7 +109,7 @@ describe("App", () => {
         tourMemory={seenTour}
         usedCodesMemory={noUsedCodes}
         dailiesMemory={noDailies}
-        themeMemory={noTheme}
+        filterMemory={noFilter}
         now={now}
       />,
     );
@@ -127,7 +127,7 @@ describe("App", () => {
         tourMemory={seenTour}
         usedCodesMemory={noUsedCodes}
         dailiesMemory={noDailies}
-        themeMemory={noTheme}
+        filterMemory={noFilter}
         now={now}
       />,
     );
@@ -145,7 +145,7 @@ describe("App", () => {
         tourMemory={seenTour}
         usedCodesMemory={noUsedCodes}
         dailiesMemory={noDailies}
-        themeMemory={noTheme}
+        filterMemory={noFilter}
         now={now}
       />,
     );
@@ -164,7 +164,7 @@ describe("App", () => {
         tourMemory={seenTour}
         usedCodesMemory={noUsedCodes}
         dailiesMemory={noDailies}
-        themeMemory={noTheme}
+        filterMemory={noFilter}
         now={now}
       />,
     );
@@ -181,7 +181,7 @@ describe("App", () => {
         tourMemory={seenTour}
         usedCodesMemory={noUsedCodes}
         dailiesMemory={noDailies}
-        themeMemory={noTheme}
+        filterMemory={noFilter}
         now={now}
       />,
     );
@@ -205,7 +205,7 @@ describe("App", () => {
         tourMemory={seenTour}
         usedCodesMemory={noUsedCodes}
         dailiesMemory={noDailies}
-        themeMemory={noTheme}
+        filterMemory={noFilter}
         now={now}
       />,
     );
@@ -225,7 +225,7 @@ describe("App", () => {
         tourMemory={seenTour}
         usedCodesMemory={noUsedCodes}
         dailiesMemory={noDailies}
-        themeMemory={noTheme}
+        filterMemory={noFilter}
         now={now}
       />,
     );
@@ -243,7 +243,7 @@ describe("App", () => {
         tourMemory={seenTour}
         usedCodesMemory={noUsedCodes}
         dailiesMemory={noDailies}
-        themeMemory={noTheme}
+        filterMemory={noFilter}
         now={now}
       />,
     );
@@ -253,23 +253,29 @@ describe("App", () => {
     expect(codes).toHaveAttribute("title", "리딤 코드");
   });
 
-  it("wears the colour of the game picked", async () => {
+  it("narrows every tab to the game picked, and wears its colour", async () => {
+    const genshin = event();
+    const zenless = event({ id: "zenless-version", game: "zenless", title: "3.3 Update" });
     const { container } = render(
       <App
-        state={ready([event()])}
+        state={ready([genshin, zenless])}
         onRefresh={() => {}}
         tourMemory={seenTour}
         usedCodesMemory={noUsedCodes}
         dailiesMemory={noDailies}
-        themeMemory={noTheme}
+        filterMemory={noFilter}
         now={now}
       />,
     );
-    expect(container.firstChild).toHaveAttribute("data-game", "genshin");
+    expect(container.firstChild).not.toHaveAttribute("data-game");
+    expect(screen.getByRole("heading", { name: "6.0 Special Program" })).toBeInTheDocument();
 
-    await userEvent.selectOptions(screen.getByRole("combobox", { name: "테마 게임" }), "zenless");
+    await userEvent.click(screen.getByRole("button", { name: "게임: 전체" }));
+    await userEvent.click(screen.getByRole("option", { name: "젠레스" }));
 
     expect(container.firstChild).toHaveAttribute("data-game", "zenless");
+    expect(screen.queryByRole("heading", { name: "6.0 Special Program" })).not.toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "3.3 Update" })).toBeInTheDocument();
   });
 
   it("shows the version under the name", () => {
@@ -280,7 +286,7 @@ describe("App", () => {
         tourMemory={seenTour}
         usedCodesMemory={noUsedCodes}
         dailiesMemory={noDailies}
-        themeMemory={noTheme}
+        filterMemory={noFilter}
         now={now}
       />,
     );
