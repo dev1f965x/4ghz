@@ -22,7 +22,8 @@ export const TOUR_STEPS: readonly TourStep[] = [
     id: "upcoming",
     target: '[data-tour~="upcoming"]',
     title: "가까운 일정이 위에",
-    detail: "세 게임의 공식 일정을 시작이 가까운 순으로 보여줘요. 오른쪽이 시작까지 남은 시간이에요.",
+    detail:
+      "세 게임의 공식 일정을 시작이 가까운 순으로 보여줘요. 오른쪽이 시작까지 남은 시간이에요.",
   },
   {
     id: "filter",
