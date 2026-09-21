@@ -46,6 +46,7 @@
     <li><a href="#usage">Usage</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#license">License</a></li>
+    <li><a href="#disclaimer">Disclaimer</a></li>
     <li><a href="#contact">Contact</a></li>
     <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
@@ -138,6 +139,12 @@ See the [open issues](https://github.com/dev1f965x/4ghz/issues) for the full lis
 ## License
 
 Distributed under the MIT License. See [`LICENSE`](https://github.com/dev1f965x/4ghz/blob/main/LICENSE) for more information.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## Disclaimer
+
+Not affiliated with, endorsed by, or connected to HoYoverse. Genshin Impact, Honkai: Star Rail, and Zenless Zone Zero are trademarks of their respective owners. Dates are transcribed from public announcements and carry no guarantee.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

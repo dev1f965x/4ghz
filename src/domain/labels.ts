@@ -61,5 +61,10 @@ export function formatFetchedAt(fetchedAt: Date, now: Date): string {
   const hours = Math.floor(minutes / 60);
   if (hours < 24) return `${hours}시간 전`;
 
-  return new Intl.DateTimeFormat("ko-KR", { month: "long", day: "numeric" }).format(fetchedAt);
+  const sameYear = fetchedAt.getFullYear() === now.getFullYear();
+  return new Intl.DateTimeFormat("ko-KR", {
+    year: sameYear ? undefined : "numeric",
+    month: "long",
+    day: "numeric",
+  }).format(fetchedAt);
 }
