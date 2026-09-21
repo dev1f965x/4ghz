@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-/** Half a minute: fast enough that "1분 전" never arrives late, cheap enough to ignore. */
+/** Half a minute: fast enough that a one-minute label is never late, cheap enough to ignore. */
 const TICK_MS = 30_000;
 
 /**
