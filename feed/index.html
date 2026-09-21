@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>4GHz feed</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --surface: #0e0f13;
+        --raised: #16181f;
+        --border: #262933;
+        --text: #f4f5f8;
+        --muted: #8b91a0;
+        --accent: #7aa2ff;
+      }
+      body {
+        margin: 0;
+        padding: 48px 24px;
+        background: var(--surface);
+        color: var(--text);
+        font: 16px/1.6 "Segoe UI", system-ui, sans-serif;
+      }
+      main {
+        max-width: 640px;
+        margin: 0 auto;
+      }
+      h1 {
+        margin: 0 0 8px;
+        font-size: 1.5rem;
+      }
+      p {
+        color: var(--muted);
+      }
+      ul {
+        margin: 32px 0 0;
+        padding: 0;
+        list-style: none;
+      }
+      li {
+        padding: 16px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: var(--raised);
+      }
+      li + li {
+        margin-top: 12px;
+      }
+      a {
+        color: var(--accent);
+      }
+      code {
+        color: var(--muted);
+        font-size: 0.875rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>4GHz feed</h1>
+      <p>
+        Event schedules for Genshin Impact, Honkai: Star Rail, and Zenless Zone Zero, read
+        by the <a href="https://github.com/dev1f965x/4ghz">4GHz desktop app</a>.
+      </p>
+      <ul>
+        <li>
+          <a href="events.json">events.json</a><br />
+          <code>The published schedule. Updated by hand, validated in CI.</code>
+        </li>
+        <li>
+          <a href="schema.json">schema.json</a><br />
+          <code>JSON Schema the feed is validated against.</code>
+        </li>
+        <li>
+          <a href="https://github.com/dev1f965x/4ghz/blob/main/docs/feed.md">docs/feed.md</a
+          ><br />
+          <code>How an event gets added.</code>
+        </li>
+      </ul>
+      <p style="margin-top: 32px">
+        Not affiliated with HoYoverse. Dates are transcribed from public announcements.
+      </p>
+    </main>
+  </body>
+</html>
