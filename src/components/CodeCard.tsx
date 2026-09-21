@@ -67,6 +67,10 @@ export function CodeCard({ code, used, now, onToggleUsed }: Props) {
           {CODE_LABELS.redeem}
         </button>
         <button type="button" className="code__used" aria-pressed={used} onClick={onToggleUsed}>
+          <svg viewBox="0 0 14 14" aria-hidden="true">
+            <rect x="1.5" y="1.5" width="11" height="11" rx="3" />
+            <path d="m4.5 7.2 1.8 1.8 3.4-4" />
+          </svg>
           {CODE_LABELS.used}
         </button>
       </div>

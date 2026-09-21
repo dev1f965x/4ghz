@@ -158,6 +158,7 @@ Not affiliated with, endorsed by, or connected to HoYoverse. Genshin Impact, Hon
 
 ## Acknowledgments
 
+- [Pretendard](https://github.com/orioncactus/pretendard) — SIL Open Font License 1.1, see [`licenses/`](licenses)
 - [OverlayScrollbars](https://kingsora.github.io/OverlayScrollbars/)
 - [Shields.io](https://shields.io)
 - [Best-README-Template](https://github.com/othneildrew/Best-README-Template)

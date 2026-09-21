@@ -1,3 +1,4 @@
+import { REFRESH_LABEL } from "../domain/labels";
 import "./RefreshButton.css";
 
 interface Props {
@@ -5,7 +6,10 @@ interface Props {
   onRefresh: () => void;
 }
 
-/** Fetches the schedule again. Disabled while a fetch is already running. */
+/**
+ * Fetches the schedule again. An icon, since the fetch time beside it already says what
+ * it is about; the name is there for screen readers and as a tooltip.
+ */
 export function RefreshButton({ busy, onRefresh }: Props) {
   return (
     <button
@@ -15,8 +19,13 @@ export function RefreshButton({ busy, onRefresh }: Props) {
       onClick={onRefresh}
       disabled={busy}
       aria-busy={busy}
+      aria-label={REFRESH_LABEL}
+      title={REFRESH_LABEL}
     >
-      새로고침
+      <svg viewBox="0 0 16 16" aria-hidden="true">
+        <path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9" />
+        <path d="M13.5 2.5v3h-3" />
+      </svg>
     </button>
   );
 }

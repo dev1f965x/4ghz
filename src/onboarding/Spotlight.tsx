@@ -23,7 +23,7 @@ const PADDING = 8;
 export function Spotlight({ step, position, total, onNext, onSkip }: Props) {
   const target = useTargetRect(step.target);
   const card = useRef<HTMLDivElement>(null);
-  const cardSize = useCardSize(card, step.id);
+  const cardSize = useCardSize(card, target);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: focus has to follow the step
   useEffect(() => card.current?.focus(), [step.id]);
@@ -107,17 +107,21 @@ function useTargetRect(selector: string): Hole | undefined {
   return rect;
 }
 
-/** Measures before paint, so a card that has to move never shows in the wrong place first. */
+/**
+ * Measures the card before paint, so one that has to move never shows in the wrong place
+ * first. It measures again whenever the target does: the card only exists once there is
+ * a target, and a new step or a resized window moves the target.
+ */
 function useCardSize(
   card: React.RefObject<HTMLDivElement | null>,
-  stepId: string,
+  target: Hole | undefined,
 ): { width: number; height: number } {
   const [size, setSize] = useState({ width: 0, height: 0 });
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: each step gets its own card
+  // biome-ignore lint/correctness/useExhaustiveDependencies: the card is re-measured as the target changes
   useLayoutEffect(() => {
     setSize({ width: card.current?.offsetWidth ?? 0, height: card.current?.offsetHeight ?? 0 });
-  }, [card, stepId]);
+  }, [card, target]);
 
   return size;
 }
