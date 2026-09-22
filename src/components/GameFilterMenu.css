@@ -38,20 +38,26 @@
   transform: rotate(180deg);
 }
 
-/* A game is its colour; all games are the three colours in one disc. */
+/*
+ * A game is its colour; all games are the three colours as three small dots, a different
+ * shape from any one game's. Every mark takes the same box, so the names line up.
+ */
 .filter-menu__swatch {
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
   flex-shrink: 0;
+  padding: 1px;
   border-radius: 50%;
+  background-clip: content-box;
 }
 
 .filter-menu__swatch[data-filter="all"] {
-  background: conic-gradient(
-    var(--game-genshin) 0 120deg,
-    var(--game-starrail) 0 240deg,
-    var(--game-zenless) 0
-  );
+  padding: 0;
+  border-radius: 0;
+  background:
+    radial-gradient(circle at 6px 2.75px, var(--game-genshin) 2.25px, transparent 2.75px),
+    radial-gradient(circle at 2.75px 9.25px, var(--game-starrail) 2.25px, transparent 2.75px),
+    radial-gradient(circle at 9.25px 9.25px, var(--game-zenless) 2.25px, transparent 2.75px);
 }
 
 .filter-menu__swatch[data-filter="genshin"] {
