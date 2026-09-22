@@ -10,7 +10,6 @@
   background: var(--surface-raised);
   box-shadow: var(--shadow-card);
   overflow: hidden;
-  transition: opacity 160ms ease;
 }
 
 /* The same colored edge as an event card, so a game reads the same on every tab. */
@@ -20,6 +19,7 @@
   inset: 0 auto 0 0;
   width: 3px;
   background: var(--game-color);
+  transition: opacity 160ms ease;
 }
 
 .code[data-game="genshin"] {
@@ -34,15 +34,12 @@
   --game-color: var(--game-zenless);
 }
 
-.code[data-used="true"] {
-  opacity: 0.5;
-}
-
 .code__game {
   padding-left: var(--space-2);
   color: var(--game-color);
   font-size: var(--text-small);
   font-weight: 600;
+  transition: opacity 160ms ease;
 }
 
 .code__body {
@@ -50,6 +47,14 @@
   flex-direction: column;
   gap: var(--space-1);
   min-width: 0;
+  transition: opacity 160ms ease;
+}
+
+/* A used code fades what it was; what can still be done with it stays as clear as ever. */
+.code[data-used="true"]::before,
+.code[data-used="true"] .code__game,
+.code[data-used="true"] .code__body {
+  opacity: 0.5;
 }
 
 .code__value {
@@ -176,7 +181,9 @@
   stroke: var(--surface-base);
 }
 
-.code[data-used="true"] .code__action {
-  border-color: var(--border-subtle);
-  color: var(--text-muted);
+/* Redeem stops calling for a click once the code is used; both buttons still work. */
+.code[data-used="true"] .code__action--primary {
+  border-color: var(--border-strong);
+  color: var(--text-body);
+  font-weight: inherit;
 }

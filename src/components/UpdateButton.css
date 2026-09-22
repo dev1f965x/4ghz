@@ -46,15 +46,9 @@
   filter: none;
 }
 
-/* The narrowest windows keep the icon; the tooltip and screen readers keep the words. */
+/* The narrowest windows keep the number, and screen readers keep the words. */
 @media (max-width: 680px) {
-  .update__button {
-    justify-content: center;
-    width: 32px;
-    padding: 0;
-  }
-
-  .update__label {
+  .update__verb {
     position: absolute;
     width: 1px;
     height: 1px;

@@ -91,8 +91,9 @@ export const UPDATE_LABELS = {
   available: (version: string) => `${version} 버전이 나왔어요`,
   install: "업데이트",
   downloading: (version: string) => `${version} 버전을 받고 있어요`,
-  installing: (progress: number | null) =>
-    progress === null ? "받는 중…" : `받는 중 ${Math.round(progress * 100)}%`,
+  installing: "받는 중",
+  progress: (progress: number | null) =>
+    progress === null ? "…" : ` ${Math.round(progress * 100)}%`,
   failed: "업데이트하지 못했어요",
   retry: "다시 시도",
 };

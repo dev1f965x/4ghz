@@ -74,9 +74,11 @@ export function Spotlight({ step, position, total, onNext, onSkip }: Props) {
           {step.detail}
         </p>
         <div className="spotlight__actions">
-          <button type="button" className="spotlight__skip" onClick={onSkip}>
-            건너뛰기
-          </button>
+          {position < total && (
+            <button type="button" className="spotlight__skip" onClick={onSkip}>
+              건너뛰기
+            </button>
+          )}
           <button type="button" className="spotlight__next" onClick={onNext}>
             {position === total ? "시작하기" : "다음"}
           </button>
