@@ -136,7 +136,7 @@ Adding an event to the published schedule is [docs/feed.md](https://github.com/d
 - [x] 1.1.0 — tabs with browser-style back and forward
 - [x] 1.1.0 — redeem codes, copied or opened on the official page
 - [x] 1.1.0 — dailies checklist, month calendar, and streaks
-- [ ] 1.2.0 — dailies from the feed, a clearer game filter, no back and forward
+- [x] 1.2.0 — dailies from the feed, a clearer game filter, no back and forward
 - [ ] 1.3.0 — notifications 24 hours and 1 hour before an event
 
 See the [open issues](https://github.com/dev1f965x/4ghz/issues) for the full list.
