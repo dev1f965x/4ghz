@@ -110,8 +110,7 @@
   gap: var(--space-2);
 }
 
-.code__action,
-.code__used {
+.code__action {
   height: 28px;
   padding: 0 var(--space-3);
   border: 1px solid var(--border-strong);
@@ -123,8 +122,7 @@
   white-space: nowrap;
 }
 
-.code__action:hover,
-.code__used:hover {
+.code__action:hover {
   border-color: var(--accent);
   color: var(--text-strong);
 }
@@ -144,13 +142,26 @@
 
 /* A toggle, drawn as a box that gains a check, so it does not read as a third action. */
 .code__used {
-  padding-right: 0;
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  border-color: transparent;
+  height: 28px;
+  padding: 0 0 0 var(--space-3);
+  border: none;
   background: transparent;
   color: var(--text-muted);
+  cursor: pointer;
+  font-size: var(--text-small);
+  white-space: nowrap;
+}
+
+/* Hovering lights the box and its word, the way a checkbox answers, with no pill around it. */
+.code__used:hover {
+  color: var(--text-strong);
+}
+
+.code__used:hover svg rect {
+  stroke: var(--accent);
 }
 
 .code__used svg {
