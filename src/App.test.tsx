@@ -173,7 +173,7 @@ describe("App", () => {
     expect(screen.getByText("새로고침 중…")).toBeInTheDocument();
   });
 
-  it("moves between tabs and back again, like a browser", async () => {
+  it("opens a tab from the tab bar", async () => {
     render(
       <App
         state={ready([event()])}
@@ -185,16 +185,12 @@ describe("App", () => {
         now={now}
       />,
     );
-    const backButton = screen.getByRole("button", { name: "뒤로" });
     expect(screen.getByRole("tab", { name: "일정" })).toHaveAttribute("aria-selected", "true");
-    expect(backButton).toBeDisabled();
 
     await userEvent.click(screen.getByRole("tab", { name: "리딤 코드" }));
-    expect(screen.getByRole("tabpanel")).toHaveAttribute("aria-labelledby", "tab-codes");
 
-    await userEvent.click(backButton);
-    expect(screen.getByRole("tab", { name: "일정" })).toHaveAttribute("aria-selected", "true");
-    expect(screen.getByRole("button", { name: "앞으로" })).toBeEnabled();
+    expect(screen.getByRole("tab", { name: "리딤 코드" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("tabpanel")).toHaveAttribute("aria-labelledby", "tab-codes");
   });
 
   it("moves between tabs with the arrow keys", async () => {

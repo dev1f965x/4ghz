@@ -1,6 +1,6 @@
 import type { KeyboardEvent } from "react";
-import { NAVIGATION_LABELS, TAB_LABELS } from "../domain/labels";
-import { TABS, type Tab } from "../navigation/history";
+import { TAB_BAR_LABEL, TAB_LABELS } from "../domain/labels";
+import { TABS, type Tab } from "../navigation/tabs";
 import { TabIcon } from "./TabIcon";
 import "./TabBar.css";
 
@@ -15,11 +15,10 @@ export const panelId = (tab: Tab) => `panel-${tab}`;
 /**
  * The three views, as ARIA tabs splitting the width in three. Each shows an icon and is
  * named for screen readers and tooltips. Arrow keys move between them and open the one
- * they land on; Alt with an arrow is left alone for back and forward.
+ * they land on.
  */
 export function TabBar({ tab, onOpen }: Props) {
   const onKeyDown = (event: KeyboardEvent) => {
-    if (event.altKey) return;
     const step = event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0;
     if (step === 0) return;
 
@@ -33,7 +32,7 @@ export function TabBar({ tab, onOpen }: Props) {
     <div
       className="tab-bar"
       role="tablist"
-      aria-label={NAVIGATION_LABELS.tabs}
+      aria-label={TAB_BAR_LABEL}
       onKeyDown={onKeyDown}
       data-tour="tabs"
     >

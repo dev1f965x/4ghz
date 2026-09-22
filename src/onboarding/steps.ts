@@ -35,7 +35,6 @@ export const TOUR_STEPS: readonly TourStep[] = [
     id: "tabs",
     target: '[data-tour="tabs"]',
     title: "일정 · 리딤 코드 · 숙제",
-    detail:
-      "달력은 일정, 티켓은 리딤 코드, 체크는 숙제예요. 왼쪽 위 화살표나 Alt+←/→로 보던 탭으로 돌아가요.",
+    detail: "달력은 일정, 티켓은 리딤 코드, 체크는 숙제예요.",
   },
 ];

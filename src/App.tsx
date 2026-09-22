@@ -1,5 +1,6 @@
 import "overlayscrollbars/overlayscrollbars.css";
 import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
+import { useState } from "react";
 import "./design/base.css";
 import "./design/scrollbar.css";
 import "./App.css";
@@ -10,7 +11,6 @@ import { CodeList } from "./components/CodeList";
 import { DailiesTab } from "./components/DailiesTab";
 import { EventList } from "./components/EventList";
 import { GameFilterMenu } from "./components/GameFilterMenu";
-import { HistoryButtons } from "./components/HistoryButtons";
 import { Notice } from "./components/Notice";
 import { RefreshButton } from "./components/RefreshButton";
 import { panelId, TabBar, tabId } from "./components/TabBar";
@@ -25,8 +25,7 @@ import { FETCH_LABELS, formatFetchedAt } from "./domain/labels";
 import type { SyncState } from "./feed/sync";
 import type { FilterMemory } from "./filter/filterMemory";
 import { useGameFilter } from "./filter/useGameFilter";
-import type { Tab } from "./navigation/history";
-import { useNavigation } from "./navigation/useNavigation";
+import { TABS, type Tab } from "./navigation/tabs";
 import { Spotlight } from "./onboarding/Spotlight";
 import type { TourMemory } from "./onboarding/useTour";
 import { useTour } from "./onboarding/useTour";
@@ -50,8 +49,8 @@ export interface AppProps {
 }
 
 /**
- * The window, in three bands: one bar that is both title bar and header — navigation,
- * the app's name, its controls, and the window's own — then the tabs, then the content,
+ * The window, in three bands: one bar that is both title bar and header — the app's
+ * name, its controls, and the window's own — then the tabs, then the content,
  * which is the only part that scrolls.
  */
 export default function App({
@@ -73,7 +72,7 @@ export default function App({
   );
   const hasEvents = state.status === "ready" && state.cached.feed.events.length > 0;
   const tour = useTour(tourMemory, hasEvents);
-  const navigation = useNavigation();
+  const [tab, setTab] = useState<Tab>(TABS[0]);
   const usedCodes = useUsedCodes(usedCodesMemory);
   const dailies = useDailyRecords(dailiesMemory);
   const { filter, choose } = useGameFilter(filterMemory);
@@ -81,13 +80,6 @@ export default function App({
   return (
     <div className="app" data-game={filter === "all" ? undefined : filter}>
       <header className="app__bar" data-tauri-drag-region>
-        <HistoryButtons
-          canGoBack={navigation.canGoBack}
-          canGoForward={navigation.canGoForward}
-          onBack={navigation.goBack}
-          onForward={navigation.goForward}
-        />
-
         <div className="app__identity">
           <BrandMark />
           <h1 className="app__title">4GHz</h1>
@@ -119,22 +111,22 @@ export default function App({
         <WindowControls />
       </header>
 
-      <TabBar tab={navigation.tab} onOpen={navigation.open} />
+      <TabBar tab={tab} onOpen={setTab} />
 
       <UpdateBanner update={update} onInstall={onInstallUpdate} />
 
       <OverlayScrollbarsComponent
         element="main"
         className="app__main"
-        id={panelId(navigation.tab)}
+        id={panelId(tab)}
         role="tabpanel"
-        aria-labelledby={tabId(navigation.tab)}
+        aria-labelledby={tabId(tab)}
         defer
         options={{
           scrollbars: { theme: "os-theme-4ghz", autoHide: "move", autoHideDelay: 700 },
         }}
       >
-        {renderTab(navigation.tab, { state, onRefresh, now: current, usedCodes, dailies, filter })}
+        {renderTab(tab, { state, onRefresh, now: current, usedCodes, dailies, filter })}
       </OverlayScrollbarsComponent>
 
       {tour.step && (
