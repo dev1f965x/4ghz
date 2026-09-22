@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { NOW, openApp, stored } from "./app";
+import { NOW, openApp, SEEN_TOUR, stored } from "./app";
 
 test("each countdown ticks every second", async ({ page }) => {
   await openApp(page);
@@ -30,4 +30,20 @@ test("a first run walks through every step once", async ({ page }) => {
 
   await expect(dialog).toHaveCount(0);
   expect(await stored(page, "settings.json", "tour-seen")).toBe(true);
+});
+
+test("a waiting release is offered in the title bar, leaving the content where it was", async ({
+  page,
+}) => {
+  await openApp(page);
+  const heading = page.getByRole("heading", { name: "진행 중인 일정" });
+  const before = await heading.boundingBox();
+
+  await openApp(page, SEEN_TOUR, "?update=1.3.0");
+  const install = page.getByRole("banner").getByRole("button", { name: "업데이트" });
+  await expect(install).toHaveAttribute("title", "1.3.0 버전이 나왔어요");
+  expect(await heading.boundingBox()).toEqual(before);
+
+  await install.click();
+  await expect(page.getByRole("button", { name: "받는 중 40%" })).toBeDisabled();
 });

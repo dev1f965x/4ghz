@@ -10,13 +10,14 @@ import { useFeedSync } from "./feed/useFeedSync";
 import { storeFilterMemory } from "./filter/filterMemory";
 import { storeTourMemory } from "./onboarding/memory";
 import type { UpdateSource } from "./update/ports";
-import { alwaysCurrent, tauriUpdateSource } from "./update/tauri";
+import { sampleUpdateSource } from "./update/sample";
+import { tauriUpdateSource } from "./update/tauri";
 import { useUpdate } from "./update/useUpdate";
 
 const [source, cache]: [FeedSource, FeedCache] = import.meta.env.DEV
   ? [sampleFeedSource, memoryFeedCache]
   : [httpFeedSource, storeFeedCache];
-const updates: UpdateSource = import.meta.env.DEV ? alwaysCurrent : tauriUpdateSource;
+const updates: UpdateSource = import.meta.env.DEV ? sampleUpdateSource : tauriUpdateSource;
 
 function Window() {
   const { state, refresh } = useFeedSync(source, cache);

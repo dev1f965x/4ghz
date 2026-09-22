@@ -6,11 +6,14 @@ export const NOW = new Date("2026-09-21T21:00:00+09:00");
 
 export const SEEN_TOUR: Stores = { "settings.json": { "tour-seen": true } };
 
-/** Opens the window with the clock at `NOW` and the store holding `stores`. */
-export async function openApp(page: Page, stores: Stores = SEEN_TOUR) {
+/**
+ * Opens the window with the clock at `NOW` and the store holding `stores`. `query` reaches
+ * the development stand-ins, such as `?update=1.3.0` for a release waiting to install.
+ */
+export async function openApp(page: Page, stores: Stores = SEEN_TOUR, query = "") {
   await page.clock.install({ time: NOW });
   await page.addInitScript({ content: tauriStandIn(stores) });
-  await page.goto("/");
+  await page.goto(`/${query}`);
   await page.getByRole("tablist").waitFor();
 }
 

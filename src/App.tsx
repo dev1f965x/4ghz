@@ -14,7 +14,7 @@ import { GameFilterMenu } from "./components/GameFilterMenu";
 import { Notice } from "./components/Notice";
 import { RefreshButton } from "./components/RefreshButton";
 import { panelId, TabBar, tabId } from "./components/TabBar";
-import { UpdateBanner } from "./components/UpdateBanner";
+import { UpdateButton } from "./components/UpdateButton";
 import { useMinimumDuration } from "./components/useMinimumDuration";
 import { WindowControls } from "./components/WindowControls";
 import { BUILT_IN_CHORES } from "./dailies/builtInChores";
@@ -88,6 +88,7 @@ export default function App({
         </div>
 
         <div className="app__controls">
+          <UpdateButton update={update} onInstall={onInstallUpdate} />
           <div className="app__status" aria-live="polite">
             {state.status === "ready" && (
               <p className="app__fetched">
@@ -113,8 +114,6 @@ export default function App({
       </header>
 
       <TabBar tab={tab} onOpen={setTab} />
-
-      <UpdateBanner update={update} onInstall={onInstallUpdate} />
 
       <OverlayScrollbarsComponent
         element="main"

@@ -26,6 +26,8 @@ interface Shot {
   stores?: Stores;
   act?: (page: Page) => Promise<void>;
   viewport?: { width: number; height: number };
+  /** Query string for the page, such as a pretend release waiting to install. */
+  query?: string;
 }
 
 const tourSeen: Stores = { "settings.json": { "tour-seen": true } };
@@ -105,7 +107,16 @@ const SHOTS: Shot[] = [
         await page.getByRole("button", { name: "다음" }).click();
     },
   })),
+  { name: "update", stores: tourSeen, query: "?update=1.3.0" },
+  {
+    name: "update-installing",
+    stores: tourSeen,
+    query: "?update=1.3.0",
+    act: (page) => page.getByRole("button", { name: "업데이트" }).click(),
+  },
+  { name: "update-dailies", stores: withDailies, query: "?update=1.3.0", act: tab("숙제") },
   { name: "small-schedule", stores: tourSeen, viewport: SMALLEST },
+  { name: "small-update", stores: tourSeen, viewport: SMALLEST, query: "?update=1.3.0" },
   { name: "small-codes", stores: tourSeen, viewport: SMALLEST, act: tab("리딤 코드") },
   { name: "small-dailies", stores: withDailies, viewport: SMALLEST, act: tab("숙제") },
 ];
@@ -128,7 +139,7 @@ async function main() {
       });
       await page.clock.setFixedTime(NOW);
       await page.addInitScript({ content: tauriStandIn(shot.stores ?? {}) });
-      await page.goto(`http://localhost:${PORT}`);
+      await page.goto(`http://localhost:${PORT}/${shot.query ?? ""}`);
       await page.getByRole("tablist").waitFor();
       await shot.act?.(page);
       // Park the pointer where nothing reacts to it, so no hover state is photographed.
