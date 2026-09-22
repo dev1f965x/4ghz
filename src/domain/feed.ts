@@ -1,4 +1,5 @@
 import { codeKey, type RedeemCode } from "./code";
+import type { Chore, Chores } from "./dailies";
 import { EVENT_KINDS, type EventKind, GAMES, type Game, type GameEvent } from "./event";
 
 /** Feed layouts this build understands. A newer major version means the app is too old. */
@@ -10,6 +11,8 @@ export interface Feed {
   events: GameEvent[];
   /** Added in schema 1.1; a 1.0 feed has none. */
   codes: RedeemCode[];
+  /** Added in schema 1.2; an older feed leaves the app with the chores it was built with. */
+  dailies?: Chores;
 }
 
 export type FeedProblem =
@@ -61,7 +64,65 @@ export function parseFeed(raw: unknown): FeedResult {
   const codes = parseCodes(raw.codes);
   if (!codes.ok) return malformed(codes.detail);
 
-  return { ok: true, feed: { schemaVersion, publishedAt, events, codes: codes.codes } };
+  const dailies = parseDailies(raw.dailies);
+  if (!dailies.ok) return malformed(dailies.detail);
+
+  return {
+    ok: true,
+    feed: { schemaVersion, publishedAt, events, codes: codes.codes, dailies: dailies.dailies },
+  };
+}
+
+type DailiesResult = { ok: true; dailies?: Chores } | { ok: false; detail: string };
+
+/** A list of chores for every game, ids unique within a game. Absent is fine; partial is not. */
+export function parseDailies(raw: unknown): DailiesResult {
+  if (raw === undefined) return { ok: true };
+  if (!isRecord(raw)) return { ok: false, detail: "dailies is not an object" };
+
+  const dailies: Partial<Record<Game, Chore[]>> = {};
+  for (const game of GAMES) {
+    const list = raw[game];
+    if (!Array.isArray(list)) return { ok: false, detail: `dailies.${game} is not a list` };
+
+    const chores: Chore[] = [];
+    const seen = new Set<string>();
+    for (const [index, entry] of list.entries()) {
+      const chore = parseChore(entry);
+      const where = `dailies.${game}[${index}]`;
+      if (!chore.ok) return { ok: false, detail: `${where}: ${chore.detail}` };
+      if (seen.has(chore.chore.id)) {
+        return { ok: false, detail: `${where}: duplicate id "${chore.chore.id}"` };
+      }
+      seen.add(chore.chore.id);
+      chores.push(chore.chore);
+    }
+    dailies[game] = chores;
+  }
+  return { ok: true, dailies: dailies as Chores };
+}
+
+type ChoreResult = { ok: true; chore: Chore } | { ok: false; detail: string };
+
+const GAME_DAY = /^\d{4}-\d{2}-\d{2}$/;
+
+function parseChore(raw: unknown): ChoreResult {
+  if (!isRecord(raw)) return { ok: false, detail: "not an object" };
+
+  const { id, title, from, until } = raw;
+  if (typeof id !== "string" || id === "") return { ok: false, detail: "id is missing" };
+  if (typeof title !== "string" || title === "") return { ok: false, detail: "title is missing" };
+  if (from !== undefined && !isGameDay(from)) return { ok: false, detail: "from is not a day" };
+  if (until !== undefined && !isGameDay(until)) return { ok: false, detail: "until is not a day" };
+  if (from !== undefined && until !== undefined && until < from) {
+    return { ok: false, detail: "until is before from" };
+  }
+
+  return { ok: true, chore: { id, title, from, until } };
+}
+
+function isGameDay(raw: unknown): raw is string {
+  return typeof raw === "string" && GAME_DAY.test(raw);
 }
 
 type CodesResult = { ok: true; codes: RedeemCode[] } | { ok: false; detail: string };

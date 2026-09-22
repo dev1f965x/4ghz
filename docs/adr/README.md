@@ -18,3 +18,4 @@ the record that replaced it.
 | [11](0011-publish-codes-in-the-feed.md) | Publish redeem codes in the feed | accepted |
 | [12](0012-keep-player-records-on-the-device.md) | Keep the player's records on the device | accepted |
 | [13](0013-switch-tabs-from-the-tab-bar-only.md) | Switch tabs from the tab bar only | accepted |
+| [14](0014-publish-dailies-in-the-feed.md) | Publish dailies in the feed | accepted |

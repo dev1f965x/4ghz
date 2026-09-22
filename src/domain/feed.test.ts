@@ -25,6 +25,12 @@ function feed(overrides: Record<string, unknown> = {}) {
   };
 }
 
+const validDailies = {
+  genshin: [{ id: "commissions", title: "일일 의뢰" }],
+  starrail: [{ id: "training", title: "일일 훈련", from: "2026-09-01" }],
+  zenless: [{ id: "activity", title: "일일 활약도", until: "2026-12-31", note: "for editors" }],
+};
+
 describe("parseFeed", () => {
   it("reads a well-formed feed", () => {
     const result = parseFeed(feed());
@@ -139,5 +145,60 @@ describe("parseFeed", () => {
     const result = parseFeed(feed({ codes: [validCode, { ...validCode, game: "zenless" }] }));
 
     expect(result.ok).toBe(true);
+  });
+});
+
+describe("parseFeed dailies", () => {
+  it("leaves the chores to the app when the feed has none", () => {
+    const result = parseFeed(feed());
+
+    expect(result.ok && result.feed.dailies).toBeUndefined();
+  });
+
+  it("reads each game's chores with the days they are due", () => {
+    const result = parseFeed(feed({ schemaVersion: "1.2", dailies: validDailies }));
+
+    if (!result.ok) throw new Error("expected a feed");
+    expect(result.feed.dailies?.genshin).toEqual([{ id: "commissions", title: "일일 의뢰" }]);
+    expect(result.feed.dailies?.starrail[0].from).toBe("2026-09-01");
+    expect(result.feed.dailies?.zenless[0]).toEqual({
+      id: "activity",
+      title: "일일 활약도",
+      until: "2026-12-31",
+    });
+  });
+
+  it.each([
+    [{ ...validDailies, zenless: undefined }, "dailies.zenless is not a list"],
+    [
+      { ...validDailies, genshin: [{ id: "a", title: "" }] },
+      "dailies.genshin[0]: title is missing",
+    ],
+    [
+      { ...validDailies, genshin: [{ id: "a", title: "A", from: "9월 1일" }] },
+      "dailies.genshin[0]: from is not a day",
+    ],
+    [
+      {
+        ...validDailies,
+        genshin: [{ id: "a", title: "A", from: "2026-09-02", until: "2026-09-01" }],
+      },
+      "dailies.genshin[0]: until is before from",
+    ],
+    [
+      {
+        ...validDailies,
+        genshin: [
+          { id: "a", title: "A" },
+          { id: "a", title: "B" },
+        ],
+      },
+      'dailies.genshin[1]: duplicate id "a"',
+    ],
+  ])("rejects dailies it cannot trust: %#", (dailies, detail) => {
+    expect(parseFeed(feed({ dailies }))).toEqual({
+      ok: false,
+      problem: { kind: "malformed", detail },
+    });
   });
 });

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+  type Chores,
   type DailyRecords,
   type GameDay,
   isComplete,
@@ -12,13 +13,14 @@ import "./MonthCalendar.css";
 
 interface Props {
   records: DailyRecords;
+  chores: Chores;
   /** The games on screen; a day shows a dot for each of these it finished. */
   games: readonly Game[];
   today: GameDay;
 }
 
 /** A month of game days, each marked with a dot per game finished that day. */
-export function MonthCalendar({ records, games, today }: Props) {
+export function MonthCalendar({ records, chores, games, today }: Props) {
   const [year, month] = today.split("-").map(Number);
   const [shown, setShown] = useState({ year, month });
 
@@ -61,7 +63,9 @@ export function MonthCalendar({ records, games, today }: Props) {
             <tr key={week.find(Boolean)}>
               {week.map((day, index) => (
                 <td key={day ?? `blank-${index}`}>
-                  {day && <Day day={day} records={records} games={games} today={today} />}
+                  {day && (
+                    <Day day={day} records={records} chores={chores} games={games} today={today} />
+                  )}
                 </td>
               ))}
             </tr>
@@ -92,6 +96,7 @@ export function MonthCalendar({ records, games, today }: Props) {
 interface DayProps {
   day: GameDay;
   records: DailyRecords;
+  chores: Chores;
   games: readonly Game[];
   today: GameDay;
 }
@@ -101,9 +106,9 @@ interface DayProps {
  * drops the dots and fills with those games' colours instead: the one mark that says
  * the day is done. Hovering names the result.
  */
-function Day({ day, records, games, today }: DayProps) {
-  const finished = games.filter((game) => isComplete(records, day, game));
-  const perfect = isPerfectDay(records, day, games);
+function Day({ day, records, chores, games, today }: DayProps) {
+  const finished = games.filter((game) => isComplete(records, chores, day, game));
+  const perfect = isPerfectDay(records, chores, day, games);
   const fill = perfect ? fillOf(games) : undefined;
   const result = perfect
     ? DAILIES_LABELS.perfect

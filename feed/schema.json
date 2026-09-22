@@ -3,7 +3,7 @@
   "$id": "https://dev1f965x.github.io/4ghz/schema.json",
   "title": "4GHz event feed",
   "type": "object",
-  "required": ["schemaVersion", "publishedAt", "events"],
+  "required": ["schemaVersion", "publishedAt", "events", "dailies"],
   "additionalProperties": false,
   "properties": {
     "schemaVersion": {
@@ -26,6 +26,32 @@
       "type": "array",
       "items": {
         "$ref": "#/$defs/code"
+      }
+    },
+    "dailies": {
+      "description": "Added in 1.2. Apps on 1.1 and older ignore it; without it, apps use the chores they were built with.",
+      "type": "object",
+      "required": ["genshin", "starrail", "zenless"],
+      "additionalProperties": false,
+      "properties": {
+        "genshin": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/chore"
+          }
+        },
+        "starrail": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/chore"
+          }
+        },
+        "zenless": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/chore"
+          }
+        }
       }
     }
   },
@@ -103,6 +129,38 @@
           "type": "string",
           "format": "uri",
           "description": "Where the code was announced. For editors."
+        },
+        "note": {
+          "type": "string",
+          "description": "For editors. The app ignores it."
+        }
+      }
+    },
+    "chore": {
+      "type": "object",
+      "required": ["id", "title"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[a-z0-9-]+$",
+          "description": "Stable. Players' checks are recorded under it; never reuse or rename one."
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Shown as written, in Korean."
+        },
+        "from": {
+          "type": "string",
+          "format": "date",
+          "description": "First game day it is due, YYYY-MM-DD. A game day starts at 04:00 UTC+8."
+        },
+        "until": {
+          "type": "string",
+          "format": "date",
+          "description": "Last game day it is due. Set this to retire a chore instead of deleting it."
         },
         "note": {
           "type": "string",

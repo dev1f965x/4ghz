@@ -289,4 +289,47 @@ describe("App", () => {
 
     expect(screen.getByText(/^v[0-9]+[.][0-9]+[.][0-9]+$/)).toBeInTheDocument();
   });
+
+  it("lists the chores the feed publishes", async () => {
+    const state = ready([event()]);
+    const dailies = {
+      genshin: [{ id: "realm", title: "선율의 조각" }],
+      starrail: [],
+      zenless: [],
+    };
+    render(
+      <App
+        state={{ ...state, cached: { ...state.cached, feed: { ...state.cached.feed, dailies } } }}
+        onRefresh={() => {}}
+        tourMemory={seenTour}
+        usedCodesMemory={noUsedCodes}
+        dailiesMemory={noDailies}
+        filterMemory={noFilter}
+        now={now}
+      />,
+    );
+
+    await userEvent.click(screen.getByRole("tab", { name: "숙제" }));
+
+    expect(screen.getByRole("checkbox", { name: "선율의 조각" })).toBeInTheDocument();
+    expect(screen.queryByRole("checkbox", { name: "레진 소모" })).not.toBeInTheDocument();
+  });
+
+  it("lists the chores it was built with before the first fetch", async () => {
+    render(
+      <App
+        state={{ status: "loading" }}
+        onRefresh={() => {}}
+        tourMemory={seenTour}
+        usedCodesMemory={noUsedCodes}
+        dailiesMemory={noDailies}
+        filterMemory={noFilter}
+        now={now}
+      />,
+    );
+
+    await userEvent.click(screen.getByRole("tab", { name: "숙제" }));
+
+    expect(screen.getByRole("checkbox", { name: "레진 소모" })).toBeInTheDocument();
+  });
 });

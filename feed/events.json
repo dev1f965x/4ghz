@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "1.1",
-  "publishedAt": "2026-09-21T06:53:40Z",
+  "schemaVersion": "1.2",
+  "publishedAt": "2026-09-22T00:39:55Z",
   "events": [
     {
       "id": "genshin-7-1",
@@ -53,5 +53,37 @@
       "addedAt": "2026-09-21T00:00:00Z",
       "note": "Standing code, no expiry."
     }
-  ]
+  ],
+  "dailies": {
+    "genshin": [
+      {
+        "id": "commissions",
+        "title": "일일 의뢰"
+      },
+      {
+        "id": "resin",
+        "title": "레진 소모"
+      }
+    ],
+    "starrail": [
+      {
+        "id": "training",
+        "title": "일일 훈련"
+      },
+      {
+        "id": "power",
+        "title": "개척력 소모"
+      }
+    ],
+    "zenless": [
+      {
+        "id": "activity",
+        "title": "일일 활약도"
+      },
+      {
+        "id": "battery",
+        "title": "배터리 소모"
+      }
+    ]
+  }
 }

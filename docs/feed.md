@@ -1,6 +1,6 @@
 # Editing the schedule
 
-Events and redeem codes live in [`feed/events.json`](../feed/events.json). Merging a change to `main`
+Events, redeem codes, and each game's daily chores live in [`feed/events.json`](../feed/events.json). Merging a change to `main`
 publishes the file to <https://dev1f965x.github.io/4ghz/events.json>, which every
 installed app fetches on launch and every six hours.
 
@@ -64,6 +64,41 @@ Codes go in the same file, under `codes` (ADR 11):
 
 Livestream codes usually expire within a day or two; when the announcement gives no time,
 check a second source before publishing rather than guessing.
+
+## Changing the dailies
+
+Each game's daily chores are under `dailies`, one list per game (ADR 14). All three games
+must be present; a game with no chores has an empty list.
+
+```json
+"dailies": {
+  "genshin": [
+    { "id": "commissions", "title": "일일 의뢰" },
+    { "id": "resin", "title": "레진 소모" },
+    { "id": "realm", "title": "선율의 조각", "from": "2026-11-03" }
+  ],
+  "starrail": [ … ],
+  "zenless": [ … ]
+}
+```
+
+| Field | Required | Meaning |
+|---|---|---|
+| `id` | yes | Lowercase letters, digits, and dashes, unique within the game. Players' checks are recorded under it. |
+| `title` | yes | Shown as written, in Korean. |
+| `from` | no | First game day it is due, `YYYY-MM-DD`. |
+| `until` | no | Last game day it is due. |
+| `note` | no | For editors. The app ignores it. |
+
+A game day starts at 04:00 on the Asia server (UTC+8), 05:00 in Korea, so a chore that
+arrives with a version update on the 3rd is `"from": "2026-11-03"`.
+
+- **Adding** a chore: a new `id`, with `from` set to the day it starts. Without `from` it
+  counts on past days too, and every past finished day becomes unfinished.
+- **Retiring** a chore: set `until` to its last day. Do not delete it; past days are
+  judged by the chores that were due on them.
+- **Renaming** a chore: change `title` and keep `id`.
+- Never reuse an `id` for a different chore; old checks would count for it.
 
 ## Times
 

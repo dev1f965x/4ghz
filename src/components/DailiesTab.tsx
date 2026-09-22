@@ -1,6 +1,6 @@
 import {
-  CHORES,
-  type Chore,
+  type Chores,
+  choresOn,
   type DailyRecords,
   type GameDay,
   gameDay,
@@ -9,16 +9,17 @@ import {
 } from "../domain/dailies";
 import { GAMES, type Game } from "../domain/event";
 import { type GameFilter, matchesFilter } from "../domain/filter";
-import { CHORE_LABELS, DAILIES_LABELS, formatGameDay, GAME_LABELS } from "../domain/labels";
+import { DAILIES_LABELS, formatGameDay, GAME_LABELS } from "../domain/labels";
 import { MonthCalendar } from "./MonthCalendar";
 import { Notice } from "./Notice";
 import "./DailiesTab.css";
 
 interface Props {
   records: DailyRecords;
+  chores: Chores;
   filter: GameFilter;
   now: Date;
-  onToggleChore: (day: GameDay, game: Game, chore: Chore) => void;
+  onToggleChore: (day: GameDay, game: Game, chore: string) => void;
   onToggleGame: (game: Game) => void;
 }
 
@@ -26,7 +27,7 @@ interface Props {
  * Today's chores and a month of finished days, for the games the player tracks — narrowed
  * to one when the window is looking at one.
  */
-export function DailiesTab({ records, filter, now, onToggleChore, onToggleGame }: Props) {
+export function DailiesTab({ records, chores, filter, now, onToggleChore, onToggleGame }: Props) {
   const today = gameDay(now);
   const games = records.games.filter((game) => matchesFilter(game, filter));
 
@@ -72,18 +73,18 @@ export function DailiesTab({ records, filter, now, onToggleChore, onToggleGame }
                   <div className="dailies__game-name">
                     <span className="dailies__name">{GAME_LABELS[game]}</span>
                     <span className="dailies__streak">
-                      {DAILIES_LABELS.streak(streak(records, game, today))}
+                      {DAILIES_LABELS.streak(streak(records, chores, game, today))}
                     </span>
                   </div>
                   <div className="dailies__chores">
-                    {CHORES[game].map((chore) => (
-                      <label key={chore} className="dailies__chore">
+                    {choresOn(chores, game, today).map((chore) => (
+                      <label key={chore.id} className="dailies__chore">
                         <input
                           type="checkbox"
-                          checked={isDone(records, today, game, chore)}
-                          onChange={() => onToggleChore(today, game, chore)}
+                          checked={isDone(records, today, game, chore.id)}
+                          onChange={() => onToggleChore(today, game, chore.id)}
                         />
-                        {CHORE_LABELS[chore]}
+                        {chore.title}
                       </label>
                     ))}
                   </div>
@@ -92,7 +93,7 @@ export function DailiesTab({ records, filter, now, onToggleChore, onToggleGame }
             </ul>
           </section>
 
-          <MonthCalendar records={records} games={games} today={today} />
+          <MonthCalendar records={records} chores={chores} games={games} today={today} />
         </div>
       )}
     </div>

@@ -6,6 +6,7 @@ import addFormats from "ajv-formats";
 interface ValidFeed {
   events: { id: string }[];
   codes?: { game: string; code: string }[];
+  dailies: Record<string, { id: string; from?: string; until?: string }[]>;
 }
 
 /**
@@ -46,7 +47,27 @@ function main(): void {
     codes.add(key);
   }
 
-  console.log(`feed/events.json is valid (${feed.events.length} events, ${codes.size} codes)`);
+  let chores = 0;
+  for (const [game, list] of Object.entries(feed.dailies)) {
+    const choreIds = new Set<string>();
+    for (const chore of list) {
+      const where = `feed/events.json dailies.${game} "${chore.id}"`;
+      if (choreIds.has(chore.id)) {
+        console.error(`${where} is listed twice`);
+        process.exit(1);
+      }
+      if (chore.from && chore.until && chore.until < chore.from) {
+        console.error(`${where} ends before it starts`);
+        process.exit(1);
+      }
+      choreIds.add(chore.id);
+    }
+    chores += list.length;
+  }
+
+  console.log(
+    `feed/events.json is valid (${feed.events.length} events, ${codes.size} codes, ${chores} chores)`,
+  );
 }
 
 main();
