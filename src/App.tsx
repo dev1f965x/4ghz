@@ -10,17 +10,18 @@ import { CodeList } from "./components/CodeList";
 import { DailiesTab } from "./components/DailiesTab";
 import { EventList } from "./components/EventList";
 import { GameFilterMenu } from "./components/GameFilterMenu";
+import { HistoryButtons } from "./components/HistoryButtons";
 import { Notice } from "./components/Notice";
 import { RefreshButton } from "./components/RefreshButton";
 import { panelId, TabBar, tabId } from "./components/TabBar";
-import { TitleBar } from "./components/TitleBar";
 import { UpdateBanner } from "./components/UpdateBanner";
 import { useMinimumDuration } from "./components/useMinimumDuration";
+import { WindowControls } from "./components/WindowControls";
 import type { DailyRecordsMemory } from "./dailies/dailyRecords";
 import { useDailyRecords } from "./dailies/useDailyRecords";
 import type { GameEvent } from "./domain/event";
 import { type GameFilter, matchesFilter } from "./domain/filter";
-import { formatFetchedAt } from "./domain/labels";
+import { FETCH_LABELS, formatFetchedAt } from "./domain/labels";
 import type { SyncState } from "./feed/sync";
 import type { FilterMemory } from "./filter/filterMemory";
 import { useGameFilter } from "./filter/useGameFilter";
@@ -49,9 +50,9 @@ export interface AppProps {
 }
 
 /**
- * The window, in three bands: the strip that replaces the system title bar, the header
- * that names the app and carries its one action, and the schedule, which is the only
- * part that scrolls.
+ * The window, in three bands: one bar that is both title bar and header — navigation,
+ * the app's name, its controls, and the window's own — then the tabs, then the content,
+ * which is the only part that scrolls.
  */
 export default function App({
   state,
@@ -79,38 +80,46 @@ export default function App({
 
   return (
     <div className="app" data-game={filter === "all" ? undefined : filter}>
-      <TitleBar
-        canGoBack={navigation.canGoBack}
-        canGoForward={navigation.canGoForward}
-        onBack={navigation.goBack}
-        onForward={navigation.goForward}
-      />
+      <header className="app__bar" data-tauri-drag-region>
+        <HistoryButtons
+          canGoBack={navigation.canGoBack}
+          canGoForward={navigation.canGoForward}
+          onBack={navigation.goBack}
+          onForward={navigation.goForward}
+        />
 
-      <header className="app__header">
-        <div className="app__masthead">
-          <div className="app__identity">
-            <BrandMark />
-            <div>
-              <h1 className="app__title">4GHz</h1>
-              <p className="app__subtitle">v{__APP_VERSION__}</p>
-            </div>
-          </div>
-
-          <div className="app__controls">
-            <div className="app__status" aria-live="polite" hidden={navigation.tab === "dailies"}>
-              {state.status === "ready" && (
-                <p className="app__fetched">
-                  {refreshing ? "새로고침 중…" : formatFetchedAt(state.cached.fetchedAt, current)}
-                </p>
-              )}
-              <RefreshButton busy={refreshing} onRefresh={onRefresh} />
-            </div>
-            <GameFilterMenu filter={filter} onChoose={choose} />
-          </div>
+        <div className="app__identity">
+          <BrandMark />
+          <h1 className="app__title">4GHz</h1>
+          <span className="app__version">v{__APP_VERSION__}</span>
         </div>
 
-        <TabBar tab={navigation.tab} onOpen={navigation.open} />
+        <div className="app__controls">
+          <div className="app__status" aria-live="polite">
+            {state.status === "ready" && (
+              <p className="app__fetched">
+                {refreshing
+                  ? FETCH_LABELS.refreshing
+                  : FETCH_LABELS.fetched(formatFetchedAt(state.cached.fetchedAt, current))}
+              </p>
+            )}
+            <RefreshButton
+              busy={refreshing}
+              fetched={
+                state.status === "ready"
+                  ? FETCH_LABELS.fetched(formatFetchedAt(state.cached.fetchedAt, current))
+                  : undefined
+              }
+              onRefresh={onRefresh}
+            />
+          </div>
+          <GameFilterMenu filter={filter} onChoose={choose} />
+        </div>
+
+        <WindowControls />
       </header>
+
+      <TabBar tab={navigation.tab} onOpen={navigation.open} />
 
       <UpdateBanner update={update} onInstall={onInstallUpdate} />
 

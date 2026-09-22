@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { codeKey, codesToShow, type RedeemCode } from "../domain/code";
 import { CODE_LABELS } from "../domain/labels";
 import { CodeCard } from "./CodeCard";
@@ -11,9 +12,13 @@ interface Props {
   onToggleUsed: (key: string) => void;
 }
 
-/** The codes still worth trying, newest first, with used ones at the bottom. */
+/**
+ * The codes still worth trying, newest first, with used ones at the bottom — as of when
+ * the tab opened. Rows keep their places while it is open, so marking one as used does
+ * not pull it out from under the pointer.
+ */
 export function CodeList({ codes, used, now, onToggleUsed }: Props) {
-  const shown = codesToShow(codes, used, now);
+  const shown = useSettledOrder(codesToShow(codes, used, now));
   if (shown.length === 0) {
     return <Notice title={CODE_LABELS.empty} detail={CODE_LABELS.emptyDetail} />;
   }
@@ -35,4 +40,13 @@ export function CodeList({ codes, used, now, onToggleUsed }: Props) {
       })}
     </ul>
   );
+}
+
+/** Keeps the order the list first appeared in; codes that arrive later join at the end. */
+function useSettledOrder(codes: RedeemCode[]): RedeemCode[] {
+  const [first] = useState(() => codes.map(codeKey));
+  const byKey = new Map(codes.map((code) => [codeKey(code), code]));
+  const kept = first.flatMap((key) => byKey.get(key) ?? []);
+  const arrived = codes.filter((code) => !first.includes(codeKey(code)));
+  return [...kept, ...arrived];
 }

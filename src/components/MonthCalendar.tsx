@@ -1,5 +1,11 @@
 import { useState } from "react";
-import { type DailyRecords, type GameDay, isComplete, monthGrid } from "../domain/dailies";
+import {
+  type DailyRecords,
+  type GameDay,
+  isComplete,
+  isPerfectDay,
+  monthGrid,
+} from "../domain/dailies";
 import type { Game } from "../domain/event";
 import { DAILIES_LABELS, GAME_LABELS } from "../domain/labels";
 import "./MonthCalendar.css";
@@ -28,10 +34,14 @@ export function MonthCalendar({ records, games, today }: Props) {
         <h2 id="calendar-title">{DAILIES_LABELS.month(shown.year, shown.month)}</h2>
         <div className="calendar__steps">
           <button type="button" aria-label={DAILIES_LABELS.previousMonth} onClick={() => step(-1)}>
-            ‹
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <path d="m10 3.5-4.5 4.5 4.5 4.5" />
+            </svg>
           </button>
           <button type="button" aria-label={DAILIES_LABELS.nextMonth} onClick={() => step(1)}>
-            ›
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <path d="m6 3.5 4.5 4.5-4.5 4.5" />
+            </svg>
           </button>
         </div>
       </header>
@@ -58,6 +68,23 @@ export function MonthCalendar({ records, games, today }: Props) {
           ))}
         </tbody>
       </table>
+
+      <p className="calendar__legend">
+        {games.length > 1 && (
+          <span className="calendar__key">
+            <span className="calendar__dots" aria-hidden="true">
+              {games.map((game) => (
+                <span key={game} className="calendar__dot" data-game={game} />
+              ))}
+            </span>
+            {DAILIES_LABELS.legendSome}
+          </span>
+        )}
+        <span className="calendar__key">
+          <span className="calendar__key-fill" style={fillOf(games)} aria-hidden="true" />
+          {games.length > 1 ? DAILIES_LABELS.legendAll : DAILIES_LABELS.legendOne}
+        </span>
+      </p>
     </section>
   );
 }
@@ -69,20 +96,46 @@ interface DayProps {
   today: GameDay;
 }
 
+/**
+ * A day with a dot per game finished. A day on which every game in view was finished
+ * drops the dots and fills with those games' colours instead: the one mark that says
+ * the day is done. Hovering names the result.
+ */
 function Day({ day, records, games, today }: DayProps) {
   const finished = games.filter((game) => isComplete(records, day, game));
+  const perfect = isPerfectDay(records, day, games);
+  const fill = perfect ? fillOf(games) : undefined;
+  const result = perfect
+    ? DAILIES_LABELS.perfect
+    : DAILIES_LABELS.finished(finished.map((game) => GAME_LABELS[game]));
 
   return (
-    <div className="calendar__day" data-today={day === today} data-future={day > today}>
+    <div
+      className="calendar__day"
+      data-today={day === today}
+      data-future={day > today}
+      data-perfect={perfect}
+      style={fill}
+      title={result}
+    >
       <span>{Number(day.slice(8))}</span>
-      <span className="visually-hidden">
-        {DAILIES_LABELS.finished(finished.map((game) => GAME_LABELS[game]))}
-      </span>
+      <span className="visually-hidden">{result}</span>
       <span className="calendar__dots" aria-hidden="true">
-        {finished.map((game) => (
-          <span key={game} className="calendar__dot" data-game={game} />
-        ))}
+        {!perfect &&
+          finished.map((game) => <span key={game} className="calendar__dot" data-game={game} />)}
       </span>
     </div>
   );
+}
+
+/**
+ * The games' colours run corner to corner, blended in OKLCH so a blue-to-orange fill turns
+ * through its hues instead of greying out in the middle. One game is its colour alone.
+ */
+function fillOf(games: readonly Game[]) {
+  const colours = games.map((game) => `var(--game-${game})`);
+  return {
+    background:
+      colours.length > 1 ? `linear-gradient(135deg in oklch, ${colours.join(", ")})` : colours[0],
+  };
 }

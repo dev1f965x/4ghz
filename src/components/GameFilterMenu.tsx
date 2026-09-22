@@ -73,6 +73,7 @@ export function GameFilterMenu({ filter, onChoose }: Props) {
         ref={trigger}
         type="button"
         className="filter-menu__trigger"
+        data-tour="filter"
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-controls={`${id}-list`}

@@ -5,6 +5,11 @@
 
 @import "./tokens.css";
 
+/* An element marked hidden stays hidden, whatever display its own rules give it. */
+[hidden] {
+  display: none !important;
+}
+
 *,
 *::before,
 *::after {
@@ -16,6 +21,8 @@ body {
   background: var(--surface-base);
   color: var(--text-body);
   font-family: var(--font-family);
+  word-break: keep-all;
+  overflow-wrap: break-word;
   font-size: var(--text-base);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;

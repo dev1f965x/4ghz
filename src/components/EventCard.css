@@ -90,7 +90,7 @@
 
 .event__days {
   color: var(--text-strong);
-  font-size: 2rem;
+  font-size: 1.625rem;
   font-variant-numeric: tabular-nums;
   font-weight: 700;
   letter-spacing: -0.03em;
@@ -98,7 +98,8 @@
 }
 
 .event__unit {
-  margin-right: var(--space-2);
+  margin-left: -2px;
+  margin-right: var(--space-1);
   color: var(--text-muted);
   font-size: var(--text-base);
   font-weight: 600;
@@ -112,32 +113,19 @@
 }
 
 /* Under a day, the clock is all there is, so it takes the size the days would have. */
-.event__time > .event__clock:only-child {
+.event__caption + .event__clock {
   color: var(--text-strong);
-  font-size: 1.625rem;
+  font-size: 1.375rem;
   font-weight: 700;
   letter-spacing: -0.02em;
 }
 
-.event[data-status="today"] .event__time > .event__clock:only-child {
+.event[data-status="today"] .event__caption + .event__clock {
   color: var(--soon);
 }
 
-.event__until-end {
-  color: var(--text-muted);
-  font-size: var(--text-small);
-}
-
-.event__until-end .event__days {
-  font-size: var(--text-base);
-}
-
-.event__until-end .event__unit {
-  margin-right: var(--space-1);
-  font-size: var(--text-small);
-}
-
-.event__until-end .event__clock {
+.event__caption {
+  margin-right: var(--space-2);
   color: var(--text-muted);
   font-size: var(--text-small);
 }
@@ -181,4 +169,20 @@
 .event[data-status="today"] .event__badge {
   background: color-mix(in srgb, var(--soon) 16%, transparent);
   color: var(--soon);
+}
+
+/* Narrow windows give the countdown its own line under the title, so the date beside it
+   never runs into it. */
+@media (max-width: 680px) {
+  .event {
+    grid-template-columns: 72px 1fr;
+    row-gap: var(--space-3);
+  }
+
+  .event__countdown {
+    grid-column: 2;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-3);
+  }
 }

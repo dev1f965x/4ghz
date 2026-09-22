@@ -68,6 +68,11 @@ export function toggleGame(records: DailyRecords, game: Game): DailyRecords {
   return { ...records, games };
 }
 
+/** A day on which every game the player looks at was finished. */
+export function isPerfectDay(records: DailyRecords, day: GameDay, games: readonly Game[]): boolean {
+  return games.length > 0 && games.every((game) => isComplete(records, day, game));
+}
+
 /**
  * Days in a row with every chore of the game done. An unfinished today does not break
  * it yet — the day is not over — so the count starts from yesterday until today is done.

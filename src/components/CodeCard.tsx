@@ -50,7 +50,8 @@ export function CodeCard({ code, used, now, onToggleUsed }: Props) {
       <div className="code__body">
         <h3 className="code__value">{code.code}</h3>
         <p className="code__detail">
-          {code.rewards} · {expiry}
+          <span>{code.rewards}</span>
+          <span className="code__expiry">{expiry}</span>
         </p>
       </div>
 
