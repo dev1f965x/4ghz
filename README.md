@@ -54,12 +54,15 @@
 
 ## About The Project
 
-Three games, three sites, three announcement feeds. 4GHz puts every upcoming livestream, version update, and in-game event in one window and counts the days down in your own time zone.
+Three games, three sites, three announcement feeds. 4GHz puts every upcoming livestream, version update, and in-game event in one window and counts each one down to the second in your own time zone.
 
 The name reads as *for GHZ*: **G**enshin, **H**onkai, **Z**enless.
 
-- Upcoming events for the three games, soonest first, each with days remaining
+- Upcoming events for the three games, soonest first, each with a live countdown
+- Redeem codes, copied in one click or opened on the game's official page
+- A dailies checklist per game, with a month calendar and streaks, kept on your computer
 - Running events are separated from the ones that have not started
+- Three tabs with browser-style back and forward, and a game filter that narrows every tab and takes on that game's colour
 - Fetches on launch, every six hours, and on demand; the last good schedule is cached for offline
 - A window the app draws itself, and a walkthrough on first run
 - Updates itself: a signed release is announced in the window and installed in place
@@ -76,6 +79,7 @@ Dates are not scraped. They live in [`feed/events.json`](https://github.com/dev1
 [![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vite.dev/)
+[![Playwright](https://img.shields.io/badge/Playwright-2EAD33?style=for-the-badge&logo=playwright&logoColor=white)](https://playwright.dev/)
 [![Vitest](https://img.shields.io/badge/Vitest-6E9F18?style=for-the-badge&logo=vitest&logoColor=white)](https://vitest.dev/)
 [![Biome](https://img.shields.io/badge/Biome-60A5FA?style=for-the-badge&logo=biome&logoColor=white)](https://biomejs.dev/)
 [![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)](https://docs.github.com/actions)
@@ -129,9 +133,9 @@ Adding an event to the published schedule is [docs/feed.md](https://github.com/d
 
 - [x] 1.0.0 — official event countdowns
 - [x] 1.0.0 — updates itself from GitHub Releases
-- [ ] 1.1.0 — tabs with browser-style back and forward
-- [ ] 1.1.0 — redeem codes, copied or opened on the official page
-- [ ] 1.1.0 — dailies checklist, month calendar, and streaks
+- [x] 1.1.0 — tabs with browser-style back and forward
+- [x] 1.1.0 — redeem codes, copied or opened on the official page
+- [x] 1.1.0 — dailies checklist, month calendar, and streaks
 - [ ] 1.2.0 — notifications 24 hours and 1 hour before an event
 
 See the [open issues](https://github.com/dev1f965x/4ghz/issues) for the full list.
