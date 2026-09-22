@@ -76,6 +76,28 @@ forward in the top left corner.
   breaks at the first day a chore was left undone.
 - Checks, used codes, and the chosen games survive a restart and never leave the device.
 
+## 1.2.0 scope
+
+Feedback from the first update, 1.0.0 to 1.1.0.
+
+- **No history.** Back and forward go: the tab bar is the one way between views (ADR 13).
+- **A clearer "all".** The game filter shows "all" as the three games side by side, not as
+  one more colour.
+- **Dailies from the feed.** Each game's chores are published in the feed, like events and
+  codes, so a chore added or retired by a game update reaches every copy without a release.
+  A chore may carry a first and a last day.
+
+### Acceptance criteria
+
+- The title bar starts with the app's name; `Alt+←`/`Alt+→` and mouse side buttons do
+  nothing.
+- A chore added to the feed appears within six hours, or immediately after a manual refresh.
+- A past day is judged by the chores that applied on that day, so retiring a chore neither
+  breaks nor completes an old streak.
+- Checks recorded under 1.1.0 keep counting.
+- Before the first fetch, and with a feed that has no dailies, the chores this build knew
+  are shown.
+
 ## Interface language
 
 Korean, with every user-facing string kept in one place so a second language can be added
@@ -103,7 +125,8 @@ HoYoverse credentials. The rest lands in order:
 |---|---|
 | 1.0.0 | Official event countdowns |
 | 1.1.0 | Tabs with back and forward, redeem codes, dailies calendar and streaks |
-| 1.2.0 | Notifications before an event |
+| 1.2.0 | Dailies from the feed, a clearer game filter, no back and forward |
+| 1.3.0 | Notifications before an event |
 | later | A Discord bot or webhook reading the same feed |
 
 A Discord bot or webhook may publish the same feed later, which is why the feed is a

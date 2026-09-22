@@ -1,4 +1,4 @@
-import type { Tab } from "../navigation/history";
+import type { Tab } from "../navigation/tabs";
 
 /**
  * Line drawings of 📅, 🎫, and ✅. Emoji fonts on Windows draw in colour whatever the

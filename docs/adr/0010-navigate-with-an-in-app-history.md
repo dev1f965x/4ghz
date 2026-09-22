@@ -1,6 +1,6 @@
 # 10. Navigate with an in-app history
 
-Status: accepted
+Status: superseded by [13](0013-switch-tabs-from-the-tab-bar-only.md)
 Date: 2026-09-21
 
 ## Context

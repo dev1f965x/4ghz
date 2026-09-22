@@ -62,7 +62,7 @@ The name reads as *for GHZ*: **G**enshin, **H**onkai, **Z**enless.
 - Redeem codes, copied in one click or opened on the game's official page
 - A dailies checklist per game, with a month calendar and streaks, kept on your computer
 - Running events are separated from the ones that have not started
-- Three tabs with browser-style back and forward, and a game filter that narrows every tab and takes on that game's colour
+- Three tabs, and a game filter that narrows every tab and takes on that game's colour
 - Fetches on launch, every six hours, and on demand; the last good schedule is cached for offline
 - A window the app draws itself, and a walkthrough on first run
 - Updates itself: a signed release is announced in the window and installed in place
@@ -136,7 +136,8 @@ Adding an event to the published schedule is [docs/feed.md](https://github.com/d
 - [x] 1.1.0 — tabs with browser-style back and forward
 - [x] 1.1.0 — redeem codes, copied or opened on the official page
 - [x] 1.1.0 — dailies checklist, month calendar, and streaks
-- [ ] 1.2.0 — notifications 24 hours and 1 hour before an event
+- [ ] 1.2.0 — dailies from the feed, a clearer game filter, no back and forward
+- [ ] 1.3.0 — notifications 24 hours and 1 hour before an event
 
 See the [open issues](https://github.com/dev1f965x/4ghz/issues) for the full list.
 

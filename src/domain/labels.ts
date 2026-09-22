@@ -1,4 +1,4 @@
-import type { Tab } from "../navigation/history";
+import type { Tab } from "../navigation/tabs";
 import type { Chore, GameDay } from "./dailies";
 import type { EventKind, Game } from "./event";
 import type { GameFilter } from "./filter";
@@ -115,11 +115,7 @@ export const FETCH_LABELS = {
   fetched: (when: string) => `${when} 업데이트`,
 };
 
-export const NAVIGATION_LABELS = {
-  back: "뒤로",
-  forward: "앞으로",
-  tabs: "보기",
-};
+export const TAB_BAR_LABEL = "보기";
 
 export const CODE_LABELS = {
   copy: "복사",
