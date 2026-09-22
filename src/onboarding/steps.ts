@@ -16,7 +16,7 @@ export const TOUR_STEPS: readonly TourStep[] = [
     target: '[data-tour~="game"]',
     title: "색으로 게임 구분",
     detail:
-      "게임 이름과 카드 왼쪽 띠가 같은 색이에요. 원신은 파랑, 스타레일은 보라, 젠레스는 주황이에요.",
+      "게임 이름과 카드 왼쪽 띠가 같은 색이에요. 원신은 파랑, 붕괴: 스타레일은 보라, 젠레스 존 제로는 주황이에요.",
   },
   {
     id: "upcoming",

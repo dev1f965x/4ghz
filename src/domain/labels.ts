@@ -13,8 +13,8 @@ import type { EventPhase, TimeLeft } from "./schedule";
  */
 export const GAME_LABELS: Record<Game, string> = {
   genshin: "원신",
-  starrail: "스타레일",
-  zenless: "젠레스",
+  starrail: "붕괴: 스타레일",
+  zenless: "젠레스 존 제로",
 };
 
 export const KIND_LABELS: Record<EventKind, string> = {
@@ -131,7 +131,7 @@ export const CODE_LABELS = {
   emptyDetail: "새 코드가 올라오면 여기에 표시돼요",
 };
 
-/** 은 after a final consonant, 는 after a vowel: 원신은, 젠레스는. */
+/** 은 after a final consonant, 는 after a vowel: 원신은, 젠레스 존 제로는. */
 export function topicParticle(word: string): "은" | "는" {
   const last = word.charCodeAt(word.length - 1) - 0xac00;
   const hasFinalConsonant = last >= 0 && last < 11172 && last % 28 !== 0;

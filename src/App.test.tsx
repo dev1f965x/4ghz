@@ -267,7 +267,7 @@ describe("App", () => {
     expect(screen.getByRole("heading", { name: "6.0 Special Program" })).toBeInTheDocument();
 
     await userEvent.click(screen.getByRole("button", { name: "게임: 전체" }));
-    await userEvent.click(screen.getByRole("option", { name: "젠레스" }));
+    await userEvent.click(screen.getByRole("option", { name: "젠레스 존 제로" }));
 
     expect(container.firstChild).toHaveAttribute("data-game", "zenless");
     expect(screen.queryByRole("heading", { name: "6.0 Special Program" })).not.toBeInTheDocument();

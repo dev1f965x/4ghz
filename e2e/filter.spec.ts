@@ -5,7 +5,7 @@ test("one game narrows every tab and dresses the window in its colour", async ({
   await openApp(page);
 
   await page.getByRole("button", { name: "게임: 전체" }).click();
-  await page.getByRole("option", { name: "젠레스" }).click();
+  await page.getByRole("option", { name: "젠레스 존 제로" }).click();
 
   await expect(page.locator(".app")).toHaveAttribute("data-game", "zenless");
   await expect(page.getByRole("heading", { name: "공허 수사 이벤트" })).toBeVisible();
@@ -22,7 +22,7 @@ test("the game picked last time is picked again", async ({ page }) => {
     "settings.json": { ...SEEN_TOUR["settings.json"], "game-filter": "starrail" },
   });
 
-  await expect(page.getByRole("button", { name: "게임: 스타레일" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "게임: 붕괴: 스타레일" })).toBeVisible();
   await expect(page.locator(".app")).toHaveAttribute("data-game", "starrail");
 });
 
