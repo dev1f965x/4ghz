@@ -15,7 +15,7 @@ function renderMenu(filter: GameFilter = "all") {
   return {
     onChoose,
     trigger: screen.getByRole("button", {
-      name: `게임: ${filter === "all" ? "전체" : "스타레일"}`,
+      name: `게임: ${filter === "all" ? "전체" : "붕괴: 스타레일"}`,
     }),
   };
 }
@@ -30,10 +30,10 @@ describe("GameFilterMenu", () => {
     expect(screen.getAllByRole("option").map((option) => option.textContent)).toEqual([
       "전체",
       "원신",
-      "스타레일",
-      "젠레스",
+      "붕괴: 스타레일",
+      "젠레스 존 제로",
     ]);
-    expect(screen.getByRole("option", { name: "스타레일" })).toHaveAttribute(
+    expect(screen.getByRole("option", { name: "붕괴: 스타레일" })).toHaveAttribute(
       "aria-selected",
       "true",
     );

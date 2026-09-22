@@ -175,7 +175,7 @@
    never runs into it. */
 @media (max-width: 680px) {
   .event {
-    grid-template-columns: 72px 1fr;
+    grid-template-columns: 92px 1fr;
     row-gap: var(--space-3);
   }
 

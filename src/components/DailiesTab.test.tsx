@@ -78,7 +78,7 @@ describe("DailiesTab with one game picked", () => {
   it("offers to track the game when it is switched off", async () => {
     const { onToggleGame } = renderTab({ ...EMPTY_RECORDS, games: ["genshin"] }, "zenless");
 
-    expect(screen.getByText("젠레스는 챙길 게임에서 꺼져 있어요")).toBeInTheDocument();
+    expect(screen.getByText("젠레스 존 제로는 챙길 게임에서 꺼져 있어요")).toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "켜기" }));
     expect(onToggleGame).toHaveBeenCalledWith("zenless");
   });

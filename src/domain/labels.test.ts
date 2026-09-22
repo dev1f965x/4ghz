@@ -52,8 +52,8 @@ describe("formatFetchedAt across years", () => {
 describe("topicParticle", () => {
   it("picks 은 after a final consonant and 는 after a vowel", () => {
     expect(topicParticle("원신")).toBe("은");
-    expect(topicParticle("스타레일")).toBe("은");
-    expect(topicParticle("젠레스")).toBe("는");
+    expect(topicParticle("붕괴: 스타레일")).toBe("은");
+    expect(topicParticle("젠레스 존 제로")).toBe("는");
   });
 });
 
