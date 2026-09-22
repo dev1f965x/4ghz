@@ -83,8 +83,10 @@ export default function App({
       <header className="app__bar" data-tauri-drag-region>
         <div className="app__identity">
           <BrandMark />
-          <h1 className="app__title">4GHz</h1>
-          <span className="app__version">v{__APP_VERSION__}</span>
+          <div className="app__name">
+            <h1 className="app__title">4GHz</h1>
+            <span className="app__version">v{__APP_VERSION__}</span>
+          </div>
         </div>
 
         <div className="app__controls">
