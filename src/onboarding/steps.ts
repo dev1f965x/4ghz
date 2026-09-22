@@ -29,7 +29,7 @@ export const TOUR_STEPS: readonly TourStep[] = [
     id: "filter",
     target: '[data-tour="filter"]',
     title: "한 게임만 보기",
-    detail: "게임을 고르면 모든 탭이 그 게임만 보여주고, 강조 색도 그 게임 색으로 바뀌어요.",
+    detail: "게임을 고르면 모든 탭이 그 게임만 보여주고, 강조색도 그 게임 색으로 바뀌어요.",
   },
   {
     id: "tabs",

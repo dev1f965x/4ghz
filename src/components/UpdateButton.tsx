@@ -11,7 +11,8 @@ interface Props {
 /**
  * A pill in the title bar while a newer release is waiting, the way a browser offers its
  * own update: nothing on screen moves for it. While the release downloads, the pill fills
- * with its progress; after a failure it offers to try again.
+ * with its progress, down to the number alone in the narrowest windows; after a failure it
+ * offers to try again.
  */
 export function UpdateButton({ update, onInstall }: Props) {
   if (update.status === "current") return null;
@@ -23,11 +24,16 @@ export function UpdateButton({ update, onInstall }: Props) {
       : installing
         ? UPDATE_LABELS.downloading(update.version)
         : UPDATE_LABELS.available(update.version);
-  const action = installing
-    ? UPDATE_LABELS.installing(update.progress)
-    : update.status === "failed"
-      ? UPDATE_LABELS.retry
-      : UPDATE_LABELS.install;
+  const action = installing ? (
+    <>
+      <span className="update__verb">{UPDATE_LABELS.installing}</span>
+      {UPDATE_LABELS.progress(update.progress)}
+    </>
+  ) : update.status === "failed" ? (
+    UPDATE_LABELS.retry
+  ) : (
+    UPDATE_LABELS.install
+  );
   const progress = installing ? { "--progress": update.progress ?? 0 } : undefined;
 
   return (
@@ -45,7 +51,7 @@ export function UpdateButton({ update, onInstall }: Props) {
         <svg viewBox="0 0 16 16" aria-hidden="true">
           <path d="M8 2.5v8m-3.5-3.5L8 10.5 11.5 7M3 13.5h10" />
         </svg>
-        <span className="update__label">{action}</span>
+        <span>{action}</span>
       </button>
     </div>
   );

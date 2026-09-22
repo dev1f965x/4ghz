@@ -57,7 +57,6 @@
 .spotlight__actions {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   margin-top: var(--space-2);
 }
 
@@ -76,6 +75,7 @@
 }
 
 .spotlight__next {
+  margin-left: auto;
   padding: var(--space-2) var(--space-4);
   border: none;
   border-radius: var(--radius-pill);

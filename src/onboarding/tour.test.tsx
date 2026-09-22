@@ -90,7 +90,7 @@ describe("first run walkthrough", () => {
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
   });
 
-  it("walks the steps and remembers that it finished", async () => {
+  it("walks the steps, ends with one way out, and remembers that it finished", async () => {
     const remembered = memory(false);
     render(
       <App
@@ -109,6 +109,7 @@ describe("first run walkthrough", () => {
       await userEvent.click(screen.getByRole("button", { name: "다음" }));
       expect(screen.getByRole("dialog")).toHaveTextContent(step.title);
     }
+    expect(screen.queryByRole("button", { name: "건너뛰기" })).not.toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "시작하기" }));
 
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());

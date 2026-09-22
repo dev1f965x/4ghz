@@ -117,6 +117,13 @@ const SHOTS: Shot[] = [
   { name: "update-dailies", stores: withDailies, query: "?update=1.3.0", act: tab("숙제") },
   { name: "small-schedule", stores: tourSeen, viewport: SMALLEST },
   { name: "small-update", stores: tourSeen, viewport: SMALLEST, query: "?update=1.3.0" },
+  {
+    name: "small-update-installing",
+    stores: tourSeen,
+    viewport: SMALLEST,
+    query: "?update=1.3.0",
+    act: (page) => page.getByRole("button", { name: "업데이트" }).click(),
+  },
   { name: "small-codes", stores: tourSeen, viewport: SMALLEST, act: tab("리딤 코드") },
   { name: "small-dailies", stores: withDailies, viewport: SMALLEST, act: tab("숙제") },
 ];
