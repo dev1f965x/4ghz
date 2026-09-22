@@ -4,9 +4,11 @@
   flex-shrink: 0;
 }
 
+/* The plate sits inside the drawing, so its whole edge shows against the bar, as on the app icon. */
 .brand-mark__plate {
-  fill: var(--surface-raised);
-  stroke: var(--border-subtle);
+  fill: var(--surface-overlay);
+  stroke: var(--border-strong);
+  stroke-width: 1.5;
 }
 
 .brand-mark__bar--genshin {

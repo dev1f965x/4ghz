@@ -9,7 +9,7 @@ import "./BrandMark.css";
 export function BrandMark() {
   return (
     <svg className="brand-mark" viewBox="0 0 40 40" role="img" aria-label="4GHz">
-      <rect className="brand-mark__plate" width="40" height="40" rx="11" />
+      <rect className="brand-mark__plate" x="0.75" y="0.75" width="38.5" height="38.5" rx="10.25" />
       <rect
         className="brand-mark__bar brand-mark__bar--genshin"
         x="11"

@@ -34,9 +34,14 @@
   line-height: var(--leading-title);
 }
 
+/* The version stands on the name's baseline. */
+.app__name {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
 .app__version {
-  align-self: flex-end;
-  margin-bottom: 3px;
   color: var(--text-muted);
   font-size: var(--text-small);
 }
