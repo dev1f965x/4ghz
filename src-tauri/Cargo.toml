@@ -1,6 +1,6 @@
 [package]
 name = "fourghz"
-version = "1.2.3"
+version = "1.2.4"
 description = "Desktop app that counts down to official HoYoverse game events"
 authors = ["dev1f965x"]
 license = "MIT"
