@@ -1,6 +1,7 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
+import { BUILT_IN_CHORES } from "../dailies/builtInChores";
 import { type DailyRecords, EMPTY_RECORDS, toggleChore } from "../domain/dailies";
 import type { GameFilter } from "../domain/filter";
 import { DailiesTab } from "./DailiesTab";
@@ -18,6 +19,7 @@ function renderTab(records: DailyRecords = EMPTY_RECORDS, filter: GameFilter = "
   render(
     <DailiesTab
       records={records}
+      chores={BUILT_IN_CHORES}
       filter={filter}
       now={now}
       onToggleChore={onToggleChore}

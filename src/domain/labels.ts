@@ -1,5 +1,5 @@
 import type { Tab } from "../navigation/tabs";
-import type { Chore, GameDay } from "./dailies";
+import type { GameDay } from "./dailies";
 import type { EventKind, Game } from "./event";
 import type { GameFilter } from "./filter";
 import type { EventPhase, TimeLeft } from "./schedule";
@@ -135,15 +135,6 @@ export function topicParticle(word: string): "은" | "는" {
   const hasFinalConsonant = last >= 0 && last < 11172 && last % 28 !== 0;
   return hasFinalConsonant ? "은" : "는";
 }
-
-export const CHORE_LABELS: Record<Chore, string> = {
-  commissions: "일일 의뢰",
-  resin: "레진 소모",
-  training: "일일 훈련",
-  power: "개척력 소모",
-  activity: "일일 활약도",
-  battery: "배터리 소모",
-};
 
 export const DAILIES_LABELS = {
   games: "챙길 게임",

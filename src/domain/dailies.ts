@@ -1,21 +1,27 @@
 import { GAMES, type Game } from "./event";
 
-/** What each game asks of a player every day. Labels live with the other screen text. */
-export const CHORES = {
-  genshin: ["commissions", "resin"],
-  starrail: ["training", "power"],
-  zenless: ["activity", "battery"],
-} as const satisfies Record<Game, readonly string[]>;
-
-export type Chore = (typeof CHORES)[Game][number];
-
 /** A day in the games' own calendar, as `YYYY-MM-DD`. */
 export type GameDay = string;
 
-/** The player's own records: which games they play, and what they finished on which day. */
+/** Something a game asks of the player every day, as the feed publishes it. */
+export interface Chore {
+  /** Stable: the player's checks are recorded under it. */
+  id: string;
+  /** Shown as written, in Korean. */
+  title: string;
+  /** The first game day it is due; before it, the chore did not exist yet. */
+  from?: GameDay;
+  /** The last game day it is due; after it, the chore is retired. */
+  until?: GameDay;
+}
+
+/** Each game's chores, retired and upcoming ones included, so past days keep their meaning. */
+export type Chores = Readonly<Record<Game, readonly Chore[]>>;
+
+/** The player's own records: which games they play, and which chores they finished when. */
 export interface DailyRecords {
   games: readonly Game[];
-  done: Readonly<Record<GameDay, Partial<Record<Game, readonly Chore[]>>>>;
+  done: Readonly<Record<GameDay, Partial<Record<Game, readonly string[]>>>>;
 }
 
 export const EMPTY_RECORDS: DailyRecords = { games: GAMES, done: {} };
@@ -37,19 +43,33 @@ export function addDays(day: GameDay, count: number): GameDay {
   return date.toISOString().slice(0, 10);
 }
 
-export function isDone(records: DailyRecords, day: GameDay, game: Game, chore: Chore): boolean {
+/** The game's chores that were, are, or will be due on `day`. */
+export function choresOn(chores: Chores, game: Game, day: GameDay): readonly Chore[] {
+  return chores[game].filter(
+    (chore) => (!chore.from || chore.from <= day) && (!chore.until || day <= chore.until),
+  );
+}
+
+export function isDone(records: DailyRecords, day: GameDay, game: Game, chore: string): boolean {
   return records.done[day]?.[game]?.includes(chore) ?? false;
 }
 
-export function isComplete(records: DailyRecords, day: GameDay, game: Game): boolean {
-  return CHORES[game].every((chore) => isDone(records, day, game, chore));
+/** Every chore due that day was done. A day with nothing due is not a finished day. */
+export function isComplete(
+  records: DailyRecords,
+  chores: Chores,
+  day: GameDay,
+  game: Game,
+): boolean {
+  const due = choresOn(chores, game, day);
+  return due.length > 0 && due.every((chore) => isDone(records, day, game, chore.id));
 }
 
 export function toggleChore(
   records: DailyRecords,
   day: GameDay,
   game: Game,
-  chore: Chore,
+  chore: string,
 ): DailyRecords {
   const today = records.done[day] ?? {};
   const finished = today[game] ?? [];
@@ -69,18 +89,23 @@ export function toggleGame(records: DailyRecords, game: Game): DailyRecords {
 }
 
 /** A day on which every game the player looks at was finished. */
-export function isPerfectDay(records: DailyRecords, day: GameDay, games: readonly Game[]): boolean {
-  return games.length > 0 && games.every((game) => isComplete(records, day, game));
+export function isPerfectDay(
+  records: DailyRecords,
+  chores: Chores,
+  day: GameDay,
+  games: readonly Game[],
+): boolean {
+  return games.length > 0 && games.every((game) => isComplete(records, chores, day, game));
 }
 
 /**
  * Days in a row with every chore of the game done. An unfinished today does not break
  * it yet — the day is not over — so the count starts from yesterday until today is done.
  */
-export function streak(records: DailyRecords, game: Game, today: GameDay): number {
-  let day = isComplete(records, today, game) ? today : addDays(today, -1);
+export function streak(records: DailyRecords, chores: Chores, game: Game, today: GameDay): number {
+  let day = isComplete(records, chores, today, game) ? today : addDays(today, -1);
   let count = 0;
-  while (isComplete(records, day, game)) {
+  while (isComplete(records, chores, day, game)) {
     count += 1;
     day = addDays(day, -1);
   }

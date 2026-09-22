@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
 import {
-  type Chore,
   type DailyRecords,
   EMPTY_RECORDS,
   type GameDay,
@@ -34,7 +33,7 @@ export function useDailyRecords(memory: DailyRecordsMemory) {
 
   return {
     records,
-    toggleChore: (day: GameDay, game: Game, chore: Chore) =>
+    toggleChore: (day: GameDay, game: Game, chore: string) =>
       change(toggleChore(records, day, game, chore)),
     toggleGame: (game: Game) => change(toggleGame(records, game)),
   };

@@ -60,7 +60,7 @@ The name reads as *for GHZ*: **G**enshin, **H**onkai, **Z**enless.
 
 - Upcoming events for the three games, soonest first, each with a live countdown
 - Redeem codes, copied in one click or opened on the game's official page
-- A dailies checklist per game, with a month calendar and streaks, kept on your computer
+- A dailies checklist per game, with a month calendar and streaks; your checks stay on your computer
 - Running events are separated from the ones that have not started
 - Three tabs, and a game filter that narrows every tab and takes on that game's colour
 - Fetches on launch, every six hours, and on demand; the last good schedule is cached for offline
@@ -68,7 +68,7 @@ The name reads as *for GHZ*: **G**enshin, **H**onkai, **Z**enless.
 - Updates itself: a signed release is announced in the window and installed in place
 - No account, no telemetry; it only ever reads the schedule and checks for a release, both on GitHub
 
-Dates are not scraped. They live in [`feed/events.json`](https://github.com/dev1f965x/4ghz/blob/main/feed/events.json), are reviewed like code, and are published to GitHub Pages, so a new schedule needs no new installer.
+Dates, codes, and chores are not scraped. They live in [`feed/events.json`](https://github.com/dev1f965x/4ghz/blob/main/feed/events.json), are reviewed like code, and are published to GitHub Pages, so a change needs no new installer.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

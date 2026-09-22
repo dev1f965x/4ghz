@@ -17,6 +17,7 @@ import { panelId, TabBar, tabId } from "./components/TabBar";
 import { UpdateBanner } from "./components/UpdateBanner";
 import { useMinimumDuration } from "./components/useMinimumDuration";
 import { WindowControls } from "./components/WindowControls";
+import { BUILT_IN_CHORES } from "./dailies/builtInChores";
 import type { DailyRecordsMemory } from "./dailies/dailyRecords";
 import { useDailyRecords } from "./dailies/useDailyRecords";
 import type { GameEvent } from "./domain/event";
@@ -156,6 +157,7 @@ function renderTab(tab: Tab, { state, onRefresh, now, usedCodes, dailies, filter
     return (
       <DailiesTab
         records={dailies.records}
+        chores={(state.status === "ready" && state.cached.feed.dailies) || BUILT_IN_CHORES}
         filter={filter}
         now={now}
         onToggleChore={dailies.toggleChore}

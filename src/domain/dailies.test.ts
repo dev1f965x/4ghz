@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   addDays,
-  CHORES as CHORES_OF,
+  type Chores,
+  choresOn,
   type DailyRecords,
   EMPTY_RECORDS,
   gameDay,
@@ -12,6 +13,21 @@ import {
   toggleChore,
   toggleGame,
 } from "./dailies";
+
+const CHORES: Chores = {
+  genshin: [
+    { id: "commissions", title: "일일 의뢰" },
+    { id: "resin", title: "레진 소모" },
+  ],
+  starrail: [
+    { id: "training", title: "일일 훈련" },
+    { id: "power", title: "개척력 소모" },
+  ],
+  zenless: [
+    { id: "activity", title: "일일 활약도" },
+    { id: "battery", title: "배터리 소모" },
+  ],
+};
 
 function finished(days: string[]): DailyRecords {
   return days.reduce(
@@ -38,9 +54,14 @@ describe("chores", () => {
   it("counts a game as done only when every chore is", () => {
     const half = toggleChore(EMPTY_RECORDS, "2026-09-21", "genshin", "commissions");
 
-    expect(isComplete(half, "2026-09-21", "genshin")).toBe(false);
+    expect(isComplete(half, CHORES, "2026-09-21", "genshin")).toBe(false);
     expect(
-      isComplete(toggleChore(half, "2026-09-21", "genshin", "resin"), "2026-09-21", "genshin"),
+      isComplete(
+        toggleChore(half, "2026-09-21", "genshin", "resin"),
+        CHORES,
+        "2026-09-21",
+        "genshin",
+      ),
     ).toBe(true);
   });
 
@@ -53,29 +74,74 @@ describe("chores", () => {
   });
 });
 
+describe("chores over time", () => {
+  const added: Chores = {
+    ...CHORES,
+    genshin: [...CHORES.genshin, { id: "realm", title: "선율의 조각", from: "2026-09-21" }],
+  };
+  const retired: Chores = {
+    ...CHORES,
+    genshin: [CHORES.genshin[0], { ...CHORES.genshin[1], until: "2026-09-20" }],
+  };
+
+  it("lists a chore only on the days it is due", () => {
+    expect(choresOn(added, "genshin", "2026-09-20").map((chore) => chore.id)).toEqual([
+      "commissions",
+      "resin",
+    ]);
+    expect(choresOn(retired, "genshin", "2026-09-21").map((chore) => chore.id)).toEqual([
+      "commissions",
+    ]);
+  });
+
+  it("does not undo a finished day when a chore is added after it", () => {
+    const records = finished(["2026-09-20"]);
+
+    expect(isComplete(records, added, "2026-09-20", "genshin")).toBe(true);
+    expect(isComplete(finished(["2026-09-21"]), added, "2026-09-21", "genshin")).toBe(false);
+  });
+
+  it("keeps a streak going across a chore's retirement", () => {
+    const records = toggleChore(
+      finished(["2026-09-19", "2026-09-20"]),
+      "2026-09-21",
+      "genshin",
+      "commissions",
+    );
+
+    expect(streak(records, retired, "genshin", "2026-09-21")).toBe(3);
+  });
+
+  it("does not count a day with nothing due as finished", () => {
+    const none: Chores = { ...CHORES, genshin: [] };
+
+    expect(isComplete(EMPTY_RECORDS, none, "2026-09-21", "genshin")).toBe(false);
+  });
+});
+
 describe("streak", () => {
   it("counts finished days back from today", () => {
     const records = finished(["2026-09-19", "2026-09-20", "2026-09-21"]);
 
-    expect(streak(records, "genshin", "2026-09-21")).toBe(3);
+    expect(streak(records, CHORES, "genshin", "2026-09-21")).toBe(3);
   });
 
   it("keeps yesterday's run while today is still open", () => {
     const records = finished(["2026-09-19", "2026-09-20"]);
 
-    expect(streak(records, "genshin", "2026-09-21")).toBe(2);
+    expect(streak(records, CHORES, "genshin", "2026-09-21")).toBe(2);
   });
 
   it("stops at the first day left unfinished", () => {
     const records = finished(["2026-09-17", "2026-09-19", "2026-09-20"]);
 
-    expect(streak(records, "genshin", "2026-09-20")).toBe(2);
+    expect(streak(records, CHORES, "genshin", "2026-09-20")).toBe(2);
   });
 
   it("is zero when yesterday was missed", () => {
     const records = finished(["2026-09-18"]);
 
-    expect(streak(records, "genshin", "2026-09-21")).toBe(0);
+    expect(streak(records, CHORES, "genshin", "2026-09-21")).toBe(0);
   });
 });
 
@@ -116,22 +182,25 @@ describe("isPerfectDay", () => {
   const day = "2026-09-21";
   const all = (["genshin", "starrail", "zenless"] as const).reduce(
     (records, game) =>
-      CHORES_OF[game].reduce((r, chore) => toggleChore(r, day, game, chore), records),
+      CHORES[game].reduce((r, chore) => toggleChore(r, day, game, chore.id), records),
     EMPTY_RECORDS,
   );
 
   it("needs every game in view finished", () => {
-    expect(isPerfectDay(all, day, ["genshin", "starrail", "zenless"])).toBe(true);
+    expect(isPerfectDay(all, CHORES, day, ["genshin", "starrail", "zenless"])).toBe(true);
     expect(
-      isPerfectDay(toggleChore(all, day, "zenless", "battery"), day, ["genshin", "zenless"]),
+      isPerfectDay(toggleChore(all, day, "zenless", "battery"), CHORES, day, [
+        "genshin",
+        "zenless",
+      ]),
     ).toBe(false);
   });
 
   it("takes only the one game when one is in view", () => {
-    expect(isPerfectDay(all, day, ["genshin"])).toBe(true);
+    expect(isPerfectDay(all, CHORES, day, ["genshin"])).toBe(true);
   });
 
   it("needs something in view", () => {
-    expect(isPerfectDay(all, day, [])).toBe(false);
+    expect(isPerfectDay(all, CHORES, day, [])).toBe(false);
   });
 });

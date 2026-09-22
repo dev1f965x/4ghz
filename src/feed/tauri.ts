@@ -61,6 +61,7 @@ export const storeFeedCache: FeedCache = {
           addedAt: code.addedAt.toISOString(),
           expiresAt: code.expiresAt?.toISOString(),
         })),
+        dailies: cached.feed.dailies,
       },
       fetchedAt: cached.fetchedAt.toISOString(),
     });
