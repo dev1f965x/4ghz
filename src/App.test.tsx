@@ -73,7 +73,7 @@ describe("App", () => {
       screen.getByRole("heading", { name: "6.0 Special Program", level: 3 }),
     ).toBeInTheDocument();
     expect(screen.getByRole("article")).toHaveTextContent(/3일\s*08:00:00/);
-    expect(screen.getByText("3시간 전 업데이트")).toBeInTheDocument();
+    expect(screen.getByText("3시간 전 확인")).toBeInTheDocument();
   });
 
   it("separates what is airing now from what is ahead", () => {

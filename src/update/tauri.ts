@@ -30,8 +30,3 @@ export const tauriUpdateSource: UpdateSource = {
     };
   },
 };
-
-/** Development builds are never out of date; there is nothing to install over them. */
-export const alwaysCurrent: UpdateSource = {
-  check: async () => null,
-};

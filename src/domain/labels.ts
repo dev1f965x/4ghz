@@ -90,8 +90,9 @@ export function formatFetchedAt(fetchedAt: Date, now: Date): string {
 export const UPDATE_LABELS = {
   available: (version: string) => `${version} 버전이 나왔어요`,
   install: "업데이트",
+  downloading: (version: string) => `${version} 버전을 받고 있어요`,
   installing: (progress: number | null) =>
-    progress === null ? "업데이트 받는 중…" : `업데이트 받는 중… ${Math.round(progress * 100)}%`,
+    progress === null ? "받는 중…" : `받는 중 ${Math.round(progress * 100)}%`,
   failed: "업데이트하지 못했어요",
   retry: "다시 시도",
 };
@@ -112,7 +113,7 @@ export const REFRESH_LABEL = "새로고침";
 
 export const FETCH_LABELS = {
   refreshing: "새로고침 중…",
-  fetched: (when: string) => `${when} 업데이트`,
+  fetched: (when: string) => `${when} 확인`,
 };
 
 export const TAB_BAR_LABEL = "보기";
