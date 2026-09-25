@@ -7,9 +7,8 @@ import type { EventPhase, TimeLeft } from "./schedule";
 /**
  * Every Korean string the interface shows, in one place.
  *
- * Keeping them here rather than inline is what lets a second language be added by
- * swapping this module, and it keeps wording consistent between the list and a
- * notification.
+ * Keeping them here rather than inline allows a second language to be added by swapping
+ * this module, and keeps wording consistent between the list and a notification.
  */
 export const GAME_LABELS: Record<Game, string> = {
   genshin: "원신",
@@ -24,7 +23,7 @@ export const KIND_LABELS: Record<EventKind, string> = {
   ingame: "인게임 행사",
 };
 
-/** What the countdown says. "오늘" beats "0일 남음", which reads like nothing is left. */
+/** What the countdown says. "오늘" is used instead of "0일 남음", which reads as nothing left. */
 export function phaseLabel(phase: EventPhase): string {
   switch (phase.status) {
     case "today":
@@ -41,8 +40,8 @@ export function phaseLabel(phase: EventPhase): string {
 /**
  * The clock time of an event in the viewer's zone, as `10월 2일 20:00`.
  *
- * The year appears only when it differs from the year being viewed: the common case
- * stays short, and a January event seen in December still says which January.
+ * The year appears only when it differs from the year being viewed, so the common case
+ * stays short while a January event seen in December still says which January.
  */
 export function formatStart(instant: Date, now: Date): string {
   return new Intl.DateTimeFormat("ko-KR", {

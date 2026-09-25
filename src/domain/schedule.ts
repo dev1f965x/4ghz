@@ -12,17 +12,17 @@ const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 /**
  * How long an event with no announced end stays on screen after it starts.
  *
- * A livestream is announced as a single instant, and the viewer looks at this app while
- * it is airing. Dropping it the second it begins would empty the list at the moment it
- * matters most. Two hours covers a HoYoverse special program with room to spare.
+ * A livestream is announced as a single instant and is watched while it airs, so removing
+ * it at its start time would empty the list during the broadcast. Two hours covers a
+ * HoYoverse special program.
  */
 const MOMENTARY_EVENT_GRACE_MS = 2 * 60 * 60 * 1000;
 
 /**
  * Whole calendar days between two instants in the viewer's zone.
  *
- * Counting calendar days rather than 24-hour spans is what makes an event tomorrow
- * morning read as one day away, not zero, when it is looked at late tonight.
+ * Counting calendar days rather than 24-hour spans makes an event tomorrow morning read
+ * as one day away rather than zero when it is looked at late tonight.
  */
 export function calendarDaysBetween(from: Date, to: Date): number {
   return Math.round((startOfDay(to).getTime() - startOfDay(from).getTime()) / MILLISECONDS_PER_DAY);

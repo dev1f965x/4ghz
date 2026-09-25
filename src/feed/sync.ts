@@ -24,8 +24,8 @@ function isTransient(problem: FailedFetch): boolean {
  * Keeps one copy of the schedule fresh.
  *
  * The rules come from the product definition: fetch on start and every six hours, retry a
- * network failure three times with growing delays, and never drop what is already on
- * screen — a stale schedule beats an empty window.
+ * network failure three times with growing delays, and keep what is already on screen, so
+ * that a failure leaves a stale schedule rather than an empty window.
  */
 export class FeedSync {
   private state: SyncState = { status: "loading" };
