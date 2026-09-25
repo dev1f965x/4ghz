@@ -102,9 +102,11 @@ interface DayProps {
 }
 
 /**
- * A day with a dot per game finished. A day on which every game in view was finished
- * drops the dots and fills with those games' colours instead: the one mark that says
- * the day is done. Hovering names the result.
+ * A day with a dot per game finished.
+ *
+ * A day on which every game in view was finished drops the dots and fills with those
+ * games' colours instead, which is how a complete day is marked. Hovering names the
+ * result.
  */
 function Day({ day, records, chores, games, today }: DayProps) {
   const finished = games.filter((game) => isComplete(records, chores, day, game));

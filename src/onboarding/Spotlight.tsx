@@ -17,8 +17,8 @@ const PADDING = 4;
 /**
  * Dims the window except for one element, and explains that element.
  *
- * The dimming is a single box shadow spread over the whole viewport from the cut-out, so
- * there is one element to paint rather than four strips to keep aligned.
+ * The dimming is a single box shadow spread from the cut-out over the viewport, which is
+ * one element to paint rather than four strips to keep aligned.
  */
 export function Spotlight({ step, position, total, onNext, onSkip }: Props) {
   const target = useTargetRect(step.target);

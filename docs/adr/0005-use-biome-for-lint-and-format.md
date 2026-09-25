@@ -6,7 +6,7 @@ Date: 2026-09-20
 ## Context
 
 The repository needs one opinion on formatting and a lint pass that runs on every commit
-and in CI. Whatever it is, it has to be fast enough that nobody skips it.
+and in CI. It has to be fast enough to run on every save.
 
 ## Options
 

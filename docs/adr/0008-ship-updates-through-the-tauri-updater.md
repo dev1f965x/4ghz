@@ -11,8 +11,8 @@ without a release; the binary does not.
 
 ## Options
 
-- **Tell people to download the new installer.** No moving parts, and almost nobody does
-  it. A parsing bug would live on every installed copy forever.
+- **Tell people to download the new installer.** No moving parts, and rarely acted on. A
+  parsing bug would remain on every installed copy.
 - **Package through a store.** Automatic updates, plus review queues, developer fees, and
   an account. Too much for a three-game countdown.
 - **Tauri's updater plugin.** The app checks a signed manifest, downloads in the
