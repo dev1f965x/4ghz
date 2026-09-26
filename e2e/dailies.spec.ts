@@ -26,8 +26,8 @@ test("a game switched off can be switched back on from the filter", async ({ pag
   });
   await page.getByRole("tab", { name: "숙제" }).click();
 
-  await expect(page.getByText("젠레스 존 제로는 챙길 게임에서 꺼져 있어요")).toBeVisible();
-  await page.getByRole("button", { name: "켜기" }).click();
+  await expect(page.getByText("젠레스 존 제로는 선택되지 않았습니다")).toBeVisible();
+  await page.getByRole("button", { name: "선택" }).click();
 
   await expect(page.getByRole("checkbox", { name: "배터리 소모" })).toBeVisible();
 });

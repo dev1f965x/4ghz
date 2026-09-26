@@ -114,7 +114,7 @@ describe("App", () => {
       />,
     );
 
-    expect(screen.getByText("가져오지 못했어요")).toBeInTheDocument();
+    expect(screen.getByText("불러오지 못했습니다")).toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "다시 시도" }));
     expect(onRefresh).toHaveBeenCalledOnce();
   });
@@ -132,7 +132,7 @@ describe("App", () => {
       />,
     );
 
-    expect(screen.getByText("앱을 업데이트해 주세요")).toBeInTheDocument();
+    expect(screen.getByText("업데이트 필요")).toBeInTheDocument();
   });
 
   it("keeps showing the old schedule and says so when a refresh failed", () => {
@@ -151,9 +151,7 @@ describe("App", () => {
     );
 
     expect(screen.getByRole("heading", { name: "6.0 Special Program" })).toBeInTheDocument();
-    expect(
-      screen.getByText("최신 내용을 받지 못해 마지막으로 받은 내용을 보여주고 있어요"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("최신 내용을 받지 못해 마지막 내용을 표시합니다")).toBeInTheDocument();
   });
 
   it("disables the refresh button while a refresh is running", () => {

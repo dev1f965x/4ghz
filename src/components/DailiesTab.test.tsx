@@ -63,7 +63,7 @@ describe("DailiesTab", () => {
   it("asks for a game when none is picked", () => {
     renderTab({ ...EMPTY_RECORDS, games: [] });
 
-    expect(screen.getByText("챙길 게임을 하나 이상 골라 주세요")).toBeInTheDocument();
+    expect(screen.getByText("게임을 하나 이상 선택하십시오")).toBeInTheDocument();
   });
 });
 
@@ -78,8 +78,8 @@ describe("DailiesTab with one game picked", () => {
   it("offers to track the game when it is switched off", async () => {
     const { onToggleGame } = renderTab({ ...EMPTY_RECORDS, games: ["genshin"] }, "zenless");
 
-    expect(screen.getByText("젠레스 존 제로는 챙길 게임에서 꺼져 있어요")).toBeInTheDocument();
-    await userEvent.click(screen.getByRole("button", { name: "켜기" }));
+    expect(screen.getByText("젠레스 존 제로는 선택되지 않았습니다")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "선택" }));
     expect(onToggleGame).toHaveBeenCalledWith("zenless");
   });
 });
