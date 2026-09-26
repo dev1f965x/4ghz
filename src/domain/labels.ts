@@ -87,13 +87,13 @@ export function formatFetchedAt(fetchedAt: Date, now: Date): string {
 }
 
 export const UPDATE_LABELS = {
-  available: (version: string) => `${version} 버전이 나왔어요`,
+  available: (version: string) => `${version} 사용 가능`,
   install: "업데이트",
-  downloading: (version: string) => `${version} 버전을 받고 있어요`,
-  installing: "받는 중",
+  downloading: (version: string) => `${version} 내려받는 중`,
+  installing: "내려받는 중",
   progress: (progress: number | null) =>
     progress === null ? "…" : ` ${Math.round(progress * 100)}%`,
-  failed: "업데이트하지 못했어요",
+  failed: "업데이트 실패",
   retry: "다시 시도",
 };
 
@@ -120,14 +120,14 @@ export const TAB_BAR_LABEL = "보기";
 
 export const CODE_LABELS = {
   copy: "복사",
-  copied: "복사했어요",
+  copied: "복사함",
   redeem: "교환",
-  redeemHint: "코드를 복사하고 공식 교환 페이지를 열어요",
+  redeemHint: "코드를 복사하고 공식 교환 페이지를 엽니다",
   used: "사용함",
   noExpiry: "기한 없음",
   expires: (text: string) => `${text}까지`,
-  empty: "지금 쓸 수 있는 코드가 없어요",
-  emptyDetail: "새 코드가 올라오면 여기에 표시돼요",
+  empty: "사용 가능한 코드가 없습니다",
+  emptyDetail: "새 코드가 등록되면 표시됩니다",
 };
 
 /** 은 after a final consonant, 는 after a vowel: 원신은, 젠레스 존 제로는. */
@@ -138,12 +138,12 @@ export function topicParticle(word: string): "은" | "는" {
 }
 
 export const DAILIES_LABELS = {
-  games: "챙길 게임",
-  noGames: "챙길 게임을 하나 이상 골라 주세요",
-  notTracked: (game: string) => `${game}${topicParticle(game)} 챙길 게임에서 꺼져 있어요`,
-  track: "켜기",
+  games: "대상 게임",
+  noGames: "게임을 하나 이상 선택하십시오",
+  notTracked: (game: string) => `${game}${topicParticle(game)} 선택되지 않았습니다`,
+  track: "선택",
   today: (date: string) => `오늘 · ${date}`,
-  resetHint: "매일 오전 5시에 새 하루가 시작돼요",
+  resetHint: "매일 오전 5시에 초기화됩니다",
   streak: (days: number) => `${days}일 연속`,
   month: (year: number, month: number) => `${year}년 ${month}월`,
   previousMonth: "지난달",

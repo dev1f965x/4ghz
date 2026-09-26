@@ -41,9 +41,9 @@ test("a waiting release is offered in the title bar, leaving the content where i
 
   await openApp(page, SEEN_TOUR, "?update=1.3.0");
   const install = page.getByRole("banner").getByRole("button", { name: "업데이트" });
-  await expect(install).toHaveAttribute("title", "1.3.0 버전이 나왔어요");
+  await expect(install).toHaveAttribute("title", "1.3.0 사용 가능");
   expect(await heading.boundingBox()).toEqual(before);
 
   await install.click();
-  await expect(page.getByRole("button", { name: "받는 중 40%" })).toBeDisabled();
+  await expect(page.getByRole("button", { name: "내려받는 중 40%" })).toBeDisabled();
 });

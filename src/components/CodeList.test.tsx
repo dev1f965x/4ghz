@@ -38,7 +38,7 @@ describe("CodeList", () => {
     const expired = code({ expiresAt: new Date("2026-09-01T00:00:00Z") });
     render(<CodeList codes={[expired]} used={new Set()} now={now} onToggleUsed={() => {}} />);
 
-    expect(screen.getByText("지금 쓸 수 있는 코드가 없어요")).toBeInTheDocument();
+    expect(screen.getByText("사용 가능한 코드가 없습니다")).toBeInTheDocument();
   });
 
   it("copies a code and says it did", async () => {
@@ -47,7 +47,7 @@ describe("CodeList", () => {
     await userEvent.click(screen.getByRole("button", { name: "복사" }));
 
     expect(outside.copy).toHaveBeenCalledWith("GENSHINGIFT");
-    expect(screen.getByRole("button", { name: "복사했어요" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "복사함" })).toBeInTheDocument();
   });
 
   it("copies before opening the official page, so the code is there to paste", async () => {

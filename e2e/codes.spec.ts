@@ -17,7 +17,7 @@ test("an expired code is not listed", async ({ page }) => {
 test("copy puts the code on the clipboard and says so", async ({ page }) => {
   await card(page, "GENSHINGIFT").getByRole("button", { name: "복사" }).click();
 
-  await expect(card(page, "GENSHINGIFT").getByRole("button", { name: "복사했어요" })).toBeVisible();
+  await expect(card(page, "GENSHINGIFT").getByRole("button", { name: "복사함" })).toBeVisible();
   expect(await clipboard(page)).toBe("GENSHINGIFT");
 });
 

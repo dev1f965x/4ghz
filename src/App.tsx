@@ -173,13 +173,10 @@ function renderTab(tab: Tab, { state, onRefresh, now, usedCodes, dailies, filter
 
   if (state.status === "failed") {
     return state.problem.kind === "unsupported-schema" ? (
-      <Notice
-        title="앱을 업데이트해 주세요"
-        detail="정보 형식이 바뀌어서 이 버전으로는 읽을 수 없어요"
-      />
+      <Notice title="업데이트 필요" detail="정보 형식이 변경되어 이 버전으로는 읽을 수 없습니다" />
     ) : (
       <Notice
-        title="가져오지 못했어요"
+        title="불러오지 못했습니다"
         detail={state.problem.detail}
         action={{ label: "다시 시도", onAction: onRefresh }}
       />
@@ -191,7 +188,7 @@ function renderTab(tab: Tab, { state, onRefresh, now, usedCodes, dailies, filter
   return (
     <>
       {state.lastProblem && (
-        <p className="app__stale">최신 내용을 받지 못해 마지막으로 받은 내용을 보여주고 있어요</p>
+        <p className="app__stale">최신 내용을 받지 못해 마지막 내용을 표시합니다</p>
       )}
       {tab === "schedule" ? (
         renderSchedule(events, now)
@@ -204,7 +201,7 @@ function renderTab(tab: Tab, { state, onRefresh, now, usedCodes, dailies, filter
 
 function renderSchedule(events: readonly GameEvent[], now: Date) {
   if (events.length === 0) {
-    return <Notice title="예정된 일정이 없어요" detail="새 일정이 올라오면 여기에 표시돼요" />;
+    return <Notice title="예정된 일정이 없습니다" detail="새 일정이 등록되면 표시됩니다" />;
   }
   return <EventList events={events} now={now} />;
 }

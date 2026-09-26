@@ -18,7 +18,7 @@ describe("UpdateButton", () => {
       <UpdateButton update={{ status: "available", version: "1.3.0" }} onInstall={onInstall} />,
     );
 
-    expect(screen.getByRole("status")).toHaveTextContent("1.3.0 버전이 나왔어요");
+    expect(screen.getByRole("status")).toHaveTextContent("1.3.0 사용 가능");
     await userEvent.click(screen.getByRole("button", { name: "업데이트" }));
     expect(onInstall).toHaveBeenCalledOnce();
   });
@@ -31,14 +31,14 @@ describe("UpdateButton", () => {
       />,
     );
 
-    expect(screen.getByRole("status")).toHaveTextContent("1.3.0 버전을 받고 있어요");
-    expect(screen.getByRole("button", { name: "받는 중 42%" })).toBeDisabled();
+    expect(screen.getByRole("status")).toHaveTextContent("1.3.0 내려받는 중");
+    expect(screen.getByRole("button", { name: "내려받는 중 42%" })).toBeDisabled();
   });
 
   it("offers a retry after a failure", () => {
     render(<UpdateButton update={{ status: "failed", version: "1.3.0" }} onInstall={() => {}} />);
 
-    expect(screen.getByRole("status")).toHaveTextContent("업데이트하지 못했어요");
+    expect(screen.getByRole("status")).toHaveTextContent("업데이트 실패");
     expect(screen.getByRole("button", { name: "다시 시도" })).toBeEnabled();
   });
 });
