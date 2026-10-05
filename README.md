@@ -26,6 +26,7 @@ Run `mise install` once in the repository to get the pinned Node.js and pnpm, th
 | `pnpm format` | Format TypeScript, JSON, CSS, and Rust |
 | `pnpm dev` | Run only the web frontend in a browser at http://localhost:1420 |
 | `pnpm build` | Type check and build only the web frontend |
+| `pnpm tauri <command>` | Run other Tauri CLI commands, for example `pnpm tauri icon design/icon/app-icon.svg` |
 
 ## License
 

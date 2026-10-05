@@ -1,4 +1,4 @@
-// Placeholder shell until the tab issues build the real screens.
+// Placeholder until the real screens are built.
 export default function App() {
   return (
     <main>
