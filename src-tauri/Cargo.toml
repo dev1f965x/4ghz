@@ -9,7 +9,7 @@ edition = "2024"
 publish = false
 
 [lib]
-# A distinct library name avoids a name clash with the binary on Windows (rust-lang/cargo#8519).
+# Keeps the library and binary names distinct. The app version comes from package.json (tauri.conf.json).
 name = "fourghz_lib"
 crate-type = ["rlib"]
 
