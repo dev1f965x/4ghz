@@ -41,6 +41,10 @@ describe("toInstant", () => {
     [{ kind: "server", at: "2026-02-30T04:00" }],
     [{ kind: "server", at: "2026-10-05T25:00" }],
     [{ kind: "server", at: "2026-10-05T04:61" }],
+    [{ kind: "server", at: "2026-13-01T04:00" }],
+    [{ kind: "server", at: "2026-00-15T04:00" }],
+    [{ kind: "instant", at: "2026-02-30T00:00Z" }],
+    [{ kind: "instant", at: "2026-10-05T24:00Z" }],
   ] as const)("rejects %o", (time) => {
     expect(() => toInstant(time, "asia")).toThrow();
   });

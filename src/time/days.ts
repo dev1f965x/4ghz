@@ -63,7 +63,9 @@ function maxLabel(labels: Iterable<string>): string | null {
  */
 function undoWrongClock(state: GameDays, ctx: Context): GameDays {
   const { now } = ctx;
-  const latest = Math.max(state.lastAdvancedAt, ...Object.values(state.days).map((d) => d.fixedAt));
+  // A loop, not Math.max(...spread), so a huge number of records cannot overflow the call stack.
+  let latest = state.lastAdvancedAt;
+  for (const d of Object.values(state.days)) if (d.fixedAt > latest) latest = d.fixedAt;
   if (now >= latest - CLOCK_TOLERANCE_MS) return state;
   const entries = Object.entries(state.days);
   const days = Object.fromEntries(entries.filter(([, d]) => d.fixedAt <= now));
@@ -83,7 +85,12 @@ function undoWrongClock(state: GameDays, ctx: Context): GameDays {
     const kept = maxLabel(Object.keys(days));
     if (kept !== null && kept > lastFixedLabel) lastFixedLabel = kept;
   }
-  return { ...state, days, firstSeen, lastFixedLabel };
+  // A start set under the wrong clock would block tracking until that date. Processed labels
+  // still cannot be checked again, so moving it back to the current day cannot overlap.
+  const todayStart = gameDayStart(gameDayLabel(now, ctx.region), ctx.region);
+  const countFrom =
+    state.countFrom !== null && state.countFrom > now ? todayStart : state.countFrom;
+  return { ...state, days, firstSeen, lastFixedLabel, countFrom, lastAdvancedAt: now };
 }
 
 function minLabel(labels: readonly string[]): string {
@@ -166,7 +173,8 @@ export function advance(state: GameDays, ctx: Context): GameDays {
   next = seeChores(next, ctx);
   next = fixEndedDays(next, ctx);
   next = dropOldChecks(next, ctx);
-  return { ...next, lastAdvancedAt: ctx.now };
+  // Never moves back, so repeated small steps backward still add up to a detected wrong clock.
+  return { ...next, lastAdvancedAt: Math.max(next.lastAdvancedAt, ctx.now) };
 }
 
 /** Game-day labels whose daily chores can still be checked: the current day and, during the grace period, the previous one. */
@@ -189,6 +197,9 @@ export function setDailyCheck(
   choreId: string,
   checked: boolean,
 ): GameDays {
+  // A game that is not played has no checklist, so it never holds checks that a later
+  // region change could attach to another region's day.
+  if (!ctx.plays) throw new Error("The game is not played");
   if (!editableDays(state, ctx).includes(label)) throw new Error(`Day ${label} is not editable`);
   if (!ctx.dailyChores.some((c) => c.id === choreId && c.enabled)) {
     throw new Error(`Chore ${choreId} is not an enabled daily chore`);

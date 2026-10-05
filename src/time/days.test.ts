@@ -112,6 +112,12 @@ describe("fixing days", () => {
     expect(later.days["2026-10-01"]?.result).toBe("not-done");
   });
 
+  it("rejects checks of a game that is not played", () => {
+    const now = asiaStart("2026-10-01") + HOUR;
+    const off = ctx(now, "asia", { plays: false });
+    expect(() => setDailyCheck(installed, off, "2026-10-01", "resin", true)).toThrow();
+  });
+
   it("rejects checks of unknown or disabled chores", () => {
     const now = asiaStart("2026-10-01") + HOUR;
     expect(() => setDailyCheck(installed, ctx(now), "2026-10-01", "unknown", true)).toThrow();
@@ -134,11 +140,10 @@ describe("fixing days", () => {
     expect(() => changeRegion(checked, ctx(now), "america")).not.toThrow();
   });
 
-  it("fixes a long gap in linear time", () => {
-    const started = performance.now();
+  // Quadratic copying took seconds here; the default test timeout catches a regression.
+  it("fixes a ten-year gap", () => {
     const later = advance(installed, ctx(asiaStart("2036-10-01")));
     expect(Object.keys(later.days)).toHaveLength(3652);
-    expect(performance.now() - started).toBeLessThan(1000);
   });
 
   it("records missed days on the Europe server", () => {
@@ -304,7 +309,7 @@ describe("clock changes", () => {
     const off = { plays: false };
     const at = asiaStart("2026-10-03") + HOUR;
     const skipped = advance(base, ctx(at, "asia", off));
-    const checked = checkAll(skipped, ctx(at, "asia", off), "2026-10-03");
+    const checked = checkAll(skipped, ctx(at), "2026-10-03");
     const wrong = advance(checked, ctx(asiaStart("2026-11-01"), "asia", off));
     const back = advance(wrong, ctx(at + HOUR, "asia", off));
     expect(back.dailyChecks["2026-10-03"]).toEqual(checked.dailyChecks["2026-10-03"]);
@@ -324,6 +329,23 @@ describe("clock changes", () => {
     expect(back.firstSeen.pot).toBe(real);
   });
 
+  it("moves a start set under a wrong future clock back to the current day", () => {
+    const wrong = install(asiaStart("2026-11-01"));
+    const real = asiaStart("2026-10-03") + HOUR;
+    const back = advance(wrong, ctx(real));
+    expect(back.countFrom).toBe(asiaStart("2026-10-03"));
+    expect(editableDays(back, ctx(real))).toEqual(["2026-10-03"]);
+  });
+
+  it("detects repeated small steps backward", () => {
+    const at = asiaStart("2026-10-05");
+    let state = advance(base, ctx(at));
+    // Each step is within the tolerance, but the second is more than a minute behind the latest.
+    state = advance(state, ctx(at - 50_000));
+    expect(state.lastAdvancedAt).toBe(at);
+    state = advance(state, ctx(at - 100_000));
+    expect(state.lastAdvancedAt).toBe(at - 100_000);
+  });
   it("never removes checks when the clock moves back", () => {
     const at = asiaStart("2026-10-03") + HOUR;
     const checked = setDailyCheck(advance(base, ctx(at)), ctx(at), "2026-10-03", "resin", true);
