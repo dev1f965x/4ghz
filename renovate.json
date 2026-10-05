@@ -8,10 +8,27 @@
   "rangeStrategy": "bump",
   "packageRules": [
     {
-      "description": "Pin the Dev Container image by digest so a rebuild uses a reviewed image.",
-      "matchManagers": ["devcontainer"],
-      "matchDepTypes": ["image"],
-      "pinDigests": true
+      "description": "Node.js and pnpm move together in mise.toml and packageManager, so local runs and CI stay in step.",
+      "matchManagers": ["mise", "npm"],
+      "matchDepNames": ["node", "pnpm"],
+      "groupName": "toolchain (Node.js and pnpm)"
+    },
+    {
+      "description": "The Rust toolchain is reviewed on its own because it can change Clippy results.",
+      "matchManagers": ["custom.regex"],
+      "matchDepNames": ["rust"],
+      "groupName": "Rust toolchain"
+    },
+    {
+      "description": "Tauri crates and npm packages must stay on matching versions.",
+      "matchPackageNames": ["/^@tauri-apps\\//", "/^tauri(-.*)?$/"],
+      "groupName": "Tauri"
+    },
+    {
+      "description": "Group the remaining updates by ecosystem to keep the number of pull requests small.",
+      "matchManagers": ["cargo"],
+      "matchPackageNames": ["!/^tauri(-.*)?$/"],
+      "groupName": "Rust dependencies"
     },
     {
       "description": "Merge low-risk dev dependency patches after CI passes; 0.x has no compatibility promise.",
@@ -19,6 +36,17 @@
       "matchUpdateTypes": ["patch"],
       "matchCurrentVersion": "!/^v?0\\./",
       "automerge": true
+    }
+  ],
+  "customManagers": [
+    {
+      "description": "rust-toolchain.toml pins an exact Rust version.",
+      "customType": "regex",
+      "managerFilePatterns": ["/^rust-toolchain\\.toml$/"],
+      "matchStrings": ["channel = \"(?<currentValue>\\d+\\.\\d+\\.\\d+)\""],
+      "depNameTemplate": "rust",
+      "datasourceTemplate": "github-releases",
+      "packageNameTemplate": "rust-lang/rust"
     }
   ],
   "vulnerabilityAlerts": {

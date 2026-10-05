@@ -1,0 +1,13 @@
+Third-party notices for the Rust crates in 4ghz.
+Each crate is used unmodified. Its source is available from crates.io at the link below.
+{{#each licenses}}
+
+================================================================================
+{{name}}
+Used by:
+{{#each used_by}}
+  - {{crate.name}} {{crate.version}}: https://crates.io/crates/{{crate.name}}/{{crate.version}}
+{{/each}}
+
+{{text}}
+{{/each}}

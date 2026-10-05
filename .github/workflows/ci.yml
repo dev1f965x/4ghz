@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  check:
+    name: Check and build
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # Node.js and pnpm from mise.toml, the same versions as local development.
+      - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
+
+      # rustup installs the toolchain from rust-toolchain.toml on first use.
+      - name: Show the Rust toolchain
+        run: rustup show active-toolchain
+
+      # Prebuilt binaries instead of compiling them on every run.
+      - uses: taiki-e/install-action@e407f7bafb71fd004bc5c2da3032e5470cbb6ef0 # v2.87.24
+        with:
+          tool: cargo-deny,cargo-about
+
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+        with:
+          workspaces: src-tauri
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check
+        run: pnpm check
+
+      - name: Build the installer
+        run: pnpm app:build
+
+      - name: Check the installer size
+        shell: pwsh
+        run: |
+          $installer = Get-Item src-tauri/target/release/bundle/nsis/*-setup.exe
+          $mb = [math]::Round($installer.Length / 1MB, 2)
+          "Installer: $($installer.Name), $mb MB"
+          # Performance target: the installer stays under 10 MB.
+          if ($installer.Length -ge 10MB) { throw "Installer is $mb MB; the limit is 10 MB." }
