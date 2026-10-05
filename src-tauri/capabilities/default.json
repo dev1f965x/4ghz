@@ -3,5 +3,5 @@
   "identifier": "default",
   "description": "Capability for the main window. Each feature adds only the permissions it needs.",
   "windows": ["main"],
-  "permissions": []
+  "permissions": ["allow-read-store", "allow-write-store"]
 }
