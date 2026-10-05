@@ -12,9 +12,9 @@ The app is developed natively on Windows 11. Install these first:
 
 - Visual Studio Build Tools with the “Desktop development with C++” workload
 - Rust through rustup
-- mise, which installs the Node.js and pnpm versions the repository pins
+- mise, which installs the Node.js, pnpm, cargo-deny, and cargo-about versions the repository pins
 
-Run `mise install` once in the repository to get the pinned Node.js and pnpm, then `pnpm install`.
+Run `mise install` once in the repository to get the pinned tools, then `pnpm install`.
 
 <!-- This table is the only list of commands; AGENTS.md links here. -->
 
@@ -22,7 +22,10 @@ Run `mise install` once in the repository to get the pinned Node.js and pnpm, th
 | --- | --- |
 | `pnpm app:dev` | Run the app with hot reload |
 | `pnpm app:build` | Build the release app and the per-user installer (`src-tauri/target/release/bundle/nsis`) |
-| `pnpm check` | Lint and format check (Biome), type check, rustfmt, and Clippy |
+| `pnpm check` | All checks: Biome, type check, knip, tests, license check, `pnpm audit`, rustfmt, Clippy, and cargo-deny |
+| `pnpm test` | Unit tests (Vitest) |
+| `pnpm license-check` | Check npm package licenses against the project's license policy |
+| `pnpm notices` | Write the third-party notices to `public/third-party-notices.txt`; `pnpm app:build` runs it |
 | `pnpm format` | Format TypeScript, JSON, CSS, and Rust |
 | `pnpm dev` | Run only the web frontend in a browser at http://localhost:1420 |
 | `pnpm build` | Type check and build only the web frontend |
