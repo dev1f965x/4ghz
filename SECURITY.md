@@ -14,8 +14,10 @@ Fixes go to the `main` branch.
 
 ## Security checks
 
-GitHub secret scanning with push protection and Dependabot alerts are enabled for the repository. Renovate opens dependency update pull requests.
+GitHub secret scanning with push protection, Dependabot alerts, and CodeQL are enabled for the repository. Every pull request runs `pnpm audit` for npm packages and cargo-deny for Rust crates in the Windows build. Renovate opens dependency update pull requests.
 
 ## Accepted advisories
 
-None.
+| Advisory | Severity | Path | Why it is accepted | Reviewed | Revisit when |
+| --- | --- | --- | --- | --- | --- |
+| [GHSA-wrw7-89jp-8q8g](https://github.com/advisories/GHSA-wrw7-89jp-8q8g) (glib 0.18.5) | Medium | tauri → muda, tao, wry → gtk 0.18 → glib | glib is part of the Linux GTK backend. The app is built for Windows only, and `cargo tree -i glib --target x86_64-pc-windows-msvc` finds no glib in the Windows build. Tauri 2 (through tao, wry, and muda) requires the gtk 0.18 line, so glib cannot move to the fixed 0.20 line. | 2026-10-05 | Tauri moves to gtk 0.20 or later, or the app adds a Linux build |
