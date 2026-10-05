@@ -55,14 +55,22 @@ foreach ($theme in 'light', 'dark') {
   $pairs = @(
     @($t.text, $t.bg, 4.5, 'text on bg'), @($t.text, $t.surface, 4.5, 'text on surface'),
     @($t.muted, $t.bg, 4.5, 'muted on bg'), @($t.muted, $t.surface, 4.5, 'muted on surface'),
-    @($t.control, $t.surface, 3.0, 'control border on surface')
+    @($t.control, $t.surface, 3.0, 'control border on surface'), @($t.control, $t.bg, 3.0, 'control border on bg'),
+    @($t.surface, $t.text, 4.5, 'today badge'),
+    @($t.warning, $t.surface, 3.0, 'warning bar and icon on surface')
   )
   foreach ($g in 'genshin', 'hsr', 'zzz') {
     $a = $t.accent.$g
-    $pairs += , @($a.base, $t.surface, 4.5, "$g accent text on surface")
-    $pairs += , @($a.base, $t.bg, 3.0, "$g accent mark on bg")
+    $pairs += , @($a.base, $t.surface, 3.0, "$g accent (focus, tab, switch) on surface")
+    $pairs += , @($a.base, $t.bg, 3.0, "$g accent on bg")
     $pairs += , @($a.on, $a.base, 4.5, "$g text on accent fill")
-    $pairs += , @($a.text, $a.soft, 4.5, "$g text on soft fill")
+    $pairs += , @($a.text, $a.soft, 4.5, "$g accent text on soft fill")
+    $pairs += , @($a.text, $t.surface, 4.5, "$g accent text on surface")
+    $pairs += , @($t.text, $a.soft, 4.5, "text on $g soft fill")
+    $pairs += , @($t.muted, $a.soft, 4.5, "muted on $g soft fill")
+    $pairs += , @($a.base, $a.soft, 3.0, "$g accent border on soft fill")
+    # Every game's mark appears on every game's all-done tint.
+    foreach ($h in 'genshin', 'hsr', 'zzz') { $pairs += , @($t.accent.$h.base, $a.soft, 3.0, "$h mark on $g soft fill") }
   }
   foreach ($p in $pairs) {
     $r = Get-Contrast $p[0] $p[1]
@@ -80,6 +88,24 @@ foreach ($theme in 'light', 'dark') {
       if (-not $ok) { $failed++ }
       '{0,-34} dE {1,5:N1}  {2}' -f "$kind $($pair[0])/$($pair[1])", $d, $(if ($ok) { 'ok' } else { 'FAIL (needs 20)' })
     }
+  }
+}
+# theme.css must carry the same values as tokens.json until the app generates its CSS from the tokens.
+$css = Get-Content -Raw (Join-Path $PSScriptRoot 'theme.css')
+$names = @{ bg = 'bg'; surface = 'surface'; text = 'text'; muted = 'muted'; control = 'control'; hairline = 'hairline'; warning = 'warning' }
+foreach ($theme in 'light', 'dark') {
+  $block = [regex]::Match($css, "data-theme=""$theme""\]\s*\{([^}]*)\}").Groups[1].Value
+  $expected = @{}
+  foreach ($k in $names.Keys) { $expected["--$k"] = $tokens.$theme.$k }
+  $i = 0
+  foreach ($g in 'genshin', 'hsr', 'zzz') {
+    $a = $tokens.$theme.accent.$g
+    $expected["--g$i"] = $a.base; $expected["--g$i-on"] = $a.on; $expected["--g$i-soft"] = $a.soft; $expected["--g$i-text"] = $a.text
+    $i++
+  }
+  foreach ($k in $expected.Keys) {
+    $m = [regex]::Match($block, [regex]::Escape($k) + ':\s*(#[0-9a-fA-F]{6})\s*;')
+    if (-not $m.Success -or $m.Groups[1].Value -ne $expected[$k]) { $failed++; "theme.css $theme $k does not match tokens.json ($($expected[$k]))" }
   }
 }
 if ($failed) { "$failed check(s) failed"; exit 1 }
