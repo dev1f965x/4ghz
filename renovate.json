@@ -56,6 +56,16 @@
       "depNameTemplate": "rust",
       "datasourceTemplate": "github-releases",
       "packageNameTemplate": "rust-lang/rust"
+    },
+    {
+      "description": "The CI workflow pins the mise version that installs the tools.",
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.github/workflows/ci\\.yml$/"],
+      "matchStrings": ["version: (?<currentValue>\\d+\\.\\d+\\.\\d+)"],
+      "depNameTemplate": "mise",
+      "datasourceTemplate": "github-releases",
+      "packageNameTemplate": "jdx/mise",
+      "extractVersionTemplate": "^v(?<version>.*)$"
     }
   ],
   "vulnerabilityAlerts": {
