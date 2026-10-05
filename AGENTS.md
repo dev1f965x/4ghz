@@ -4,11 +4,18 @@ Guidance for coding agents working in this repository. Humans should start with 
 
 ## Project
 
-Unofficial Windows app with schedules, redeem codes, and a chore calendar for Genshin Impact, Honkai: Star Rail, and Zenless Zone Zero
+An unofficial Windows app with schedules, redeem codes, and a chore calendar for Genshin Impact, Honkai: Star Rail, and Zenless Zone Zero. Product and design documents are in Confluence (space GHZ); work is tracked in Jira (GHZ).
 
 ## Setup
 
-<!-- Development environment (Dev Container for web and backend projects) and how to start it. -->
+- Develop natively on Windows 11; there is no Dev Container. The prerequisites are listed in [README.md](README.md#development).
+- Tool versions are pinned in the repository and matched in CI.
+
+## Product rules
+
+- The app never reads, changes, or automates the games, game files, or game accounts.
+- No official logos, character icons, or artwork. Game names appear only as text.
+- No telemetry and no personal data. The only network requests are the data file and the latest release check.
 
 ## Commands
 
