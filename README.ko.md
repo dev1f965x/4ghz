@@ -12,9 +12,9 @@
 
 - Visual Studio Build Tools와 “C++를 사용한 데스크톱 개발” 워크로드
 - rustup으로 설치한 Rust
-- 저장소가 고정한 Node.js와 pnpm 버전을 설치하는 mise
+- 저장소가 고정한 Node.js, pnpm, cargo-deny, cargo-about 버전을 설치하는 mise
 
-저장소에서 `mise install`을 한 번 실행해 고정된 Node.js와 pnpm을 설치한 뒤 `pnpm install`을 실행하세요. 명령은 [README.md](README.md#development)의 표를 따릅니다.
+저장소에서 `mise install`을 한 번 실행해 고정된 도구를 설치한 뒤 `pnpm install`을 실행하세요. 명령은 [README.md](README.md#development)의 표를 따릅니다.
 
 ## 라이선스
 

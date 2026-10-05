@@ -17,3 +17,5 @@ accepted = [
 targets = ["x86_64-pc-windows-msvc"]
 ignore-build-dependencies = true
 ignore-dev-dependencies = true
+# Proc-macro dependencies (such as tauri-macros) are normal edges to cargo-about, so their build-time
+# crates are listed too. Listing more than ships is harmless.

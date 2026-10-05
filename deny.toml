@@ -6,7 +6,7 @@ targets = ["x86_64-pc-windows-msvc"]
 ignore = []
 
 [licenses]
-# Permissive licenses only (handbook allow-list), plus the recorded MPL-2.0 exceptions below.
+# Permissive licenses only (the project's license policy), plus the recorded MPL-2.0 exceptions below.
 allow = [
   "MIT",
   "Apache-2.0",
@@ -22,7 +22,7 @@ allow = [
   "Unicode-3.0",
 ]
 confidence-threshold = 0.9
-# The list mirrors the handbook policy, so not every entry is in use at any time.
+# The list states the policy, so not every entry is in use at any time.
 unused-allowed-license = "allow"
 exceptions = [
   # Shipped unmodified through tauri -> dirs; notice and source link are in the third-party notices.

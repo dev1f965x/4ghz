@@ -1,7 +1,7 @@
-// Fails when an npm dependency uses a license outside the allow-lists (handbook conventions, section 7).
+// Fails when an npm dependency uses a license outside the project's license policy.
 import { execSync } from "node:child_process";
 
-// Shipped with the app.
+// Shipped with the app: permissive licenses, the same set deny.toml allows for Rust crates, plus OFL for fonts.
 const shipped = new Set([
   "MIT",
   "Apache-2.0",
@@ -10,33 +10,36 @@ const shipped = new Set([
   "BSD-2-Clause",
   "BSD-3-Clause",
   "ISC",
+  "Zlib",
   "0BSD",
+  "CC0-1.0",
+  "MIT-0",
+  "Unlicense",
+  "Unicode-3.0",
   "OFL-1.1",
 ]);
-// Development tools only; never bundled into the app.
-const devOnly = new Set([
-  ...shipped,
-  // lightningcss is Vite's CSS minifier; it runs at build time and is not shipped.
-  "MPL-2.0",
-]);
 
-function licenses(args) {
+// Development tools only, never bundled into the app; each exception names its packages.
+const devExceptions = {
+  // lightningcss is Vite's CSS minifier; it runs at build time and is not shipped.
+  "MPL-2.0": /^lightningcss(-.+)?$/,
+};
+
+function licenses(scope) {
   // A fixed command string; pnpm is a .cmd shim on Windows, so it runs through the shell.
-  const out = execSync(["pnpm licenses list --json", ...args].join(" "), { encoding: "utf8" });
-  return JSON.parse(out);
+  const flag = scope === "shipped" ? " --prod" : "";
+  return JSON.parse(execSync(`pnpm licenses list --json${flag}`, { encoding: "utf8" }));
 }
 
 let failed = false;
-for (const [scope, args, allowed] of [
-  ["shipped", ["--prod"], shipped],
-  ["all", [], devOnly],
-]) {
-  for (const [license, packages] of Object.entries(licenses(args))) {
-    if (!allowed.has(license)) {
+for (const scope of ["shipped", "all"]) {
+  for (const [license, packages] of Object.entries(licenses(scope))) {
+    if (shipped.has(license)) continue;
+    const exception = scope === "all" ? devExceptions[license] : undefined;
+    for (const pkg of packages) {
+      if (exception?.test(pkg.name)) continue;
       failed = true;
-      console.error(
-        `${scope}: ${license} is not allowed: ${packages.map((p) => p.name).join(", ")}`,
-      );
+      console.error(`${scope}: ${pkg.name} uses ${license}, which is not allowed`);
     }
   }
 }
