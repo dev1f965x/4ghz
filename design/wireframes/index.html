@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>4ghz wireframes</title>
+<!--
+  Low-fidelity wireframes for the first release (Jira GHZ-2). Not shipped with the app.
+  Open with ?s=<screen>&lang=<ko|en>; capture.ps1 renders every screen with headless Edge.
+  All times are computed from one fixed "now" so countdowns and dates stay consistent.
+-->
+<style>
+  :root { --line:#9aa0a6; --soft:#eceef0; --mid:#c4c7cc; --ink:#202124; --sub:#5f6368; --faint:#6b7076; --accent:#5f6368; }
+  * { box-sizing:border-box; }
+  html,body { margin:0; height:100%; font-family:"Malgun Gothic","Segoe UI",sans-serif; color:var(--ink); background:#fff; font-size:14px; word-break:keep-all; }
+  .app { display:flex; flex-direction:column; height:100vh; }
+  header { display:flex; align-items:center; gap:10px; padding:8px 16px; border-bottom:1px solid var(--line); flex:none; }
+  .mark { font-weight:700; border:1px dashed var(--line); padding:2px 8px; }
+  .dd { border:1px solid var(--line); padding:5px 10px; min-width:190px; display:flex; gap:8px; align-items:center; }
+  .dd .sw { width:18px; height:18px; border:1px solid var(--ink); display:inline-flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; }
+  .dd .caret { margin-left:auto; }
+  .spacer { flex:1; }
+  .sync { display:flex; align-items:center; border:1px solid var(--line); }
+  .sync .st { padding:5px 10px; color:var(--sub); font-size:13px; border-right:1px solid var(--line); }
+  .sync .st.err { color:var(--ink); font-weight:700; }
+  .sync .go { padding:5px 10px; }
+  .btn { border:1px solid var(--line); padding:5px 10px; background:#fff; white-space:nowrap; display:inline-block; }
+  .btn.primary { background:var(--accent); color:#fff; border-color:var(--accent); }
+  .btn.pressed { background:var(--soft); font-weight:700; }
+  .btn.ghost { border-color:transparent; }
+  .banners { flex:none; }
+  .banner { margin:8px 16px 0; border:1px solid var(--line); background:var(--soft); padding:6px 10px; display:flex; gap:10px; align-items:center; }
+  .banner b { white-space:nowrap; }
+  .banner .msg { flex:1; color:var(--sub); }
+  .tabs { display:flex; gap:4px; padding:0 16px; border-bottom:1px solid var(--line); flex:none; align-items:flex-end; margin-top:8px; }
+  .tab { padding:9px 14px; color:var(--sub); }
+  .tab.on { color:var(--ink); font-weight:700; border-bottom:3px solid var(--accent); }
+  .tabs .right { margin-left:auto; padding-bottom:6px; }
+  main { flex:1; overflow:auto; padding:16px; min-height:0; }
+  h2 { font-size:15px; margin:0 0 8px; }
+  h3 { font-size:14px; margin:14px 0 6px; }
+  .muted { color:var(--sub); }
+  .faint { color:var(--faint); }
+  .row { display:flex; align-items:center; gap:12px; border:1px solid var(--mid); padding:9px 12px; margin-bottom:8px; }
+  .row.dim { background:#f6f7f8; }
+  .row.dim .mono { color:var(--sub); }
+  .chip { border:1px solid var(--line); padding:1px 6px; font-size:12px; white-space:nowrap; min-width:64px; text-align:center; }
+  .grow { flex:1; min-width:0; }
+  .mono { font-family:Consolas,monospace; }
+  .count { font-family:Consolas,monospace; color:var(--sub); white-space:nowrap; min-width:120px; text-align:right; }
+  .count.soon { color:var(--ink); font-weight:700; }
+  .copy { min-width:78px; text-align:center; }
+  .cb { display:inline-flex; gap:6px; align-items:center; white-space:nowrap; }
+  .box { width:16px; height:16px; border:1px solid var(--ink); display:inline-flex; align-items:center; justify-content:center; font-size:12px; flex:none; }
+  .box.off { border-color:var(--faint); background:var(--soft); }
+  .empty { border:1px dashed var(--line); padding:36px; text-align:center; margin-top:16px; }
+  .empty h3 { margin:0 0 6px; font-size:15px; }
+  .skel { height:44px; border:1px solid var(--mid); background:repeating-linear-gradient(90deg,var(--soft) 0 40%,#fff 40% 100%); margin-bottom:8px; }
+  .cal { display:grid; grid-template-columns: 330px 1fr; gap:20px; }
+  .narrow .cal { grid-template-columns: 1fr; }
+  .group { margin-bottom:12px; }
+  .ghead { display:flex; justify-content:space-between; gap:8px; font-weight:700; margin-bottom:4px; }
+  .ghead .muted { font-weight:400; font-size:13px; }
+  .chk { display:flex; gap:8px; align-items:center; padding:5px 0; border-bottom:1px solid var(--soft); }
+  .chk .end { color:var(--sub); font-size:13px; white-space:nowrap; }
+  .gapnote { border:1px dashed var(--line); padding:10px; color:var(--sub); }
+  .calhead { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+  .grid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
+  .dow { text-align:center; color:var(--sub); font-size:12px; }
+  .day { border:1px solid var(--mid); min-height:56px; padding:4px; font-size:12px; position:relative; }
+  .narrow .day { min-height:44px; }
+  .day .n { display:inline-block; min-width:20px; text-align:center; }
+  .day.out { color:var(--faint); border-style:dashed; }
+  .day.future { color:var(--faint); border-color:var(--soft); }
+  .day.today .n { background:var(--ink); color:#fff; border-radius:10px; font-weight:700; }
+  .day.pending { border:2px dotted var(--ink); }
+  .day.norec .marks::after { content:"—"; color:var(--faint); }
+  .day.all { background:var(--soft); border:3px double var(--ink); }
+  .day.all::after { content:"전부"; position:absolute; right:4px; top:3px; font-size:11px; font-weight:700; }
+  .en .day.all::after { content:"All"; }
+  .marks { display:flex; gap:3px; margin-top:6px; flex-wrap:wrap; }
+  .m { border:1px solid var(--ink); font-size:12px; line-height:16px; min-width:18px; text-align:center; font-weight:700; }
+  .legend { display:flex; flex-wrap:wrap; gap:6px 14px; font-size:12px; color:var(--sub); margin-top:10px; align-items:center; }
+  .lg { display:inline-flex; gap:5px; align-items:center; }
+  .lg .day { min-height:16px; width:22px; padding:0; }
+  .lg .day.all::after { content:none; }
+  .settings { display:grid; grid-template-columns:190px 1fr; gap:20px; }
+  .nav div { padding:8px 10px; border-left:3px solid transparent; }
+  .nav .on { border-left-color:var(--accent); font-weight:700; background:var(--soft); }
+  .nav hr { border:0; border-top:1px solid var(--soft); }
+  .field { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--soft); gap:12px; }
+  .sw2 { width:36px; height:20px; border:1px solid var(--ink); border-radius:10px; position:relative; flex:none; }
+  .sw2::after { content:""; position:absolute; top:2px; left:2px; width:14px; height:14px; border-radius:7px; background:var(--faint); }
+  .sw2.on { background:var(--accent); }
+  .sw2.on::after { left:18px; background:#fff; }
+  .radio { display:flex; gap:8px; align-items:center; padding:6px 0; }
+  .radio i { width:14px; height:14px; border:1px solid var(--ink); border-radius:7px; display:inline-block; }
+  .radio i.on { box-shadow:inset 0 0 0 3px #fff; background:var(--ink); }
+  .menu { position:absolute; top:42px; left:86px; border:1px solid var(--line); background:#fff; width:230px; box-shadow:0 2px 6px rgba(0,0,0,.15); z-index:5; }
+  .menu div { padding:8px 10px; display:flex; gap:8px; align-items:center; }
+  .menu .sel { background:var(--soft); font-weight:700; }
+  .scrim { position:fixed; inset:0; background:rgba(0,0,0,.35); display:flex; align-items:center; justify-content:center; z-index:9; }
+  .dialog { background:#fff; border:1px solid var(--ink); width:440px; padding:18px; }
+  .dialog h2 { font-size:16px; }
+  .dialog .acts { display:flex; justify-content:flex-end; gap:8px; margin-top:16px; }
+  .note { position:fixed; right:8px; bottom:4px; font-size:11px; color:#999; background:#fff; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+// Fixed reference moment in Korea time (UTC+9). Asia server resets at 05:00 KST.
+const NOW = Date.UTC(2026, 9, 6, 1, 42);        // 2026-10-06 10:42 KST, Tuesday
+const GRACE_NOW = Date.UTC(2026, 9, 5, 21, 12); // 2026-10-06 06:12 KST, inside the 05:00-07:00 grace period
+const kst = (y, mo, d, h, mi = 0) => Date.UTC(y, mo - 1, d, h - 9, mi);
+
+const q = new URLSearchParams(location.search);
+const s = q.get("s") || "schedule";
+const en = q.get("lang") === "en";
+if (q.get("narrow")) document.body.classList.add("narrow");
+if (en) { document.documentElement.lang = "en"; document.body.classList.add("en"); }
+
+const L = (ko, e) => (en ? e : ko);
+
+function left(target, now = NOW) {
+  const min = Math.round((target - now) / 60000);
+  const d = Math.floor(min / 1440), h = Math.floor((min % 1440) / 60), m = min % 60;
+  if (d > 0) return en ? `${d}d ${h}h` : `${d}일 ${h}시간`;
+  if (h > 0) return en ? `${h}h ${m}m` : `${h}시간 ${m}분`;
+  return en ? `${m}m` : `${m}분`;
+}
+const sameDay = (a, b) => new Date(a + 9 * 3600000).toISOString().slice(0, 10) === new Date(b + 9 * 3600000).toISOString().slice(0, 10);
+function when(t) {
+  const x = new Date(t + 9 * 3600000);
+  const mo = x.getUTCMonth() + 1, d = x.getUTCDate(), h = String(x.getUTCHours()).padStart(2, "0"), mi = String(x.getUTCMinutes()).padStart(2, "0");
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  return en ? `${months[mo - 1]} ${d}, ${h}:${mi}` : `${mo}월 ${d}일 ${h}:${mi}`;
+}
+
+const GAMES = [L("원신","Genshin Impact"), L("붕괴: 스타레일","Honkai: Star Rail"), L("젠레스 존 제로","Zenless Zone Zero")];
+const LETTERS = en ? ["G","H","Z"] : ["원","스","젠"];
+
+function header(opts = {}) {
+  const status = opts.status || `<span class="st">${L("10:42에 업데이트됨","Updated 10:42")}</span>`;
+  const dd = opts.settings ? `<span class="btn">← ${L("돌아가기","Back")}</span>` :
+    `<span class="dd"><span class="sw">${LETTERS[0]}</span><span>${GAMES[0]}</span><span class="caret">▾</span></span>`;
+  return `<header><span class="mark">4ghz</span>${dd}<span class="spacer"></span>
+    <span class="sync">${status}<span class="go">↻ ${L("새로 고침","Refresh")}</span></span>
+    <span class="btn ${opts.settings ? "pressed" : ""}">⚙ ${L("설정","Settings")}</span></header>`;
+}
+const banner = (title, msg, actions = "") => `<div class="banner"><b>${title}</b><span class="msg">${msg}</span>${actions}</div>`;
+const firstRun = () => banner(L("서버와 게임을 확인하세요","Check your server and games"), L("기본 서버는 아시아입니다.","The default server is Asia."), `<span class="btn">${L("설정 열기","Open settings")}</span><span class="btn ghost">✕</span>`);
+function tabs(i, right = "") {
+  const t = [L("일정","Schedule"), L("코드","Codes"), L("캘린더","Calendar")];
+  return `<nav class="tabs">${t.map((x, k) => `<span class="tab ${k === i ? "on" : ""}">${x}</span>`).join("")}<span class="right">${right}</span></nav>`;
+}
+
+// Schedule
+function schedule() {
+  const ongoing = [
+    [L("이벤트","Event"), L("기간 한정 이벤트 (예시)","Limited-time event (sample)"), kst(2026,10,1,11), kst(2026,10,21,5), true],
+    [L("엔드 콘텐츠","Endgame"), L("나선 비경","Spiral Abyss"), kst(2026,9,16,5), kst(2026,10,16,5), false],
+  ];
+  const upcoming = [
+    [L("방송","Livestream"), L("버전 7.2 특별 방송 (예시)","Version 7.2 livestream (sample)"), kst(2026,10,24,21), null, true],
+    [L("점검","Maintenance"), L("버전 7.2 업데이트 점검 (예시)","Version 7.2 maintenance (sample)"), kst(2026,11,4,7), kst(2026,11,4,12), true],
+  ];
+  const row = (r, on) => `<div class="row"><span class="chip">${r[0]}</span><span class="grow"><b>${r[1]}</b><br><span class="muted">${when(r[2])}${r[3] ? " – " + (sameDay(r[2], r[3]) ? when(r[3]).split(" ").pop() : when(r[3])) : ""}</span></span>
+    <span class="count">${on ? L("남은 시간 ","") + left(r[3]) + L(""," left") : L("시작까지 ","Starts in ") + left(r[2])}</span>${r[4] ? `<span class="btn">${L("공지 열기","Open announcement")} ↗</span>` : '<span style="width:96px"></span>'}</div>`;
+  return `<h2>${L("진행 중","Ongoing")}</h2>${ongoing.map(r => row(r, true)).join("")}<h2 style="margin-top:16px">${L("예정","Upcoming")}</h2>${upcoming.map(r => row(r, false)).join("")}`;
+}
+const loading = () => `<h2 class="muted">${L("불러오는 중","Loading")}</h2>${'<div class="skel"></div>'.repeat(4)}`;
+const couldNotLoad = () => `<div class="empty"><h3>${L("데이터를 불러오지 못했습니다","Data couldn’t be loaded")}</h3><p class="muted">${L("인터넷 연결을 확인하고 다시 시도하세요.","Check your internet connection and try again.")}</p><span class="btn primary">${L("다시 시도","Try again")}</span></div>`;
+
+// Codes
+function codes(opts = {}) {
+  const rows = [
+    ["K7TQ2M9XPLRA", L("원석 60, 모라 10,000","60 Primogems, 10,000 Mora"), kst(2026,10,7,0,59), false],
+    ["B4NW8ZC3HJDE", L("원석 100, 영웅의 경험 5","100 Primogems, 5 Hero’s Wit"), null, false],
+    ["R2VD6YK8QFMS", L("원석 30, 정제용 광물 5","30 Primogems, 5 Mystic Enhancement Ore"), kst(2026,10,13,0,59), true],
+  ];
+  const exp = t => t === null ? L("만료 시각 미정","Expiry unknown") : L(`${when(t)}에 만료`, `Expires ${when(t)}`);
+  return rows.map((r, i) => `<div class="row ${r[3] ? "dim" : ""}">
+      <span class="grow"><span class="mono" style="font-size:17px;letter-spacing:1px">${r[0]}</span><br><span class="muted">${r[1]} · ${exp(r[2])}</span></span>
+      ${r[2] && r[2] - NOW < 86400000 ? `<span class="count soon">${left(r[2])}${L(" 남음"," left")}</span>` : '<span class="count"></span>'}
+      <span class="btn copy">${i === 0 && opts.copied ? "✓ " + L("복사됨","Copied") : L("복사","Copy")}</span>
+      <span class="cb"><span class="box">${r[3] ? "✓" : ""}</span>${L("사용함","Redeemed")}</span></div>`).join("");
+}
+const redeemLink = () => `<span class="btn">${L("교환 페이지 열기","Open redemption page")} ↗</span>`;
+
+// Calendar
+function checklist(o = {}) {
+  const ro = o.readonly;
+  // Read-only: nothing stored can be shown, so every box is unchecked and disabled.
+  const box = (on) => `<span class="box ${ro ? "off" : ""}">${on && !ro ? "✓" : ""}</span>`;
+  const daily = [[L("일일 의뢰 4회","4 daily commissions"), true], [L("레진 소모","Spend resin"), false]];
+  const nextDaily = o.america ? L("10월 7일 18:00 초기화","Resets Oct 7 at 18:00") : L("내일 05:00 초기화","Resets tomorrow at 05:00");
+  const weekly = o.america ? L("10월 12일(월) 18:00 초기화","Resets Mon, Oct 12 at 18:00") : L("10월 12일(월) 05:00 초기화","Resets Mon, Oct 12 at 05:00");
+  const abyssEnd = o.america ? L("10월 16일 18:00 종료","Ends Oct 16, 18:00") : L("10월 16일 05:00 종료","Ends Oct 16, 05:00");
+  const theaterEnd = o.america ? L("11월 1일 18:00 종료","Ends Nov 1, 18:00") : L("11월 1일 05:00 종료","Ends Nov 1, 05:00");
+  const done = (n, total) => ro ? `— / ${total}` : `${n} / ${total}`;
+  return `
+  ${ro ? `<div class="gapnote" style="margin-bottom:10px">${L("이번 실행에서는 체크를 끕니다.","Checks are turned off for this session.")}</div>` : ""}
+  ${o.grace ? `<div class="group"><div class="ghead"><span>${L("전날 (10월 5일)","Previous day (Oct 5)")}</span><span class="muted">${L("07:00까지 수정 가능","Editable until 07:00")}</span></div>
+     ${[[daily[0][0], true], [daily[1][0], false]].map(c => `<div class="chk">${box(c[1])}${c[0]}</div>`).join("")}</div>` : ""}
+  <div class="group"><div class="ghead"><span>${L("일간","Daily")}</span><span class="muted">${o.gap ? "" : `${done(1, 2)} · ${nextDaily}`}</span></div>
+    ${o.gap ? `<div class="gapnote">${L("서버를 미국으로 바꿨습니다. 일간 숙제는 10월 7일 18:00부터 다시 기록합니다.","You changed the server to America. Daily chores are recorded again from Oct 7, 18:00.")}</div>` :
+      daily.map(c => `<div class="chk">${box(c[1])}${c[0]}</div>`).join("")}</div>
+  <div class="group"><div class="ghead"><span>${L("주간","Weekly")}</span><span class="muted">${done(1, 2)} · ${weekly}</span></div>
+    <div class="chk">${box(true)}${L("주간 보스 3회","Weekly bosses (3)")}</div><div class="chk">${box(false)}${L("평판 임무","Reputation bounties")}</div></div>
+  <div class="group"><div class="ghead"><span>${L("기간","Periodic")}</span><span class="muted">${done(0, 2)}</span></div>
+    <div class="chk">${box(false)}<span class="grow">${L("나선 비경","Spiral Abyss")}</span><span class="end">${abyssEnd}</span></div>
+    <div class="chk">${box(false)}<span class="grow">${L("환상극","Imaginarium Theater")}</span><span class="end">${theaterEnd}</span></div>
+    <div class="chk"><span class="box off"></span><span class="grow faint">${L("기간 숙제 (예시)","Periodic chore (sample)")}</span><span class="end faint">${L("진행 중인 기간 없음","No current period")}</span></div></div>`;
+}
+
+function month(o = {}) {
+  const dows = en ? ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"] : ["월","화","수","목","금","토","일"];
+  // Oct 1, 2026 is a Thursday: Sep 28-30 lead in, Nov 1 closes the last week.
+  const marks = { 1: [0,1,2], 2: [0,1,2], 3: [0,2], 4: [0,1,2], 5: [0,1] };
+  const today = o.grace ? 6 : 6;
+  let cells = [28, 29, 30].map(d => `<div class="day out"><span class="n">${d}</span></div>`).join("");
+  for (let d = 1; d <= 31; d++) {
+    let cls = "", ms = marks[d] || [];
+    // Read-only: stored records can't be read, so every past day shows no record.
+    if (o.norec && d < today) { cls = "norec"; ms = []; }
+    // Pending keeps the marks already earned; the result is fixed when the grace period ends.
+    if (d === 5 && o.grace) cls = "pending";
+    if (d === today) cls += " today";
+    if (d > today) cls += " future";
+    if (ms.length === 3) cls += " all";
+    cells += `<div class="day ${cls}"><span class="n">${d}</span><div class="marks">${ms.map(i => `<span class="m">${LETTERS[i]}</span>`).join("")}</div></div>`;
+  }
+  cells += `<div class="day out"><span class="n">1</span></div>`;
+  const lg = (cls, label, inner = "") => `<span class="lg"><span class="day ${cls}">${inner}</span>${label}</span>`;
+  return `<div class="calhead"><span class="btn" aria-label="${L("이전 달","Previous month")}">‹</span><b>${L("2026년 10월","October 2026")}</b><span class="btn" aria-label="${L("다음 달","Next month")}">›</span><span class="spacer"></span><span class="btn">${L("오늘","Today")}</span></div>
+    <div class="grid">${dows.map(d => `<div class="dow">${d}</div>`).join("")}${cells}</div>
+    <div class="legend">${LETTERS.map((x, i) => `<span class="lg"><span class="m">${x}</span>${GAMES[i]} ${L("완료","done")}</span>`).join("")}
+      ${lg("all", L("하는 게임 모두 완료","All played games done"))}${lg("today", L("오늘","Today"), '<span class="n">6</span>')}${lg("pending", L("확정 대기","Pending"))}${lg("norec", L("기록 없음","No record"), '<div class="marks"></div>')}${lg("future", L("다가올 날","Upcoming day"))}</div>
+    ${o.norec ? `<p class="muted">${L("기록을 읽을 수 없어 지난 날을 표시하지 않습니다.","Past days aren’t shown because records can’t be read.")}</p>` : ""}`;
+}
+
+function calendar(o = {}) {
+  if (o.none) return `<div class="cal"><div><div class="empty"><h3>${L("켜 둔 숙제가 없습니다","No chores are turned on")}</h3><p class="muted">${L("설정에서 원신 숙제를 켜세요.","Turn on chores for Genshin Impact in Settings.")}</p><span class="btn">${L("설정 열기","Open settings")}</span></div></div><div>${month()}</div></div>`;
+  if (o.notplayed) return `<div class="cal"><div><div class="empty"><h3>${L("원신은 기록하지 않습니다","Genshin Impact isn’t tracked")}</h3><p class="muted">${L("플레이하는 게임에서 빠져 있습니다. 설정에서 켜면 기록합니다.","It’s turned off in your games. Turn it on in Settings to track it.")}</p><span class="btn">${L("설정 열기","Open settings")}</span></div></div><div>${month()}</div></div>`;
+  if (o.nodata) return `<div class="cal"><div>${couldNotLoad()}</div><div>${month()}</div></div>`;
+  return `<div class="cal"><div>${checklist(o)}</div><div>${month(o)}</div></div>`;
+}
+
+// Settings
+function settings(pane) {
+  const nav = [GAMES[0], GAMES[1], GAMES[2], "-", L("언어","Language"), L("데이터","Data"), L("정보","About")];
+  const keys = ["g0","g1","g2","-","lang","data","about"];
+  const navHtml = nav.map((n, i) => n === "-" ? "<hr>" : `<div class="${keys[i] === pane ? "on" : ""}">${n}</div>`).join("");
+  let body = "";
+  if (pane === "g0") {
+    const sw = (label, on) => `<div class="field"><span>${label}</span><span class="sw2 ${on ? "on" : ""}" role="switch"></span></div>`;
+    body = `<h2>${GAMES[0]}</h2>${sw(L("플레이 중","Playing"), true)}
+      <div class="field"><span>${L("서버","Server")}</span><span class="dd" style="min-width:150px"><span>${L("아시아","Asia")}</span><span class="caret">▾</span></span></div>
+      <h3>${L("일간 숙제","Daily chores")}</h3>${sw(L("일일 의뢰 4회","4 daily commissions"), true)}${sw(L("레진 소모","Spend resin"), true)}${sw(L("주전자 정리","Serenitea Pot"), false)}
+      <h3>${L("주간 숙제","Weekly chores")}</h3>${sw(L("주간 보스 3회","Weekly bosses (3)"), true)}${sw(L("평판 임무","Reputation bounties"), true)}
+      <h3>${L("기간 숙제","Periodic chores")}</h3>${sw(L("나선 비경","Spiral Abyss"), true)}${sw(L("환상극","Imaginarium Theater"), true)}`;
+  } else if (pane === "lang") {
+    const r = (label, on) => `<div class="radio"><i class="${on ? "on" : ""}"></i>${label}</div>`;
+    body = `<h2>${L("언어","Language")}</h2>${r(L("Windows 설정 따르기","Use the Windows setting"), true)}${r("한국어", false)}${r("English", false)}`;
+  } else if (pane === "data") {
+    body = `<h2>${L("데이터","Data")}</h2>
+      <div class="field"><span>${L("일정과 코드","Schedules and codes")}<br><span class="muted">${L("10월 6일 10:42에 업데이트됨","Updated Oct 6, 10:42")}</span></span><span class="btn">↻ ${L("새로 고침","Refresh")}</span></div>
+      <div class="field"><span>${L("기록과 설정 위치","Records and settings location")}<br><span class="muted mono">%LOCALAPPDATA%\\io.github.dev1f965x.4ghz</span></span><span class="btn">${L("데이터 폴더 열기","Open data folder")}</span></div>
+      <p class="muted">${L("앱을 삭제할 때 앱 데이터 삭제를 선택하지 않으면 기록이 남습니다.","Records stay after uninstall unless you choose to delete app data.")}</p>`;
+  } else if (pane === "about") {
+    body = `<h2>4ghz 0.1.0</h2>
+      <p>${L("4ghz는 이 게임들의 퍼블리셔나 권리자와 제휴하거나 승인받지 않은 비공식 앱입니다.","4ghz is an unofficial app, not affiliated with or endorsed by the publishers or owners of these games.")}</p>
+      <p class="muted">${L("원신, 붕괴: 스타레일, 젠레스 존 제로는 각 권리자의 상표입니다.","Genshin Impact, Honkai: Star Rail, and Zenless Zone Zero are trademarks of their respective owners.")}</p>
+      <h3>${L("개인정보","Privacy")}</h3>
+      <p class="muted">${L("개인정보를 모으지 않습니다. 데이터 파일과 새 버전 정보를 GitHub에서 받으며, GitHub는 이때 IP 주소를 받습니다.","4ghz collects no personal data. It downloads the data file and release information from GitHub, which receives your IP address.")}</p>
+      <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><span class="btn">${L("MIT 라이선스","MIT License")}</span><span class="btn">${L("서드파티 고지","Third-party notices")}</span><span class="btn">${L("의견 보내기","Send feedback")} ↗</span></div>`;
+  }
+  return `<div class="settings"><div class="nav">${navHtml}</div><div>${body}</div></div>`;
+}
+// The body depends on whether the current Asia day (Oct 6) has checks: with checks it is fixed and
+// counting resumes with the next America day (Oct 7, 18:00); without checks it is discarded (Oct 6, 18:00).
+const regionDialog = (checked) => `<div class="scrim"><div class="dialog" role="dialog"><h2>${L("서버를 미국으로 바꿀까요?","Change the server to America?")}</h2>
+  <p>${checked
+    ? L("10월 6일 기록은 지금까지 체크한 대로 확정됩니다. 일간 숙제는 10월 7일 18:00부터 미국 서버 기준으로 다시 기록하며, 그 전에는 체크할 수 없습니다.","The record for Oct 6 is kept as checked so far. Daily chores are recorded again on America server time from Oct 7, 18:00, and can’t be checked before then.")
+    : L("10월 6일은 체크한 숙제가 없어 기록하지 않습니다. 일간 숙제는 10월 6일 18:00부터 미국 서버 기준으로 다시 기록하며, 그 전에는 체크할 수 없습니다.","Oct 6 has no checks, so it isn’t recorded. Daily chores are recorded again on America server time from Oct 6, 18:00, and can’t be checked before then.")}</p>
+  <div class="acts"><span class="btn">${L("취소","Cancel")}</span><span class="btn primary">${L("서버 바꾸기","Change server")}</span></div></div></div>`;
+
+// Screens
+const screens = {
+  "schedule": () => [header(), firstRun(), tabs(0), schedule()],
+  "schedule-loading": () => [header({ status: `<span class="st">${L("불러오는 중","Loading")}</span>` }), "", tabs(0), loading()],
+  "schedule-empty": () => [header(), "", tabs(0), `<div class="empty"><h3>${L("예정된 일정이 없습니다","No upcoming schedule")}</h3><p class="muted">${L("데이터는 10월 6일 10:42에 업데이트됐습니다.","Data was updated Oct 6, 10:42.")}</p></div>`],
+  "schedule-error": () => [header({ status: `<span class="st err">${L("데이터 없음","No data")}</span>` }), "", tabs(0), couldNotLoad()],
+  "schedule-refreshed": () => [header({ status: `<span class="st">${L("방금 업데이트됨","Updated just now")}</span>` }), "", tabs(0), schedule()],
+  "schedule-refresh-failed": () => [header({ status: `<span class="st err">${L("새로 고침 실패 · 10:42에 업데이트됨","Refresh failed · Updated 10:42")}</span>` }), "", tabs(0), schedule()],
+  "schedule-stale": () => [header({ status: `<span class="st">${L("10월 5일 21:10에 업데이트됨","Updated Oct 5, 21:10")}</span>` }),
+    banner(L("데이터가 오래됐을 수 있습니다","Data may be out of date"), L("마지막 새로 고침에 실패했습니다.","The last refresh failed."), `<span class="btn">${L("다시 시도","Try again")}</span>`) +
+    banner(L("새 버전 0.2.0을 받을 수 있습니다","Version 0.2.0 is available"), "", `<span class="btn">${L("릴리스 열기","Open release")} ↗</span><span class="btn ghost">✕</span>`), tabs(0), schedule()],
+  "schedule-retired": () => [header(), banner(L("새 데이터를 받을 수 없습니다","New data isn’t available"), L("앱을 업데이트하세요. 마지막으로 받은 데이터를 보여 줍니다.","Update the app. The last data received is shown."), `<span class="btn">${L("릴리스 열기","Open release")} ↗</span>`), tabs(0), schedule()],
+  "dropdown": () => [header(), "", tabs(0), schedule(), `<div class="menu">${GAMES.map((g, i) => `<div class="${i === 0 ? "sel" : ""}"><span class="sw" style="border:1px solid #202124;width:18px;text-align:center;font-size:11px;font-weight:700">${LETTERS[i]}</span>${g}${i === 0 ? " ✓" : ""}</div>`).join("")}</div>`],
+  "codes": () => [header(), "", tabs(1, redeemLink()), `<h2>${L("사용 가능한 코드","Active codes")}</h2>` + codes({ copied: true })],
+  "codes-empty": () => [header(), "", tabs(1, redeemLink()), `<div class="empty"><h3>${L("사용 가능한 코드가 없습니다","No active codes")}</h3><p class="muted">${L("새 코드가 나오면 여기에 표시됩니다.","New codes appear here.")}</p></div>`],
+  "codes-error": () => [header({ status: `<span class="st err">${L("데이터 없음","No data")}</span>` }), "", tabs(1, redeemLink()), couldNotLoad()],
+  "calendar": () => [header(), "", tabs(2), calendar()],
+  "calendar-grace": () => [header({ status: `<span class="st">${L("06:12에 업데이트됨","Updated 06:12")}</span>` }), "", tabs(2), calendar({ grace: true })],
+  "calendar-gap": () => [header(), "", tabs(2), calendar({ gap: true, america: true })],
+  "calendar-none": () => [header(), "", tabs(2), calendar({ none: true })],
+  "calendar-notplayed": () => [header(), "", tabs(2), calendar({ notplayed: true })],
+  "calendar-nodata": () => [header({ status: `<span class="st err">${L("데이터 없음","No data")}</span>` }), "", tabs(2), calendar({ nodata: true })],
+  "calendar-readonly": () => [header(), banner(L("기록을 읽을 수 없습니다","Records can’t be read"), L("기록 파일이 손상됐거나 더 새 버전에서 만들어졌습니다. 이번 실행에서는 체크를 끕니다.","The records file is damaged or was made by a newer version. Checks are turned off for this session."), `<span class="btn">${L("데이터 폴더 열기","Open data folder")}</span>`), tabs(2), calendar({ readonly: true, norec: true })],
+  "settings": () => [header({ settings: true }), "", "", settings("g0")],
+  "settings-region": () => [header({ settings: true }), "", "", settings("g0"), regionDialog(true)],
+  "settings-region-unchecked": () => [header({ settings: true }), "", "", settings("g0"), regionDialog(false)],
+  "settings-language": () => [header({ settings: true }), "", "", settings("lang")],
+  "settings-data": () => [header({ settings: true }), "", "", settings("data")],
+  "settings-about": () => [header({ settings: true }), "", "", settings("about")],
+};
+const [h, b, t, body, overlay = ""] = (screens[s] || screens.schedule)();
+document.getElementById("root").innerHTML = `<div class="app">${h}<div class="banners">${b}</div>${t}<main>${body}</main></div>${overlay}<span class="note">wireframe · ${s}${en ? " · en" : ""}</span>`;
+</script>
+</body>
+</html>
