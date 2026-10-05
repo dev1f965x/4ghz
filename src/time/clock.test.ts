@@ -34,6 +34,16 @@ describe("toInstant", () => {
     expect(() => toInstant({ kind: "server", at: "2026-10-16 04:00" }, "asia")).toThrow();
     expect(() => toInstant({ kind: "instant", at: "soon" }, "asia")).toThrow();
   });
+
+  it.each([
+    // No offset: would silently use the PC's time zone.
+    [{ kind: "instant", at: "2026-10-05T10:00" }],
+    [{ kind: "server", at: "2026-02-30T04:00" }],
+    [{ kind: "server", at: "2026-10-05T25:00" }],
+    [{ kind: "server", at: "2026-10-05T04:61" }],
+  ] as const)("rejects %o", (time) => {
+    expect(() => toInstant(time, "asia")).toThrow();
+  });
 });
 
 describe("game days", () => {
@@ -58,6 +68,19 @@ describe("game days", () => {
   ])("starts and ends the 2026-10-06 game day in %s", (region, start, end) => {
     expect(gameDayStart("2026-10-06", region)).toBe(utc(start));
     expect(gameDayEnd("2026-10-06", region)).toBe(utc(end));
+  });
+
+  it.each<[string, Region, string]>([
+    ["2027-01-01T08:59:59.999Z", "america", "2026-12-31"],
+    ["2027-01-01T09:00:00Z", "america", "2027-01-01"],
+    ["2028-03-01T08:00:00Z", "america", "2028-02-29"],
+  ])("labels %s in %s across year and leap boundaries", (iso, region, label) => {
+    expect(gameDayLabel(utc(iso), region)).toBe(label);
+  });
+
+  it("starts and ends a TW/HK/MO game day like Asia", () => {
+    expect(gameDayStart("2026-10-06", "tw_hk_mo")).toBe(gameDayStart("2026-10-06", "asia"));
+    expect(gameDayEnd("2026-10-06", "tw_hk_mo")).toBe(utc("2026-10-06T20:00:00Z"));
   });
 
   it("switches exactly at the reset", () => {
@@ -92,6 +115,17 @@ describe("weeks", () => {
 
   it("ends a week seven days after its Monday reset", () => {
     expect(weekEnd("2026-10-05", "america")).toBe(utc("2026-10-12T09:00:00Z"));
+    expect(weekEnd("2026-10-05", "tw_hk_mo")).toBe(utc("2026-10-11T20:00:00Z"));
+  });
+
+  it.each<[string, Region, string]>([
+    // TW/HK/MO week across a year end.
+    ["2027-01-03T19:59:00Z", "tw_hk_mo", "2026-12-28"],
+    ["2027-01-03T20:00:00Z", "tw_hk_mo", "2027-01-04"],
+    // Europe week around a leap day.
+    ["2028-03-01T12:00:00Z", "europe", "2028-02-28"],
+  ])("labels the week at %s in %s across year and leap boundaries", (iso, region, label) => {
+    expect(weekLabel(utc(iso), region)).toBe(label);
   });
 });
 

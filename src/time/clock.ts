@@ -24,19 +24,27 @@ function offsetMs(region: Region): number {
 }
 
 const SERVER_TIME = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/;
+// An instant must carry its offset; without one, Date.parse would use the PC's time zone.
+const INSTANT = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d{1,3})?)?(Z|[+-]\d{2}:\d{2})$/;
 const LABEL = /^(\d{4})-(\d{2})-(\d{2})$/;
 
 /** Resolves a data file time to an instant; server-local times use the region's offset. */
 export function toInstant(time: Time, region: Region): number {
   if (time.kind === "instant") {
-    const ms = Date.parse(time.at);
+    const ms = INSTANT.test(time.at) ? Date.parse(time.at) : Number.NaN;
     if (Number.isNaN(ms)) throw new Error(`Invalid instant: ${time.at}`);
     return ms;
   }
   const m = SERVER_TIME.exec(time.at);
   if (!m) throw new Error(`Invalid server time: ${time.at}`);
   const [, y, mo, d, h, mi] = m.map(Number);
-  return Date.UTC(y, mo - 1, d, h, mi) - offsetMs(region);
+  const utc = Date.UTC(y, mo - 1, d, h, mi);
+  // Date.UTC rolls over out-of-range fields (Feb 30 becomes Mar 2), so reject what does not round-trip.
+  const back = new Date(utc);
+  if (back.getUTCDate() !== d || back.getUTCHours() !== h || back.getUTCMinutes() !== mi) {
+    throw new Error(`Invalid server time: ${time.at}`);
+  }
+  return utc - offsetMs(region);
 }
 
 function pad(n: number): string {

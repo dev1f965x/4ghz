@@ -6,7 +6,7 @@ import { addDays, DAY, gameDayEnd, gameDayLabel, gameDayStart, type Region } fro
 export const GRACE_MS = 2 * 60 * 60 * 1000;
 // A clock that moved back by more than this is treated as wrong (Design Doc, Clock changes).
 const CLOCK_TOLERANCE_MS = 60 * 1000;
-// Checks of cycles that ended longer ago than this are no longer kept.
+// Checks of a recorded day are kept this long after the day was fixed.
 const CHECK_RETENTION_MS = 7 * DAY;
 
 type DayResult = "done" | "not-done" | "untracked";
@@ -21,8 +21,10 @@ export type GameDays = {
   firstSeen: Record<string, number>;
   /** Start of the first game day that is recorded. */
   countFrom: number | null;
-  /** Highest game-day label already processed, recorded or skipped. */
+  /** Highest game-day label already processed, whether recorded or skipped. */
   lastFixedLabel: string | null;
+  /** Latest instant the state was brought up to; detects a clock that moved back. */
+  lastAdvancedAt: number;
   days: Record<string, DayRecord>;
   /** Checked daily chores by game-day label: choreId -> checkedAt. */
   dailyChecks: Record<string, Record<string, number>>;
@@ -34,6 +36,7 @@ export function emptyGameDays(): GameDays {
     firstSeen: {},
     countFrom: null,
     lastFixedLabel: null,
+    lastAdvancedAt: 0,
     days: {},
     dailyChecks: {},
   };
@@ -53,12 +56,38 @@ function maxLabel(labels: Iterable<string>): string | null {
   return max;
 }
 
-/** Removes records made under a clock that has since moved back. */
-function undoWrongClock(state: GameDays, now: number): GameDays {
-  const latest = Math.max(0, ...Object.values(state.days).map((d) => d.fixedAt));
+/**
+ * Undoes what a wrong future clock did once the clock moves back: removes records made after
+ * `now`, reprocesses the days that had not ended by `now`, and moves first sightings back to `now`.
+ * Checks are kept, so the corrected days are recorded again from them.
+ */
+function undoWrongClock(state: GameDays, ctx: Context): GameDays {
+  const { now } = ctx;
+  const latest = Math.max(state.lastAdvancedAt, ...Object.values(state.days).map((d) => d.fixedAt));
   if (now >= latest - CLOCK_TOLERANCE_MS) return state;
-  const days = Object.fromEntries(Object.entries(state.days).filter(([, d]) => d.fixedAt <= now));
-  return { ...state, days, lastFixedLabel: maxLabel(Object.keys(days)) };
+  const entries = Object.entries(state.days);
+  const days = Object.fromEntries(entries.filter(([, d]) => d.fixedAt <= now));
+  const firstSeen = Object.fromEntries(
+    Object.entries(state.firstSeen).map(([id, at]) => [id, Math.min(at, now)]),
+  );
+  // Days whose grace period had passed by `now` stay processed, so days skipped while the game
+  // was off are not recorded later; days from the first removed record onward are reprocessed.
+  let lastFixedLabel = state.lastFixedLabel;
+  if (lastFixedLabel !== null) {
+    const endedByNow = addDays(gameDayLabel(now - GRACE_MS, ctx.region), -1);
+    const removed = entries.filter(([, d]) => d.fixedAt > now).map(([label]) => label);
+    const bounds = [lastFixedLabel, endedByNow];
+    if (removed.length > 0) bounds.push(addDays(minLabel(removed), -1));
+    lastFixedLabel = minLabel(bounds);
+    // Days recorded early by a region change stay processed.
+    const kept = maxLabel(Object.keys(days));
+    if (kept !== null && kept > lastFixedLabel) lastFixedLabel = kept;
+  }
+  return { ...state, days, firstSeen, lastFixedLabel };
+}
+
+function minLabel(labels: readonly string[]): string {
+  return labels.reduce((a, b) => (a < b ? a : b));
 }
 
 /** Seeds first-run state and the first sighting of new chores. */
@@ -106,22 +135,24 @@ function fixEndedDays(state: GameDays, ctx: Context): GameDays {
     state.lastFixedLabel !== null && state.lastFixedLabel >= firstCounted
       ? addDays(state.lastFixedLabel, 1)
       : firstCounted;
-  let next = state;
+  // One copy for the whole run keeps a long gap (app closed for months) linear.
+  const days = { ...state.days };
+  let lastFixedLabel = state.lastFixedLabel;
   while (gameDayEnd(label, ctx.region) + GRACE_MS <= ctx.now) {
-    if (gameDayStart(label, ctx.region) >= state.countFrom) next = fixDay(next, ctx, label);
+    if (ctx.plays) days[label] = { result: evaluateDay(state, ctx, label), fixedAt: ctx.now };
+    lastFixedLabel = label;
     label = addDays(label, 1);
   }
-  return next;
+  return { ...state, days, lastFixedLabel };
 }
 
+/** Removes checks of recorded days a week after they were fixed. */
 function dropOldChecks(state: GameDays, ctx: Context): GameDays {
-  // Retention runs from the moment a day was fixed, so a wrong future clock cannot expire checks
-  // that a later correction needs to record the day again.
+  // Retention runs from when a day was fixed, so a wrong future clock cannot expire checks that a
+  // later correction needs. Checks of days that were never recorded are kept.
   const expired = (label: string) => {
     const record = state.days[label];
-    if (record) return record.fixedAt + CHECK_RETENTION_MS <= ctx.now;
-    const processed = state.lastFixedLabel !== null && label <= state.lastFixedLabel;
-    return processed && gameDayEnd(label, ctx.region) + CHECK_RETENTION_MS <= ctx.now;
+    return record !== undefined && record.fixedAt + CHECK_RETENTION_MS <= ctx.now;
   };
   const dailyChecks = Object.fromEntries(
     Object.entries(state.dailyChecks).filter(([label]) => !expired(label)),
@@ -131,22 +162,23 @@ function dropOldChecks(state: GameDays, ctx: Context): GameDays {
 
 /** Brings the state up to `ctx.now`. Safe to run any number of times. */
 export function advance(state: GameDays, ctx: Context): GameDays {
-  let next = undoWrongClock(state, ctx.now);
+  let next = undoWrongClock(state, ctx);
   next = seeChores(next, ctx);
   next = fixEndedDays(next, ctx);
-  return dropOldChecks(next, ctx);
+  next = dropOldChecks(next, ctx);
+  return { ...next, lastAdvancedAt: ctx.now };
 }
 
 /** Game-day labels whose daily chores can still be checked: the current day and, during the grace period, the previous one. */
 export function editableDays(state: GameDays, ctx: Context): string[] {
-  const today = gameDayLabel(ctx.now, ctx.region);
   if (state.countFrom === null || ctx.now < state.countFrom) return [];
-  const labels = [today];
+  const open = (label: string) => state.lastFixedLabel === null || label > state.lastFixedLabel;
+  const today = gameDayLabel(ctx.now, ctx.region);
+  const labels = open(today) ? [today] : [];
   const previous = addDays(today, -1);
   const inGrace = ctx.now < gameDayStart(today, ctx.region) + GRACE_MS;
   const previousCounts = gameDayStart(previous, ctx.region) >= state.countFrom;
-  const previousOpen = state.lastFixedLabel === null || previous > state.lastFixedLabel;
-  if (inGrace && previousCounts && previousOpen) labels.push(previous);
+  if (inGrace && previousCounts && open(previous)) labels.push(previous);
   return labels;
 }
 
@@ -158,6 +190,9 @@ export function setDailyCheck(
   checked: boolean,
 ): GameDays {
   if (!editableDays(state, ctx).includes(label)) throw new Error(`Day ${label} is not editable`);
+  if (!ctx.dailyChores.some((c) => c.id === choreId && c.enabled)) {
+    throw new Error(`Chore ${choreId} is not an enabled daily chore`);
+  }
   const current = { ...(state.dailyChecks[label] ?? {}) };
   if (checked) current[choreId] = ctx.now;
   else delete current[choreId];
@@ -171,6 +206,9 @@ export function setDailyCheck(
 export function changeRegion(state: GameDays, ctx: Context, newRegion: Region): GameDays {
   let next = advance(state, ctx);
   const today = gameDayLabel(ctx.now, ctx.region);
+  // Regions with the same offset share every game day, so nothing needs to move.
+  if (gameDayStart(today, newRegion) === gameDayStart(today, ctx.region)) return next;
+
   const previous = addDays(today, -1);
   const counts = (label: string) =>
     next.countFrom !== null && gameDayStart(label, ctx.region) >= next.countFrom;
@@ -181,10 +219,10 @@ export function changeRegion(state: GameDays, ctx: Context, newRegion: Region): 
   const hasChecks = Object.keys(next.dailyChecks[today] ?? {}).length > 0;
   if (counts(today) && open(today) && hasChecks) next = fixDay(next, ctx, today);
 
-  const newToday = gameDayLabel(ctx.now, newRegion);
-  const hasRecords = Object.keys(next.days).length > 0;
-  let first = newToday;
-  if (hasRecords) {
+  // With nothing recorded yet, the new region's current day counts at once; otherwise counting
+  // resumes with the first new-region day after the last recorded label that has not started.
+  let first = gameDayLabel(ctx.now, newRegion);
+  if (Object.keys(next.days).length > 0) {
     while (
       (next.lastFixedLabel !== null && first <= next.lastFixedLabel) ||
       gameDayStart(first, newRegion) < ctx.now
@@ -195,8 +233,8 @@ export function changeRegion(state: GameDays, ctx: Context, newRegion: Region): 
   return {
     ...next,
     countFrom: gameDayStart(first, newRegion),
-    // Labels before the first counted day are never recorded under the new region.
-    lastFixedLabel: hasRecords ? addDays(first, -1) : next.lastFixedLabel,
+    // Labels before the first counted day are never processed under the new region.
+    lastFixedLabel: addDays(first, -1),
   };
 }
 
