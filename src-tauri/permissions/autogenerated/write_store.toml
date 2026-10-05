@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-write-store"
+description = "Enables the write_store command without any pre-configured scope."
+commands.allow = ["write_store"]
+
+[[permission]]
+identifier = "deny-write-store"
+description = "Denies the write_store command without any pre-configured scope."
+commands.deny = ["write_store"]
