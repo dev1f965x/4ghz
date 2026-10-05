@@ -57,7 +57,7 @@ foreach ($theme in 'light', 'dark') {
     @($t.muted, $t.bg, 4.5, 'muted on bg'), @($t.muted, $t.surface, 4.5, 'muted on surface'),
     @($t.control, $t.surface, 3.0, 'control border on surface'), @($t.control, $t.bg, 3.0, 'control border on bg'),
     @($t.surface, $t.text, 4.5, 'today badge'),
-    @($t.warning, $t.surface, 3.0, 'warning bar and icon on surface')
+    @($t.warning, $t.surface, 3.0, 'warning bar on surface'), @($t.surface, $t.warning, 4.5, 'warning icon glyph')
   )
   foreach ($g in 'genshin', 'hsr', 'zzz') {
     $a = $t.accent.$g
@@ -82,7 +82,9 @@ foreach ($theme in 'light', 'dark') {
   foreach ($kind in @('normal') + $cvd.Keys) {
     $m = if ($kind -eq 'normal') { $null } else { $cvd[$kind] }
     $labs = @{}; foreach ($g in 'genshin', 'hsr', 'zzz') { $labs[$g] = Get-SimLab $t.accent.$g.base $m }
-    foreach ($pair in @(@('genshin', 'hsr'), @('genshin', 'zzz'), @('hsr', 'zzz'))) {
+    # The warning color must not be mistaken for any accent, which colors notices.
+    $labs['warning'] = Get-SimLab $t.warning $m
+    foreach ($pair in @(@('genshin', 'hsr'), @('genshin', 'zzz'), @('hsr', 'zzz'), @('warning', 'genshin'), @('warning', 'hsr'), @('warning', 'zzz'))) {
       $d = Get-DeltaE $labs[$pair[0]] $labs[$pair[1]]
       $ok = $d -ge 20
       if (-not $ok) { $failed++ }
