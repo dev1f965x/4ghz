@@ -41,6 +41,7 @@ $shots = @(
   @('calendar-min-full', 's=calendar&narrow=1', 720, 1180),
   @('settings', 's=settings', 1120, 760),
   @('settings-region', 's=settings-region', 1120, 760),
+  @('settings-region-unchecked', 's=settings-region-unchecked', 1120, 760),
   @('settings-language', 's=settings-language', 1120, 760),
   @('settings-data', 's=settings-data', 1120, 760),
   @('settings-about', 's=settings-about', 1120, 760)
