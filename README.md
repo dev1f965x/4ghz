@@ -14,10 +14,19 @@ The app is developed natively on Windows 11. Install these first:
 - Rust through rustup
 - mise, which installs the Node.js and pnpm versions the repository pins
 
+Run `mise install` once in the repository to get the pinned Node.js and pnpm, then `pnpm install`.
+
 <!-- This table is the only list of commands; AGENTS.md links here. -->
 
 | Script | Purpose |
 | --- | --- |
+| `pnpm app:dev` | Run the app with hot reload |
+| `pnpm app:build` | Build the release app and the per-user installer (`src-tauri/target/release/bundle/nsis`) |
+| `pnpm check` | Lint and format check (Biome), type check, rustfmt, and Clippy |
+| `pnpm format` | Format TypeScript, JSON, CSS, and Rust |
+| `pnpm dev` | Run only the web frontend in a browser at http://localhost:1420 |
+| `pnpm build` | Type check and build only the web frontend |
+| `pnpm tauri <command>` | Run other Tauri CLI commands, for example `pnpm tauri icon design/icon/app-icon.svg` |
 
 ## License
 

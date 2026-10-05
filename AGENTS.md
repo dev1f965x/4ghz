@@ -25,6 +25,10 @@ The commands are listed in [README.md](README.md#development). Run every check (
 
 | Path | Contents |
 | --- | --- |
+| `src/` | React and TypeScript frontend; product logic lives here |
+| `src-tauri/` | Rust core, Tauri configuration, capabilities, and icons |
+| `design/` | Design sources (such as the app icon); not shipped |
+| `mise.toml`, `rust-toolchain.toml` | Pinned tool versions |
 
 ## Conventions
 
