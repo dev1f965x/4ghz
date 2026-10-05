@@ -64,10 +64,12 @@ fn write_file_atomic(path: &Path, contents: &str) -> Result<(), StorageError> {
     file.write_all(contents.as_bytes()).map_err(write_err)?;
     file.sync_all().map_err(write_err)?;
     drop(file);
-    // On Windows, std::fs::rename replaces an existing file (MoveFileEx with REPLACE_EXISTING).
+    // std::fs::rename replaces an existing file on Windows, and a rename within one NTFS volume is atomic.
     fs::rename(&temp, path).map_err(write_err)
 }
 
+// Commands are deliberately synchronous: Tauri runs them one at a time on the main thread, so two
+// writes never share the temporary file. The files are small, so the flush does not stall the UI.
 #[tauri::command]
 pub fn read_store<R: Runtime>(
     app: AppHandle<R>,
@@ -108,6 +110,20 @@ mod tests {
         let dir = tempfile::tempdir().unwrap();
         let path = dir.path().join("state.json");
         write_file_atomic(&path, "old").unwrap();
+        write_file_atomic(&path, "new").unwrap();
+        assert_eq!(read_file(&path).unwrap().as_deref(), Some("new"));
+        assert!(!path.with_extension("json.tmp").exists());
+    }
+
+    #[test]
+    fn write_recovers_from_a_leftover_temporary_file() {
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("state.json");
+        fs::write(
+            path.with_extension("json.tmp"),
+            "partial garbage from a crash",
+        )
+        .unwrap();
         write_file_atomic(&path, "new").unwrap();
         assert_eq!(read_file(&path).unwrap().as_deref(), Some("new"));
         assert!(!path.with_extension("json.tmp").exists());
