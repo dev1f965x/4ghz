@@ -18,6 +18,17 @@ const licenseFileNames = [
   "COPYING",
 ];
 
+// Packages that publish only an SPDX identifier; their upstream texts are kept in licenses/ (see licenses/README.md).
+const storedLicenses = [
+  {
+    match: /^@tauri-apps\/plugin-/,
+    files: [
+      "licenses/tauri-plugins-workspace/LICENSE_MIT",
+      "licenses/tauri-plugins-workspace/LICENSE_APACHE-2.0",
+    ],
+  },
+];
+
 function readLicenseFile(dir) {
   for (const name of licenseFileNames) {
     try {
@@ -29,12 +40,17 @@ function readLicenseFile(dir) {
   return "";
 }
 
+function readStoredLicense(name) {
+  const stored = storedLicenses.find((s) => s.match.test(name));
+  return stored ? stored.files.map((file) => readFileSync(file, "utf8").trim()).join("\n\n") : "";
+}
+
 const npm = JSON.parse(run("pnpm licenses list --prod --json"));
 const npmSections = [];
 for (const [license, packages] of Object.entries(npm)) {
   for (const pkg of packages) {
     for (const [i, version] of pkg.versions.entries()) {
-      const text = readLicenseFile(pkg.paths[i]);
+      const text = readLicenseFile(pkg.paths[i]) || readStoredLicense(pkg.name);
       if (!text) throw new Error(`No license file for ${pkg.name} ${version} (${license})`);
       const source = `https://www.npmjs.com/package/${pkg.name}/v/${version}`;
       npmSections.push(
