@@ -19,7 +19,7 @@ Use these words and no synonyms. A new product noun or verb is added here before
 | Concept | English | Korean | Notes |
 | --- | --- | --- | --- |
 | Supported game | game | 게임 | Official names only: Genshin Impact / 원신, Honkai: Star Rail / 붕괴: 스타레일, Zenless Zone Zero / 젠레스 존 제로. Never abbreviations such as "HSR" or "붕스" in sentences |
-| Games the user tracks | Playing (setting); your games, played games | 플레이 중 (설정); 플레이하는 게임, 하는 게임 | As in the wireframes: "It’s turned off in your games" / "플레이하는 게임에서 빠져 있습니다" |
+| Games the user tracks | Playing (setting); your games | 플레이 중 (설정); 플레이하는 게임 | As in the wireframes: "It’s turned off in your games" / "플레이하는 게임에서 빠져 있습니다". The calendar legend uses the shorter "All played games done" / "하는 게임 모두 완료" for space; nowhere else |
 | Game server region | server | 서버 | Asia / 아시아 and America / 미국 as in the wireframes. Europe and TW, HK, MO take the names the games show; confirm them in game before they appear in the UI |
 | Dated item from the publisher | schedule (tab), event, livestream, maintenance | 일정, 이벤트, 방송, 점검 | |
 | Redeem code | code | 코드 | Not "coupon" or "쿠폰" |
@@ -54,7 +54,7 @@ Product name: 4ghz, always lowercase Latin letters, in both languages.
 
 Past tense, name the object, end with a period. In Korean, when a particle would follow text whose last syllable is unknown, use the form "label: “text”" instead of guessing 을/를.
 
-- "Copied “GENSHINGIFT”." / "복사됨: “GENSHINGIFT”"
+- "Copied “GENSHINGIFT”." / "복사됨: “GENSHINGIFT”." (the Korean label form keeps the final period)
 
 ### Times
 

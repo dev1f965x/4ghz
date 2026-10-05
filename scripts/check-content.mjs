@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 const shared = [
   /!/,
   // Emoji only; text symbols such as ↗ (links that open the browser, CONTENT.md) are allowed.
-  /\p{Emoji_Presentation}|️/u,
+  /\p{Emoji_Presentation}|\uFE0F/u,
   /['"]/, // Apostrophes and quotes are curly (’ “ ”).
 ];
 const rules = {

@@ -6,6 +6,9 @@
 /* Generated from design/visual/tokens.json; see DESIGN.md. */
 @import "./tokens.css";
 
+/* The docs name classes in prose; only source files should generate CSS. */
+@source not "../*.md";
+
 /* Official JetBrains Mono web fonts, unmodified (licenses/README.md). */
 @font-face {
   font-family: "JetBrains Mono";

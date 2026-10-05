@@ -7,8 +7,8 @@ import { join, relative } from "node:path";
 const generated = join("src", "components", "ui");
 const appRules = [
   { name: "raw color", pattern: /#[0-9a-fA-F]{3,8}\b|\b(?:rgb|rgba|hsl|hsla|oklch|oklab)\(/g },
-  // An arbitrary value such as w-[13px]; an arbitrary variant such as data-[side=bottom]: is fine.
-  { name: "arbitrary value", pattern: /\b[\w:-]+-\[[^\]]+\](?!:)/g },
+  // An arbitrary value such as w-[13px]; an arbitrary variant such as data-[side=bottom]: or a named group such as group-data-[size=sm]/switch: is fine.
+  { name: "arbitrary value", pattern: /\b[\w:-]+-\[[^\]]+\](?![:/])/g },
 ];
 const allRules = [
   // The 2 px focus outline in index.css is the only focus indicator, and it survives contrast themes.

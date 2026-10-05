@@ -99,7 +99,8 @@ Tidy, glanceable, slightly futuristic. The app is opened for a few seconds to ch
 
 - 6 px radius on controls and rows (`rounded-lg`), 4 px on calendar cells and marks (`rounded-md`), 3 px on checkboxes (`rounded-sm`).
 - Hairline borders (`border`) instead of shadows on rows and panels. Menus and dialogs float over content, so they use the control border (`border-input`), as in the approved preview. No shadows, blur, or glow anywhere.
-- Hover and selected fills use `muted` (the hairline color); a hovered accent button darkens to the accent text shade.
+- Hover and selected fills use `muted` (the hairline color); a hovered accent button changes to the accent text shade. Controls (checkboxes, radios, switches, select triggers) never sit on a `muted` fill, because their border falls below 3:1 there; rows that hold controls show hover and selection another way, such as the accent soft fill.
+- The dialog overlay dims the page in both themes (`bg-foreground/20`, `bg-background/70` in dark).
 - Notices carry a 3 px accent bar on the left; warnings carry the warning color and an icon.
 - Links that open the browser end with an external-link arrow (↗), and only those.
 - Focus is a 2 px accent outline in every theme, from one rule in `src/index.css`. Components never hide it (`outline-none`) or replace it with a ring, which is a box shadow that contrast themes remove; `pnpm check` enforces this.
