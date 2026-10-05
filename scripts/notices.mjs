@@ -16,6 +16,8 @@ const licenseFileNames = [
   "LICENSE-MIT",
   "LICENSE-APACHE",
   "COPYING",
+  // pretendard keeps its license under dist/.
+  "dist/LICENSE.txt",
 ];
 
 // Packages that publish only an SPDX identifier; their upstream texts are kept in licenses/ (see licenses/README.md).
@@ -26,6 +28,15 @@ const storedLicenses = [
       "licenses/tauri-plugins-workspace/LICENSE_MIT",
       "licenses/tauri-plugins-workspace/LICENSE_APACHE-2.0",
     ],
+  },
+];
+
+// Files bundled from outside npm (see licenses/README.md).
+const bundled = [
+  {
+    name: "JetBrains Mono 2.304 (OFL-1.1)",
+    source: "https://github.com/JetBrains/JetBrainsMono/releases/tag/v2.304",
+    file: "licenses/jetbrains-mono/OFL.txt",
   },
 ];
 
@@ -60,6 +71,11 @@ for (const [license, packages] of Object.entries(npm)) {
   }
 }
 
+const bundledSections = bundled.map(
+  (b) =>
+    `${"=".repeat(80)}\n${b.name}\nSource: ${b.source}\n\n${readFileSync(b.file, "utf8").trim()}\n`,
+);
+
 // cargo-about refuses to write to a redirected stdout under PowerShell, so it writes a file.
 const tempDir = mkdtempSync(join(tmpdir(), "notices-"));
 const rustFile = join(tempDir, "rust.txt");
@@ -71,7 +87,7 @@ try {
   mkdirSync("public", { recursive: true });
   writeFileSync(
     "public/third-party-notices.txt",
-    `Third-party notices for 4ghz\n\nnpm packages\n\n${npmSections.join("\n")}\n${rust}`,
+    `Third-party notices for 4ghz\n\nnpm packages\n\n${npmSections.join("\n")}\nBundled files\n\n${bundledSections.join("\n")}\n${rust}`,
   );
 } finally {
   rmSync(tempDir, { recursive: true, force: true });
