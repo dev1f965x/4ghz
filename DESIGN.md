@@ -10,7 +10,7 @@ colors:
     card-foreground: "#11161c"
     popover: "#ffffff"
     popover-foreground: "#11161c"
-    muted: "#f4f6f8"
+    muted: "#dde2e7"
     muted-foreground: "#56606c"
     secondary: "#f4f6f8"
     secondary-foreground: "#11161c"
@@ -37,7 +37,7 @@ colors:
     card-foreground: "#e7ebef"
     popover: "#151a20"
     popover-foreground: "#e7ebef"
-    muted: "#0d1014"
+    muted: "#262d35"
     muted-foreground: "#9aa5b1"
     secondary: "#0d1014"
     secondary-foreground: "#e7ebef"
@@ -86,6 +86,8 @@ Tidy, glanceable, slightly futuristic. The app is opened for a few seconds to ch
 
 - Light and dark follow Windows (`prefers-color-scheme`); there is no in-app theme switch.
 - Windows contrast themes (`forced-colors: active`) let system colors win. Marks become `CanvasText` tiles with `Canvas` letters, and the all-done day uses a `CanvasText` double border.
+- Anything shown only by a fill keeps a system color in contrast themes: the radio dot and switch thumb are `CanvasText`, and the highlighted menu item is `Highlight` with `HighlightText`.
+- Only token colors compile: `src/index.css` clears Tailwind's palette, so a class such as `bg-red-500` or `text-white` generates nothing.
 
 ## Typography
 
@@ -96,10 +98,11 @@ Tidy, glanceable, slightly futuristic. The app is opened for a few seconds to ch
 ## Shape and detail
 
 - 6 px radius on controls and rows (`rounded-lg`), 4 px on calendar cells and marks (`rounded-md`), 3 px on checkboxes (`rounded-sm`).
-- Hairline borders instead of shadows, including menus and dialogs.
+- Hairline borders (`border`) instead of shadows on rows and panels. Menus and dialogs float over content, so they use the control border (`border-input`), as in the approved preview. No shadows, blur, or glow anywhere.
+- Hover and selected fills use `muted` (the hairline color); a hovered accent button darkens to the accent text shade.
 - Notices carry a 3 px accent bar on the left; warnings carry the warning color and an icon.
 - Links that open the browser end with an external-link arrow (↗), and only those.
-- Focus is a 2 px accent outline in every theme.
+- Focus is a 2 px accent outline in every theme, from one rule in `src/index.css`. Components never hide it (`outline-none`) or replace it with a ring, which is a box shadow that contrast themes remove; `pnpm check` enforces this.
 
 ## Components
 

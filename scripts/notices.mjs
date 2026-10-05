@@ -16,9 +16,10 @@ const licenseFileNames = [
   "LICENSE-MIT",
   "LICENSE-APACHE",
   "COPYING",
-  // pretendard keeps its license under dist/.
-  "dist/LICENSE.txt",
 ];
+
+// Packages that keep their license file somewhere else, by package name.
+const licensePaths = { pretendard: "dist/LICENSE.txt" };
 
 // Packages that publish only an SPDX identifier; their upstream texts are kept in licenses/ (see licenses/README.md).
 const storedLicenses = [
@@ -38,10 +39,18 @@ const bundled = [
     source: "https://github.com/JetBrains/JetBrainsMono/releases/tag/v2.304",
     file: "licenses/jetbrains-mono/OFL.txt",
   },
+  {
+    // Component source in src/components/ui and shadcn/tailwind.css come from shadcn/ui; the
+    // shadcn package itself is a development dependency, so the npm list above omits it.
+    name: "shadcn/ui (MIT)",
+    source: "https://github.com/shadcn-ui/ui",
+    file: "licenses/shadcn-ui/LICENSE.md",
+  },
 ];
 
-function readLicenseFile(dir) {
-  for (const name of licenseFileNames) {
+function readLicenseFile(dir, pkgName) {
+  const names = licensePaths[pkgName] ? [licensePaths[pkgName]] : licenseFileNames;
+  for (const name of names) {
     try {
       return readFileSync(join(dir, name), "utf8");
     } catch {
@@ -61,7 +70,7 @@ const npmSections = [];
 for (const [license, packages] of Object.entries(npm)) {
   for (const pkg of packages) {
     for (const [i, version] of pkg.versions.entries()) {
-      const text = readLicenseFile(pkg.paths[i]) || readStoredLicense(pkg.name);
+      const text = readLicenseFile(pkg.paths[i], pkg.name) || readStoredLicense(pkg.name);
       if (!text) throw new Error(`No license file for ${pkg.name} ${version} (${license})`);
       const source = `https://www.npmjs.com/package/${pkg.name}/v/${version}`;
       npmSections.push(

@@ -17,3 +17,4 @@ When a new package without a license file is added, the notice script stops and 
 | Folder | Files | Source |
 | --- | --- | --- |
 | `jetbrains-mono/` | `src/fonts/JetBrainsMono-Regular.woff2` and `JetBrainsMono-Bold.woff2` (OFL-1.1), unmodified | [JetBrains Mono 2.304 release](https://github.com/JetBrains/JetBrainsMono/releases/tag/v2.304), `JetBrainsMono-2.304.zip` (SHA-256 `6f6376c6ed2960ea8a963cd7387ec9d76e3f629125bc33d1fdcd7eb7012f7bbf`), `fonts/webfonts/` and `OFL.txt` |
+| `shadcn-ui/` | Component source in `src/components/ui/` and `shadcn/tailwind.css` (MIT) | [shadcn-ui/ui at dba2716](https://github.com/shadcn-ui/ui/blob/dba27166ad7b146b2bd840dcfb0a7d0fd95f5c8c/LICENSE.md) |

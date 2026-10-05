@@ -14,7 +14,8 @@ function themeVariables(theme) {
     "card-foreground": theme.text,
     popover: theme.surface,
     "popover-foreground": theme.text,
-    muted: theme.bg,
+    // A hover and selected fill that shows on the window and on panels.
+    muted: theme.hairline,
     "muted-foreground": theme.muted,
     secondary: theme.bg,
     "secondary-foreground": theme.text,
@@ -96,8 +97,13 @@ focusRing: "${tokens.shape.focusRing}"
 ---
 `;
 
-const design = readFileSync("DESIGN.md", "utf8");
-const body = design.replace(/^---\n(?:[\s\S]*?\n)?---\n/, "");
+const design = readFileSync("DESIGN.md", "utf8")
+  .replace(/^\uFEFF/, "")
+  .replace(/\r\n/g, "\n");
+const frontMatterPattern = /^---\n(?:[\s\S]*?\n)?---\n/;
+if (!frontMatterPattern.test(design))
+  throw new Error("DESIGN.md must start with a --- front matter block");
+const body = design.replace(frontMatterPattern, "");
 const outputs = { "src/tokens.css": css, "DESIGN.md": frontMatter + body };
 
 if (process.argv.includes("--check")) {

@@ -3,7 +3,8 @@ import { readFileSync } from "node:fs";
 
 const shared = [
   /!/,
-  /\p{Extended_Pictographic}/u,
+  // Emoji only; text symbols such as ↗ (links that open the browser, CONTENT.md) are allowed.
+  /\p{Emoji_Presentation}|️/u,
   /['"]/, // Apostrophes and quotes are curly (’ “ ”).
 ];
 const rules = {
@@ -12,7 +13,7 @@ const rules = {
     ...shared,
   ],
   "src/i18n/ko.ts": [
-    /해\s?드릴게요|하실 수 있어요|[을를] 통해|에 대한|해당|가능합니다|되어집니다|에 있어서|성공적으로|정상적으로|손쉽게|간편하게|다양한|효율적으로|스마트하게|\^\^|해 주세요|하시기 바랍니다/,
+    /드릴게요|실 수 있어요|도움이 되었으면|[을를] 통해|에 대한|해당|것이 가능합니다|되어집니다|에 있어서|성공적으로|정상적으로|손쉽게|간편하게|다양한|효율적으로|스마트하게|\^\^|주세요|시기 바랍니다/,
     ...shared,
   ],
 };

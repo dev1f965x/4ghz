@@ -22,6 +22,11 @@
   src: url("./fonts/JetBrainsMono-Bold.woff2") format("woff2");
 }
 
+/* Only the token colors exist, so a palette class such as bg-red-500 or text-white does not compile. */
+@theme {
+  --color-*: initial;
+}
+
 /* Components use these names only. */
 @theme inline {
   --font-sans: var(--font-text);

@@ -92,7 +92,7 @@ foreach ($theme in 'light', 'dark') {
     }
   }
 }
-# theme.css must carry the same values as tokens.json until the app generates its CSS from the tokens.
+# theme.css styles the wireframe previews; it must carry the same values as tokens.json, which also generates src/tokens.css.
 $css = Get-Content -Raw (Join-Path $PSScriptRoot 'theme.css')
 $names = @{ bg = 'bg'; surface = 'surface'; text = 'text'; muted = 'muted'; control = 'control'; hairline = 'hairline'; warning = 'warning' }
 foreach ($theme in 'light', 'dark') {

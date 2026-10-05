@@ -19,12 +19,12 @@ Use these words and no synonyms. A new product noun or verb is added here before
 | Concept | English | Korean | Notes |
 | --- | --- | --- | --- |
 | Supported game | game | 게임 | Official names only: Genshin Impact / 원신, Honkai: Star Rail / 붕괴: 스타레일, Zenless Zone Zero / 젠레스 존 제로. Never abbreviations such as "HSR" or "붕스" in sentences |
-| Game shown by the app | selected game | 선택한 게임 | |
-| Games the user tracks | playing (setting), played games | 플레이 중, 하는 게임 | |
-| Game server region | server | 서버 | Asia / 아시아, America / 미국, Europe / 유럽, TW, HK, MO / 대만·홍콩·마카오 |
+| Games the user tracks | Playing (setting); your games, played games | 플레이 중 (설정); 플레이하는 게임, 하는 게임 | As in the wireframes: "It’s turned off in your games" / "플레이하는 게임에서 빠져 있습니다" |
+| Game server region | server | 서버 | Asia / 아시아 and America / 미국 as in the wireframes. Europe and TW, HK, MO take the names the games show; confirm them in game before they appear in the UI |
 | Dated item from the publisher | schedule (tab), event, livestream, maintenance | 일정, 이벤트, 방송, 점검 | |
 | Redeem code | code | 코드 | Not "coupon" or "쿠폰" |
 | Using a code in the game | redeem; state "Redeemed" | 사용; 상태 "사용함" | Not "claim" |
+| The official web page for codes | redemption page | 교환 페이지 | "Open redemption page" / "교환 페이지 열기" |
 | Recurring task in a game | chore | 숙제 | Not "quest", "task", or "일퀘" |
 | Chore cycles | daily, weekly, periodic | 일간, 주간, 기간 | "Periodic" covers cycles set by the data file, such as Spiral Abyss |
 | A periodic cycle that is open now | current period | 진행 중인 기간 | |
@@ -33,8 +33,9 @@ Use these words and no synonyms. A new product noun or verb is added here before
 | Result kept for a past day | record; "No record" | 기록; "기록 없음" | |
 | Day not yet recorded during the grace period | pending | 확정 대기 | |
 | Day on which every played game is done | All (cell label); "All played games done" (legend) | 전부 (칸 표시); "하는 게임 모두 완료" (범례) | 전부 is short enough for a calendar cell |
-| Schedules and codes from GitHub | data | 데이터 | Records and settings are not "data" in the UI |
+| Schedules and codes from GitHub | data | 데이터 | Records and settings are not called "data", except in "data folder" |
 | Records and settings on this PC | records and settings | 기록과 설정 | |
+| Folder that holds them | data folder | 데이터 폴더 | The Windows app data folder: "Open data folder" / "데이터 폴더 열기" |
 | Getting new data | refresh | 새로 고침 | |
 
 Product name: 4ghz, always lowercase Latin letters, in both languages.
@@ -47,6 +48,13 @@ Product name: 4ghz, always lowercase Latin letters, in both languages.
 - Korean buttons use the noun form: "설정 열기", "서버 바꾸기".
 - A button that confirms a change repeats the verb from the title ("Change server"), never "OK" or "Confirm".
 - A link that opens the browser ends with "↗" (DESIGN.md); no other button has an arrow.
+- An icon-only button names its action and its object: "Copy “GENSHINGIFT”" / "“GENSHINGIFT” 복사".
+
+### Announcements for screen readers
+
+Past tense, name the object, end with a period. In Korean, when a particle would follow text whose last syllable is unknown, use the form "label: “text”" instead of guessing 을/를.
+
+- "Copied “GENSHINGIFT”." / "복사됨: “GENSHINGIFT”"
 
 ### Times
 
@@ -88,7 +96,7 @@ The title is a question that names the change; the body states what happens to r
 
 Banned, because they read as translation or as an AI answer:
 
-- Chat-like explanations: "~해 드릴게요", "~하실 수 있어요"
+- Chat-like explanations: "~해 드릴게요", "~하실 수 있어요", "도움이 되었으면 좋겠습니다"
 - "~을 통해", "~에 대한", "해당", "~하는 것이 가능합니다", "~되어집니다", "~에 있어서"
 - "성공적으로", "정상적으로" (say what happened instead)
 - Vague modifiers: "손쉽게", "간편하게", "다양한", "효율적으로", "스마트하게"
