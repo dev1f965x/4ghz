@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <!-- 4ghz app icon: the square-wave mark (Visual Direction V2) on the dark surface color. -->
+  <rect width="1024" height="1024" rx="224" fill="#151a20"/>
+  <path d="M192 704V320h160v384h160V320h160v384h160V320" fill="none" stroke="#e7ebef" stroke-width="72" stroke-linejoin="miter" stroke-linecap="square"/>
+</svg>

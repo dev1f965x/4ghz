@@ -1,0 +1,30 @@
+[package]
+name = "fourghz"
+version = "0.1.0"
+description = "An unofficial Windows app with schedules, redeem codes, and a chore calendar"
+authors = ["Cocos Nucifera"]
+license = "MIT"
+repository = "https://github.com/dev1f965x/4ghz"
+edition = "2024"
+publish = false
+
+[lib]
+# A distinct library name avoids a name clash with the binary on Windows (rust-lang/cargo#8519).
+name = "fourghz_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# Smaller installer (Design Doc D5); see https://tauri.app/concept/size/#cargo-configuration
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = 3
+panic = "abort"
+strip = true
