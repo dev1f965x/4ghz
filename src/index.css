@@ -1,0 +1,101 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+/* Official Pretendard files, unmodified; the browser loads only the subsets a page uses. */
+@import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
+/* Generated from design/visual/tokens.json; see DESIGN.md. */
+@import "./tokens.css";
+
+/* The docs name classes in prose; only source files should generate CSS. */
+@source not "../*.md";
+
+/* Official JetBrains Mono web fonts, unmodified (licenses/README.md). */
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./fonts/JetBrainsMono-Regular.woff2") format("woff2");
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("./fonts/JetBrainsMono-Bold.woff2") format("woff2");
+}
+
+/* Only the token colors exist, so a palette class such as bg-red-500 or text-white does not compile. */
+@theme {
+  --color-*: initial;
+}
+
+/* Components use these names only. */
+@theme inline {
+  --font-sans: var(--font-text);
+  --font-mono: var(--font-code);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-warning: var(--warning);
+
+  /* Each game keeps its own color in calendar marks, whatever game is selected. */
+  --color-genshin: var(--genshin);
+  --color-genshin-on: var(--genshin-on);
+  --color-hsr: var(--hsr);
+  --color-hsr-on: var(--hsr-on);
+  --color-zzz: var(--zzz);
+  --color-zzz-on: var(--zzz-on);
+
+  --radius-sm: var(--radius-checkbox);
+  --radius-md: var(--radius-cell);
+  --radius-lg: var(--radius);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring;
+  }
+  html {
+    @apply font-sans;
+    /* Tabular figures keep countdowns from shifting as they change. */
+    font-feature-settings: "tnum";
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  /* Focus is a 2 px accent outline in every theme. */
+  :focus-visible {
+    outline: var(--focus-ring) solid var(--ring);
+    outline-offset: 2px;
+  }
+  /* Keep Korean words whole when lines wrap (content-guide.md). */
+  :lang(ko) {
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+  }
+}
+
+/* Base UI injects this rule as a <style> element unless disableStyleElements is set (main.tsx). */
+.base-ui-disable-scrollbar {
+  scrollbar-width: none;
+}
+.base-ui-disable-scrollbar::-webkit-scrollbar {
+  display: none;
+}

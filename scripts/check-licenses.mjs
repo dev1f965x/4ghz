@@ -23,6 +23,12 @@ const shipped = new Set([
 const devExceptions = {
   // lightningcss is Vite's CSS minifier; it runs at build time and is not shipped.
   "MPL-2.0": /^lightningcss(-.+)?$/,
+  // The rest come only through the shadcn CLI (pnpm why), which adds component source files.
+  // Python-2.0 and BlueOak-1.0.0 are permissive; caniuse-lite is browser data under CC-BY-4.0.
+  "Python-2.0": /^argparse$/,
+  "BlueOak-1.0.0": /^(isexe|minimatch)$/,
+  "CC-BY-4.0": /^caniuse-lite$/,
+  "(MIT OR CC0-1.0)": /^type-fest$/,
 };
 
 function licenses(scope) {

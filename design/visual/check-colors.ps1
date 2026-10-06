@@ -57,13 +57,17 @@ foreach ($theme in 'light', 'dark') {
     @($t.muted, $t.bg, 4.5, 'muted on bg'), @($t.muted, $t.surface, 4.5, 'muted on surface'),
     @($t.control, $t.surface, 3.0, 'control border on surface'), @($t.control, $t.bg, 3.0, 'control border on bg'),
     @($t.surface, $t.text, 4.5, 'today badge'),
-    @($t.warning, $t.surface, 3.0, 'warning bar on surface'), @($t.surface, $t.warning, 4.5, 'warning icon glyph')
+    @($t.warning, $t.surface, 3.0, 'warning bar on surface'), @($t.surface, $t.warning, 4.5, 'warning icon glyph'),
+    # Hover and selected fills use the hairline color (muted in the app). Controls never sit on it (DESIGN.md).
+    @($t.text, $t.hairline, 4.5, 'text on muted fill'), @($t.muted, $t.hairline, 4.5, 'muted on muted fill')
   )
   foreach ($g in 'genshin', 'hsr', 'zzz') {
     $a = $t.accent.$g
     $pairs += , @($a.base, $t.surface, 3.0, "$g accent (focus, tab, switch) on surface")
     $pairs += , @($a.base, $t.bg, 3.0, "$g accent on bg")
     $pairs += , @($a.on, $a.base, 4.5, "$g text on accent fill")
+    $pairs += , @($a.on, $a.text, 4.5, "$g text on hovered accent fill")
+    $pairs += , @($a.text, $t.hairline, 4.5, "$g accent text on muted fill")
     $pairs += , @($a.text, $a.soft, 4.5, "$g accent text on soft fill")
     $pairs += , @($a.text, $t.surface, 4.5, "$g accent text on surface")
     $pairs += , @($t.text, $a.soft, 4.5, "text on $g soft fill")
@@ -92,7 +96,7 @@ foreach ($theme in 'light', 'dark') {
     }
   }
 }
-# theme.css must carry the same values as tokens.json until the app generates its CSS from the tokens.
+# theme.css styles the wireframe previews; it must carry the same values as tokens.json, which also generates src/tokens.css.
 $css = Get-Content -Raw (Join-Path $PSScriptRoot 'theme.css')
 $names = @{ bg = 'bg'; surface = 'surface'; text = 'text'; muted = 'muted'; control = 'control'; hairline = 'hairline'; warning = 'warning' }
 foreach ($theme in 'light', 'dark') {
