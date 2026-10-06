@@ -43,6 +43,19 @@ jobs:
       - name: Check
         run: pnpm check
 
+      # Frontend end-to-end and accessibility tests in the runner's Microsoft Edge (WebView2's engine).
+      - name: End-to-end tests
+        run: pnpm test:e2e
+
+      # Every run, so the screenshots in the report can be reviewed even when all tests pass.
+      - name: Upload the Playwright report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: playwright-report
+          path: playwright-report
+          retention-days: 7
+
       - name: Build the installer
         run: pnpm app:build
 
@@ -54,3 +67,11 @@ jobs:
           "Installer: $($installer.Name), $mb MB"
           # Performance target: the installer stays under 10 MB.
           if ($installer.Length -ge 10MB) { throw "Installer is $mb MB; the limit is 10 MB." }
+
+      # A test build whose WebView2 opens a debugging port; release builds never have it.
+      - name: Build the app for the smoke test
+        run: pnpm app:build:e2e
+
+      # The built app through msedgedriver: starts, restarts, and reports no CSP violations.
+      - name: Packaged-app smoke test
+        run: pnpm test:app

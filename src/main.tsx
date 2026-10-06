@@ -5,6 +5,12 @@ import App from "./App";
 import { initI18n } from "./i18n";
 import "./index.css";
 
+if (import.meta.env.MODE === "e2e") {
+  // Statically false in production builds, so the mocks are never bundled there.
+  const { installE2eMocks } = await import("./e2e-mocks");
+  installE2eMocks();
+}
+
 // No language has been chosen in settings yet, so the Windows display language applies.
 await initI18n(undefined);
 

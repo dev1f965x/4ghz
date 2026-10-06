@@ -12,3 +12,8 @@ dist
 !.vscode/extensions.json
 .idea
 /public/third-party-notices.txt
+
+# Playwright
+test-results/
+playwright-report/
+dist-e2e/
