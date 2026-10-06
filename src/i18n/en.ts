@@ -44,6 +44,28 @@ export const en = {
     updateBody: "Update the app. The last data received is shown.",
     invalidBody: "The new data file has errors. The last data received is shown.",
   },
+  schedule: {
+    ongoing: "Ongoing",
+    upcoming: "Upcoming",
+    timeLeft: "{{time}} left",
+    startsIn: "Starts in {{time}}",
+    openAnnouncement: "Open announcement",
+    estimated: "Estimated",
+    emptyTitle: "No upcoming schedule",
+    emptyBody: "Data was updated {{date}}.",
+    type: {
+      livestream: "Livestream",
+      update: "Update",
+      maintenance: "Maintenance",
+      event: "Event",
+      endgame: "Endgame",
+    },
+  },
+  duration: {
+    days: "{{d}}d {{h}}h",
+    hours: "{{h}}h {{m}}m",
+    minutes: "{{m}}m",
+  },
   load: {
     failedTitle: "Data couldn’t be loaded",
     failedBody: "Check your internet connection and try again.",

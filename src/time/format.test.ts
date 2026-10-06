@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatDateTime, formatUpdated, timeLeft } from "./format";
+import { formatDateTime, formatRange, formatUpdated, timeLeft } from "./format";
 
 describe("formatDateTime", () => {
   // The Asia reset (04:00 server time) is a fixed instant; local display follows each zone's rules.
@@ -44,5 +44,35 @@ describe("formatUpdated", () => {
     ["America/New_York", Date.parse("2026-10-06T05:00:00Z"), "en", "Oct 5, 21:42"],
   ] as const)("in %s at %d", (zone, now, locale, expected) => {
     expect(formatUpdated(at, now, locale, zone)).toBe(expected);
+  });
+});
+
+describe("formatRange", () => {
+  it.each([
+    // 06:00 to 11:00 UTC+8 is 07:00 to 12:00 in Seoul, on one day.
+    [
+      "Asia/Seoul",
+      "2026-11-04T06:00:00+08:00",
+      "2026-11-04T11:00:00+08:00",
+      "ko",
+      "11월 4일 07:00 – 12:00",
+    ],
+    [
+      "Asia/Seoul",
+      "2026-10-01T03:00:00+08:00",
+      "2026-10-21T04:00:00+08:00",
+      "ko",
+      "10월 1일 04:00 – 10월 21일 05:00",
+    ],
+    // The same window crosses midnight in New York.
+    [
+      "America/New_York",
+      "2026-11-04T06:00:00+08:00",
+      "2026-11-04T14:00:00+08:00",
+      "en",
+      "Nov 3, 17:00 – Nov 4, 01:00",
+    ],
+  ] as const)("in %s from %s to %s", (zone, start, end, locale, expected) => {
+    expect(formatRange(Date.parse(start), Date.parse(end), locale, zone)).toBe(expected);
   });
 });

@@ -28,15 +28,32 @@ export function timeLeft(
   };
 }
 
-/** "10:42" today, "Oct 5, 21:10" on another day, in the local time zone. */
-export function formatUpdated(instant: number, now: number, locale: Locale, timeZone?: string) {
+function sameLocalDay(a: number, b: number, timeZone?: string) {
   const day = (t: number) =>
     new Intl.DateTimeFormat("en-CA", { dateStyle: "short", timeZone }).format(t);
-  if (day(instant) !== day(now)) return formatDateTime(instant, locale, timeZone);
+  return day(a) === day(b);
+}
+
+function formatTime(instant: number, locale: Locale, timeZone?: string) {
   return new Intl.DateTimeFormat(locale === "ko" ? "ko-KR" : "en-US", {
     hour: "2-digit",
     minute: "2-digit",
     hourCycle: "h23",
     timeZone,
   }).format(instant);
+}
+
+/** "10:42" today, "Oct 5, 21:10" on another day, in the local time zone. */
+export function formatUpdated(instant: number, now: number, locale: Locale, timeZone?: string) {
+  return sameLocalDay(instant, now, timeZone)
+    ? formatTime(instant, locale, timeZone)
+    : formatDateTime(instant, locale, timeZone);
+}
+
+/** "Nov 4, 07:00 – 12:00" within one local day, the full end date otherwise. */
+export function formatRange(start: number, end: number, locale: Locale, timeZone?: string) {
+  const to = sameLocalDay(start, end, timeZone)
+    ? formatTime(end, locale, timeZone)
+    : formatDateTime(end, locale, timeZone);
+  return `${formatDateTime(start, locale, timeZone)} – ${to}`;
 }

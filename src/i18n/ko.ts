@@ -45,6 +45,28 @@ export const ko: Messages = {
     updateBody: "앱을 업데이트하세요. 마지막으로 받은 데이터를 보여 줍니다.",
     invalidBody: "새 데이터 파일에 오류가 있습니다. 마지막으로 받은 데이터를 보여 줍니다.",
   },
+  schedule: {
+    ongoing: "진행 중",
+    upcoming: "예정",
+    timeLeft: "남은 시간 {{time}}",
+    startsIn: "시작까지 {{time}}",
+    openAnnouncement: "공지 열기",
+    estimated: "예상",
+    emptyTitle: "예정된 일정이 없습니다",
+    emptyBody: "데이터는 {{date}}에 업데이트됐습니다.",
+    type: {
+      livestream: "방송",
+      update: "업데이트",
+      maintenance: "점검",
+      event: "이벤트",
+      endgame: "엔드 콘텐츠",
+    },
+  },
+  duration: {
+    days: "{{d}}일 {{h}}시간",
+    hours: "{{h}}시간 {{m}}분",
+    minutes: "{{m}}분",
+  },
   load: {
     failedTitle: "데이터를 불러오지 못했습니다",
     failedBody: "인터넷 연결을 확인하고 다시 시도하세요.",

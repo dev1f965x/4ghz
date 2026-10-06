@@ -1,5 +1,5 @@
 import type { Page } from "@playwright/test";
-import { dataFile, expect, expectNoA11yViolations, test } from "./fixtures";
+import { dataFile, expect, expectNoA11yViolations, NOW, test } from "./fixtures";
 
 type Internals = { invoke: (cmd: string, args: object) => Promise<unknown> };
 
@@ -111,7 +111,7 @@ test.describe("keyboard order", () => {
 });
 
 test.describe("damaged records", () => {
-  const cached = JSON.stringify({ savedAt: Date.now() - 3_600_000, file: dataFile });
+  const cached = JSON.stringify({ savedAt: NOW - 3_600_000, file: dataFile });
   test.use({
     localFiles: { state: "{damaged", "data-cache": cached },
     dataResponse: "offline",

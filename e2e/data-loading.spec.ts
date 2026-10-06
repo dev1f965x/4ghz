@@ -1,5 +1,5 @@
 import type { Page } from "@playwright/test";
-import { dataFile, expect, expectNoA11yViolations, test } from "./fixtures";
+import { dataFile, expect, expectNoA11yViolations, NOW, test } from "./fixtures";
 
 type Internals = { invoke: (cmd: string, args: object) => Promise<unknown> };
 
@@ -7,7 +7,7 @@ const status = (app: Page) => app.locator("[data-sync-status]");
 const retry = (app: Page) => app.getByRole("button", { name: /다시 시도|Try again/ });
 const staleBanner = (app: Page) =>
   app.getByText(/데이터가 오래됐을 수 있습니다|Data may be out of date/);
-const cached = JSON.stringify({ savedAt: Date.now() - 3_600_000, file: dataFile });
+const cached = JSON.stringify({ savedAt: NOW - 3_600_000, file: dataFile });
 const retired = { schemaVersion: 1, retired: true, updatedAt: "2027-01-01T00:00:00+09:00" };
 
 test("downloads the data file, shows it as updated, and caches it", async ({ app }) => {

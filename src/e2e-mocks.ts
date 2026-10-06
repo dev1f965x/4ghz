@@ -9,6 +9,8 @@ declare global {
   interface Window {
     /** Set by the Playwright fixture before the page loads; contents of each local file. */
     __E2E_FILES__?: Partial<Record<StoreFile, string>>;
+    /** URLs the app asked the opener plugin to open, for tests to inspect. */
+    __E2E_OPENED__?: string[];
   }
 }
 
@@ -27,6 +29,12 @@ export function installE2eMocks() {
         return files[storeFile(payload)] ?? null;
       case "write_store":
         files[storeFile(payload)] = (payload as { contents: string }).contents;
+        return null;
+      case "plugin:opener|open_url":
+        window.__E2E_OPENED__ = [
+          ...(window.__E2E_OPENED__ ?? []),
+          (payload as { url: string }).url,
+        ];
         return null;
       default:
         throw new Error(`No e2e mock for command ${command}`);

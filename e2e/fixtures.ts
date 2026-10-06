@@ -7,6 +7,12 @@ export const dataFile: unknown = JSON.parse(
   readFileSync(new URL("./fixtures/data.json", import.meta.url), "utf8"),
 );
 
+/**
+ * The time the app sees in every test: Tuesday 2026-10-06 10:42 in Korea, the wireframes'
+ * reference moment, so schedules and countdowns from the data fixture are deterministic.
+ */
+export const NOW = Date.parse("2026-10-06T01:42:00Z");
+
 /** What GitHub Pages answers: a data file (any JSON), or no connection. */
 type DataResponse = { json: unknown } | "offline";
 
@@ -36,6 +42,8 @@ export const test = base.extend<Options & Fixtures>({
     });
   },
   app: async ({ page, localFiles, network }, use) => {
+    // Date.now() stays at NOW; timers still run, so countdown updates are exercised.
+    await page.clock.setFixedTime(NOW);
     await page.addInitScript((files) => {
       // Read by src/e2e-mocks.ts when the app starts.
       (window as unknown as { __E2E_FILES__: typeof files }).__E2E_FILES__ = files;

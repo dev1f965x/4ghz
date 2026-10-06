@@ -3,5 +3,17 @@
   "identifier": "default",
   "description": "Capability for the main window. Each feature adds only the permissions it needs.",
   "windows": ["main"],
-  "permissions": ["allow-read-store", "allow-write-store"]
+  "permissions": [
+    "allow-read-store",
+    "allow-write-store",
+    {
+      "identifier": "opener:allow-open-url",
+      "allow": [
+        { "url": "https://hoyoverse.com/*" },
+        { "url": "https://*.hoyoverse.com/*" },
+        { "url": "https://hoyolab.com/*" },
+        { "url": "https://*.hoyolab.com/*" }
+      ]
+    }
+  ]
 }
