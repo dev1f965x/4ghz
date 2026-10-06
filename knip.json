@@ -1,7 +1,7 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
-  "entry": ["scripts/*.mjs"],
-  "project": ["src/**/*.{ts,tsx,css}", "scripts/**/*.mjs"],
+  "entry": ["scripts/*.mjs", "e2e/app-smoke.mjs"],
+  "project": ["src/**/*.{ts,tsx,css}", "scripts/**/*.mjs", "e2e/**/*.{ts,mjs}"],
   "ignore": ["src/components/ui/**"],
-  "ignoreBinaries": ["pwsh"]
+  "ignoreBinaries": ["pwsh", "reg", "tauri-driver"]
 }

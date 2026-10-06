@@ -1,0 +1,729 @@
+{
+  "$schema": "./v1.schema.json",
+  "schemaVersion": 1,
+  "updatedAt": "2026-10-06T11:00:00+09:00",
+  "games": {
+    "genshin": {
+      "schedule": [
+        {
+          "id": "v7-1-main-event",
+          "type": "event",
+          "title": {
+            "ko": "이벤트: 달빛을 물어온 제비 (축월절)",
+            "en": "Event: Silverwing in Pursuit of the Moon (Moonchase Festival)"
+          },
+          "start": {
+            "kind": "server",
+            "at": "2026-09-24T10:00"
+          },
+          "end": {
+            "kind": "server",
+            "at": "2026-10-12T04:00"
+          },
+          "url": "https://genshin.hoyoverse.com/m/en/news/detail/166267"
+        },
+        {
+          "id": "predictive-victory-dynamics",
+          "type": "event",
+          "title": {
+            "ko": "기간 한정 이벤트: 승부 예측의 달인",
+            "en": "Event: Predictive Victory Dynamics"
+          },
+          "start": {
+            "kind": "server",
+            "at": "2026-10-12T10:00"
+          },
+          "end": {
+            "kind": "server",
+            "at": "2026-10-20T04:00"
+          }
+        },
+        {
+          "id": "carefree-snowball-fight",
+          "type": "event",
+          "title": {
+            "ko": "기간 한정 이벤트: 근심 없는 눈싸움",
+            "en": "Event: Carefree Snowball Fight"
+          },
+          "start": {
+            "kind": "server",
+            "at": "2026-10-21T10:00"
+          },
+          "end": {
+            "kind": "server",
+            "at": "2026-11-02T04:00"
+          }
+        },
+        {
+          "id": "v7-2-livestream",
+          "type": "livestream",
+          "title": {
+            "ko": "버전 7.2 특별 방송",
+            "en": "Version 7.2 livestream"
+          },
+          "start": {
+            "kind": "instant",
+            "at": "2026-10-24T20:00:00+08:00"
+          },
+          "estimated": true
+        },
+        {
+          "id": "v7-2-update",
+          "type": "update",
+          "title": {
+            "ko": "버전 7.2 업데이트 점검",
+            "en": "Version 7.2 update maintenance"
+          },
+          "start": {
+            "kind": "instant",
+            "at": "2026-11-04T06:00:00+08:00"
+          },
+          "end": {
+            "kind": "instant",
+            "at": "2026-11-04T11:00:00+08:00"
+          },
+          "estimated": true
+        }
+      ],
+      "codes": [
+        {
+          "code": "OPERACOLLAB",
+          "rewards": {
+            "ko": "원석 30, 영웅의 경험 2, 모라 20,000",
+            "en": "30 Primogems, 2 Hero’s Wit, 20,000 Mora"
+          },
+          "addedAt": "2026-10-06T09:00:00+09:00"
+        },
+        {
+          "code": "VesnaOnPatrol",
+          "rewards": {
+            "ko": "원석 40, 영웅의 경험 3, 모라 20,000",
+            "en": "40 Primogems, 3 Hero’s Wit, 20,000 Mora"
+          },
+          "addedAt": "2026-10-06T09:00:00+09:00"
+        },
+        {
+          "code": "EPIC2026",
+          "rewards": {
+            "ko": "원석 40, 영웅의 경험 5, 모라 20,000",
+            "en": "40 Primogems, 5 Hero’s Wit, 20,000 Mora"
+          },
+          "addedAt": "2026-10-06T09:00:00+09:00"
+        },
+        {
+          "code": "Y6JYMKV6JKSL",
+          "rewards": {
+            "ko": "원석 60, 모험가의 경험 5",
+            "en": "60 Primogems, 5 Adventurer’s Experience"
+          },
+          "addedAt": "2026-10-06T09:00:00+09:00"
+        },
+        {
+          "code": "Y1INABQB6DEX",
+          "rewards": {
+            "ko": "원석 60, 모험가의 경험 5",
+            "en": "60 Primogems, 5 Adventurer’s Experience"
+          },
+          "addedAt": "2026-10-06T09:00:00+09:00"
+        },
+        {
+          "code": "2BJ64QRZ7RT8",
+          "rewards": {
+            "ko": "원석 60, 모험가의 경험 5",
+            "en": "60 Primogems, 5 Adventurer’s Experience"
+          },
+          "addedAt": "2026-10-06T09:00:00+09:00"
+        }
+      ],
+      "chores": [
+        {
+          "id": "commissions",
+          "name": {
+            "ko": "일일 의뢰 4회",
+            "en": "Daily commissions (4)"
+          },
+          "cycle": "daily",
+          "enabledByDefault": true
+        },
+        {
+          "id": "resin",
+          "name": {
+            "ko": "퓨어 레진 소모",
+            "en": "Spend Original Resin"
+          },
+          "cycle": "daily",
+          "enabledByDefault": true
+        },
+        {
+          "id": "teapot",
+          "name": {
+            "ko": "속세의 주전자 정리",
+            "en": "Serenitea Pot chores"
+          },
+          "cycle": "daily",
+          "enabledByDefault": false
+        },
+        {
+          "id": "weekly-bosses",
+          "name": {
+            "ko": "주간 보스 3회",
+            "en": "Weekly bosses (3)"
+          },
+          "cycle": "weekly",
+          "enabledByDefault": true
+        },
+        {
+          "id": "reputation",
+          "name": {
+            "ko": "현상 토벌",
+            "en": "Reputation bounties"
+          },
+          "cycle": "weekly",
+          "enabledByDefault": true
+        },
+        {
+          "id": "spiral-abyss",
+          "name": {
+            "ko": "나선 비경",
+            "en": "Spiral Abyss"
+          },
+          "cycle": "periodic",
+          "enabledByDefault": true
+        },
+        {
+          "id": "imaginarium-theater",
+          "name": {
+            "ko": "현실 속 환상극",
+            "en": "Imaginarium Theater"
+          },
+          "cycle": "periodic",
+          "enabledByDefault": true
+        },
+        {
+          "id": "stygian-onslaught",
+          "name": {
+            "ko": "지맥 제압전",
+            "en": "Stygian Onslaught"
+          },
+          "cycle": "periodic",
+          "enabledByDefault": true
+        }
+      ],
+      "periods": [
+        {
+          "id": "abyss-2026-09",
+          "choreId": "spiral-abyss",
+          "start": {
+            "kind": "server",
+            "at": "2026-09-16T04:00"
+          },
+          "end": {
+            "kind": "server",
+            "at": "2026-10-16T04:00"
+          }
+        },
+        {
+          "id": "abyss-2026-10",
+          "choreId": "spiral-abyss",
+          "start": {
+            "kind": "server",
+            "at": "2026-10-16T04:00"
+          },
+          "end": {
+            "kind": "server",
+            "at": "2026-11-16T04:00"
+          }
+        },
+        {
+          "id": "theater-2026-10",
+          "choreId": "imaginarium-theater",
+          "start": {
+            "kind": "server",
+            "at": "2026-10-01T04:00"
+          },
+          "end": {
+            "kind": "server",
+            "at": "2026-11-01T04:00"
+          }
+        },
+        {
+          "id": "theater-2026-11",
+          "choreId": "imaginarium-theater",
+          "start": {
+            "kind": "server",
+            "at": "2026-11-01T04:00"
+          },
+          "end": {
+            "kind": "server",
+            "at": "2026-12-01T04:00"
+          }
+        },
+        {
+          "id": "stygian-7-1",
+          "choreId": "stygian-onslaught",
+          "start": {
+            "kind": "server",
+            "at": "2026-09-30T10:00"
+          },
+          "end": {
+            "kind": "server",
+            "at": "2026-11-03T04:00"
+          }
+        }
+      ]
+    },
+    "hsr": {
+      "schedule": [
+        {
+          "id": "v4-6-main-event",
+          "type": "event",
+          "title": {
+            "ko": "버전 4.6 이벤트: Love, Ghosts & Robots",
+            "en": "Version 4.6 event: Love, Ghosts & Robots"
+          },
+          "start": {
+            "kind": "instant",
+            "at": "2026-09-28T11:00:00+08:00"
+          },
+          "end": {
+            "kind": "server",
+            "at": "2026-11-11T04:00"
+          }
+        },
+        {
+          "id": "interastral-peace-gala",
+          "type": "event",
+          "title": {
+            "ko": "기간 한정 이벤트: Interastral Peace Gala",
+            "en": "Event: Interastral Peace Gala"
+          },
+          "start": {
+            "kind": "server",
+            "at": "2026-10-21T12:00"
+          },
+          "end": {
+            "kind": "server",
+            "at": "2026-11-11T04:00"
+          }
+        },
+        {
+          "id": "v4-7-update",
+          "type": "update",
+          "title": {
+            "ko": "버전 4.7 업데이트 점검",
+            "en": "Version 4.7 update maintenance"
+          },
+          "start": {
+            "kind": "instant",
+            "at": "2026-11-11T06:00:00+08:00"
+          },
+          "end": {
+            "kind": "instant",
+            "at": "2026-11-11T11:00:00+08:00"
+          },
+          "estimated": true
+        }
+      ],
+      "codes": [
+        {
+          "code": "PEARLAPPRAISE",
+          "rewards": {
+            "ko": "여행자 가이드 3 외",
+            "en": "3 Traveler’s Guides and more"
+          },
+          "addedAt": "2026-10-06T09:00:00+09:00"
+        },
+        {
+          "code": "STARRAILGIFT",
+          "rewards": {
+            "ko": "성옥, 여행자 가이드, 크레딧",
+            "en": "Stellar Jade, Traveler’s Guides, Credits"
+          },
+          "addedAt": "2026-10-06T09:00:00+09:00"
+        },
+        {
+          "code": "OMEGA",
+          "rewards": {
+            "ko": "성옥 60, 연료 1",
+            "en": "60 Stellar Jade, 1 Fuel"
+          },
+          "addedAt": "2026-10-06T09:00:00+09:00"
+        },
+        {
+          "code": "CREATIONNYMPH",
+          "rewards": {
+            "ko": "성옥 60, 연료 1",
+            "en": "60 Stellar Jade, 1 Fuel"
+          },
+          "addedAt": "2026-10-06T09:00:00+09:00"
+        },
+        {
+          "code": "FAREWELL",
+          "rewards": {
+            "ko": "성옥 60, 연료 1",
+            "en": "60 Stellar Jade, 1 Fuel"
+          },
+          "addedAt": "2026-10-06T09:00:00+09:00"
+        },
+        {
+          "code": "IFYOUAREREADINGTHIS",
+          "rewards": {
+            "ko": "성옥 60, 연료 1",
+            "en": "60 Stellar Jade, 1 Fuel"
+          },
+          "addedAt": "2026-10-06T09:00:00+09:00"
+        },
+        {
+          "code": "RT4BPNA8FBS3",
+          "rewards": {
+            "ko": "성옥 50, 크레딧 10,000",
+            "en": "50 Stellar Jade, 10,000 Credits"
+          },
+          "addedAt": "2026-10-06T09:00:00+09:00"
+        }
+      ],
+      "chores": [
+        {
+          "id": "daily-training",
+          "name": {
+            "ko": "일일 훈련",
+            "en": "Daily training"
+          },
+          "cycle": "daily",
+          "enabledByDefault": true
+        },
+        {
+          "id": "trailblaze-power",
+          "name": {
+            "ko": "개척력 소모",
+            "en": "Spend Trailblaze Power"
+          },
+          "cycle": "daily",
+          "enabledByDefault": true
+        },
+        {
+          "id": "weekly-points",
+          "name": {
+            "ko": "시뮬레이션 우주 주간 점수",
+            "en": "Simulated Universe weekly points"
+          },
+          "cycle": "weekly",
+          "enabledByDefault": true
+        },
+        {
+          "id": "echo-of-war",
+          "name": {
+            "ko": "전쟁의 여운 3회",
+            "en": "Echo of War (3)"
+          },
+          "cycle": "weekly",
+          "enabledByDefault": true
+        },
+        {
+          "id": "memory-of-chaos",
+          "name": {
+            "ko": "혼돈의 기억",
+            "en": "Memory of Chaos"
+          },
+          "cycle": "periodic",
+          "enabledByDefault": true
+        },
+        {
+          "id": "pure-fiction",
+          "name": {
+            "ko": "허구 이야기",
+            "en": "Pure Fiction"
+          },
+          "cycle": "periodic",
+          "enabledByDefault": true
+        },
+        {
+          "id": "apocalyptic-shadow",
+          "name": {
+            "ko": "종말의 환영",
+            "en": "Apocalyptic Shadow"
+          },
+          "cycle": "periodic",
+          "enabledByDefault": true
+        }
+      ],
+      "periods": [
+        {
+          "id": "moc-4-6",
+          "choreId": "memory-of-chaos",
+          "start": {
+            "kind": "server",
+            "at": "2026-09-28T11:00"
+          },
+          "end": {
+            "kind": "server",
+            "at": "2026-11-02T04:00"
+          }
+        },
+        {
+          "id": "pf-2026-09",
+          "choreId": "pure-fiction",
+          "start": {
+            "kind": "server",
+            "at": "2026-09-14T04:00"
+          },
+          "end": {
+            "kind": "server",
+            "at": "2026-10-19T04:00"
+          }
+        },
+        {
+          "id": "as-2026-10",
+          "choreId": "apocalyptic-shadow",
+          "start": {
+            "kind": "server",
+            "at": "2026-10-05T04:00"
+          },
+          "end": {
+            "kind": "server",
+            "at": "2026-11-16T04:00"
+          }
+        }
+      ]
+    },
+    "zzz": {
+      "schedule": [
+        {
+          "id": "v3-3-livestream",
+          "type": "livestream",
+          "title": {
+            "ko": "버전 3.3 특별 방송",
+            "en": "Version 3.3 livestream"
+          },
+          "start": {
+            "kind": "instant",
+            "at": "2026-10-09T19:30:00+08:00"
+          },
+          "url": "https://zenless.hoyoverse.com/ko-kr/news/166552"
+        },
+        {
+          "id": "v3-3-update",
+          "type": "update",
+          "title": {
+            "ko": "버전 3.3 업데이트 점검",
+            "en": "Version 3.3 update maintenance"
+          },
+          "start": {
+            "kind": "instant",
+            "at": "2026-10-21T06:00:00+08:00"
+          },
+          "url": "https://zenless.hoyoverse.com/ko-kr/news/166000"
+        },
+        {
+          "id": "angels-support-operation",
+          "type": "event",
+          "title": {
+            "ko": "장기 이벤트: Angels Support Operation",
+            "en": "Event: Angels Support Operation"
+          },
+          "start": {
+            "kind": "instant",
+            "at": "2026-09-09T11:00:00+08:00"
+          },
+          "end": {
+            "kind": "server",
+            "at": "2026-11-30T04:00"
+          },
+          "url": "https://zenless.hoyoverse.com/ko-kr/news/165980"
+        },
+        {
+          "id": "surprise-screening-plan",
+          "type": "event",
+          "title": {
+            "ko": "이벤트: 깜짝 상영 기획",
+            "en": "Event: Surprise Screening Plan"
+          },
+          "start": {
+            "kind": "server",
+            "at": "2026-09-23T10:00"
+          },
+          "end": {
+            "kind": "server",
+            "at": "2026-10-20T04:00"
+          },
+          "url": "https://zenless.hoyoverse.com/ko-kr/news/166191"
+        },
+        {
+          "id": "pinball-hero",
+          "type": "event",
+          "title": {
+            "ko": "이벤트: 핀볼 히어로",
+            "en": "Event: Clink, Clank, Pinball Knight"
+          },
+          "start": {
+            "kind": "server",
+            "at": "2026-09-10T10:00"
+          },
+          "end": {
+            "kind": "server",
+            "at": "2026-10-19T04:00"
+          }
+        },
+        {
+          "id": "orbie-diary",
+          "type": "event",
+          "title": {
+            "ko": "이벤트: 동글이 성장 일기",
+            "en": "Event: Diary of an Orbie Parent"
+          },
+          "start": {
+            "kind": "server",
+            "at": "2026-09-30T10:00"
+          },
+          "end": {
+            "kind": "server",
+            "at": "2026-10-19T04:00"
+          },
+          "url": "https://zenless.hoyoverse.com/ko-kr/news/166476"
+        },
+        {
+          "id": "hobbling-crow",
+          "type": "event",
+          "title": {
+            "ko": "이벤트: 절름발이 까마귀 탐정록",
+            "en": "Event: Chronicles of the Hobbling Crow"
+          },
+          "start": {
+            "kind": "server",
+            "at": "2026-10-03T10:00"
+          },
+          "end": {
+            "kind": "server",
+            "at": "2026-10-19T04:00"
+          },
+          "url": "https://zenless.hoyoverse.com/ko-kr/news/166498"
+        },
+        {
+          "id": "combat-simulation-double",
+          "type": "event",
+          "title": {
+            "ko": "전투 시뮬레이션 보상 2배",
+            "en": "Double rewards: Combat Simulation"
+          },
+          "start": {
+            "kind": "server",
+            "at": "2026-10-14T04:00"
+          },
+          "end": {
+            "kind": "server",
+            "at": "2026-10-19T04:00"
+          }
+        }
+      ],
+      "codes": [
+        {
+          "code": "ZZZINK32",
+          "rewards": {
+            "ko": "폴리크롬 20, 디니 2,222. ZZZGRIND32, ZZZVOID32와 같은 보상으로, 하나만 사용할 수 있습니다.",
+            "en": "20 Polychrome, 2,222 Denny. Same reward as ZZZGRIND32 and ZZZVOID32; only one can be redeemed."
+          },
+          "addedAt": "2026-10-06T09:00:00+09:00"
+        },
+        {
+          "code": "ZENLESSGIFT",
+          "rewards": {
+            "ko": "폴리크롬 50 외",
+            "en": "50 Polychrome and more"
+          },
+          "addedAt": "2026-10-06T09:00:00+09:00"
+        }
+      ],
+      "chores": [
+        {
+          "id": "daily-engagement",
+          "name": {
+            "ko": "일일 활약도",
+            "en": "Daily engagement"
+          },
+          "cycle": "daily",
+          "enabledByDefault": true
+        },
+        {
+          "id": "battery",
+          "name": {
+            "ko": "배터리 소모",
+            "en": "Spend Battery Charge"
+          },
+          "cycle": "daily",
+          "enabledByDefault": true
+        },
+        {
+          "id": "notorious-hunt",
+          "name": {
+            "ko": "노토리우스 사냥 3회",
+            "en": "Notorious Hunt (3)"
+          },
+          "cycle": "weekly",
+          "enabledByDefault": true
+        },
+        {
+          "id": "ridu-weekly",
+          "name": {
+            "ko": "주간 리두",
+            "en": "Ridu Weekly"
+          },
+          "cycle": "weekly",
+          "enabledByDefault": true
+        },
+        {
+          "id": "hollow-zero-weekly",
+          "name": {
+            "ko": "제로 공동 주간 조사 포인트",
+            "en": "Hollow Zero weekly points"
+          },
+          "cycle": "weekly",
+          "enabledByDefault": true
+        },
+        {
+          "id": "shiyu-defense",
+          "name": {
+            "ko": "시유 방어전",
+            "en": "Shiyu Defense"
+          },
+          "cycle": "periodic",
+          "enabledByDefault": true
+        },
+        {
+          "id": "deadly-assault",
+          "name": {
+            "ko": "위험한 강습전",
+            "en": "Deadly Assault"
+          },
+          "cycle": "periodic",
+          "enabledByDefault": true
+        }
+      ],
+      "periods": [
+        {
+          "id": "shiyu-2026-10a",
+          "choreId": "shiyu-defense",
+          "start": {
+            "kind": "server",
+            "at": "2026-10-02T04:00"
+          },
+          "end": {
+            "kind": "server",
+            "at": "2026-10-16T04:00"
+          }
+        },
+        {
+          "id": "assault-2026-09",
+          "choreId": "deadly-assault",
+          "start": {
+            "kind": "server",
+            "at": "2026-09-25T04:00"
+          },
+          "end": {
+            "kind": "server",
+            "at": "2026-10-09T04:00"
+          }
+        }
+      ]
+    }
+  }
+}

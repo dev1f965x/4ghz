@@ -11,6 +11,8 @@
     "app:dev": "tauri dev",
     "app:build": "tauri build",
     "test": "vitest run --passWithNoTests",
+    "test:e2e": "playwright test",
+    "test:app": "node e2e/app-smoke.mjs",
     "license-check": "node scripts/check-licenses.mjs",
     "notices": "node scripts/notices.mjs",
     "tokens": "node scripts/tokens.mjs",
@@ -22,6 +24,7 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",
+    "@tauri-apps/api": "^2.12.1",
     "class-variance-authority": "^0.7.1",
     "cn": "^0.4.0",
     "i18next": "^26.4.2",
@@ -34,7 +37,9 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
     "@biomejs/biome": "^2",
+    "@playwright/test": "^1.63.0",
     "@tailwindcss/vite": "^4.3.3",
     "@tauri-apps/cli": "^2",
     "@types/node": "^24.19.1",
