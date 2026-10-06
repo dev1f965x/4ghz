@@ -37,6 +37,9 @@ export function installE2eMocks() {
         if (window.__E2E_WRITE_FAILS__) throw new Error("Writing failed: disk full");
         files[storeFile(payload)] = (payload as { contents: string }).contents;
         return null;
+      case "plugin:log|log":
+        // Logged errors still reach the console through src/log.ts.
+        return null;
       case "data_folder_name":
         return "io.github.dev1f965x.4ghz";
       case "open_data_folder":

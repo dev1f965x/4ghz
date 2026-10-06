@@ -1,5 +1,7 @@
 // The app's single data sync, wired to the network and the local cache, and its React binding.
+
 import { useSyncExternalStore } from "react";
+import { logError } from "@/log";
 import { readStore, writeStore } from "@/storage";
 import { createDataSync, REFRESH_INTERVAL_MS } from "./sync";
 
@@ -16,8 +18,7 @@ const dataSync = createDataSync({
   readCache: () => readStore("data-cache"),
   writeCache: (contents) => writeStore("data-cache", contents),
   now: Date.now,
-  // No log file exists yet; the console reaches the WebView2 developer tools.
-  logError: (message, error) => console.error(message, error),
+  logError,
 });
 
 /** Loads the cache, downloads, and refreshes every 30 minutes (Design Doc, "Data file"). */

@@ -275,8 +275,9 @@ describe("e2e test data", () => {
 });
 
 describe("official hosts", () => {
-  it("are exactly the hosts the opener capability allows", async () => {
+  it("with the project's pages, are exactly what the opener capability allows", async () => {
     const { officialHosts } = await import("./official-hosts");
+    const { projectUrlPatterns } = await import("@/links");
     const capability = Object.values(
       import.meta.glob<{ permissions: unknown[] }>("/src-tauri/capabilities/default.json", {
         eager: true,
@@ -290,6 +291,9 @@ describe("official hosts", () => {
         "identifier" in p &&
         p.identifier === "opener:allow-open-url",
     );
-    expect(opener?.allow.map((a) => a.url)).toEqual(officialHosts.map((h) => `https://${h}/*`));
+    expect(opener?.allow.map((a) => a.url)).toEqual([
+      ...officialHosts.map((h) => `https://${h}/*`),
+      ...projectUrlPatterns,
+    ]);
   });
 });

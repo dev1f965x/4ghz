@@ -9,6 +9,7 @@ import { useDataSync } from "@/data/store";
 import { useNow } from "@/hooks/useNow";
 import { formatDuration } from "@/i18n/duration";
 import type { Locale } from "@/i18n/locale";
+import { logError } from "@/log";
 import { localText } from "@/schedule/model";
 import { isRedeemed, setRedeemed, useLocalState } from "@/state/app-state";
 import type { GameId } from "@/state/schema";
@@ -95,7 +96,7 @@ function Row({
       })
       .catch((error: unknown) => {
         // Another app can hold the Windows clipboard; the button and announcement say so.
-        console.error(`Copying ${row.code} failed`, error);
+        logError(`Copying ${row.code} failed`, error);
         show("failed");
         announce(t("codes.copyFailedAnnouncement", { code: row.code }));
       });

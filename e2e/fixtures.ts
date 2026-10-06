@@ -21,6 +21,8 @@ type Options = {
   localFiles: Partial<Record<"state" | "data-cache", string>>;
   /** The first answer for the data file; tests change later answers with `network.serve`. */
   dataResponse: DataResponse;
+  /** What the GitHub API answers for the latest release; "none" is a 404, as before any release. */
+  latestRelease: { tag_name: string } | "none";
 };
 
 type Fixtures = {
@@ -32,6 +34,8 @@ type Fixtures = {
 export const test = base.extend<Options & Fixtures>({
   localFiles: [{}, { option: true }],
   dataResponse: [{ json: dataFile }, { option: true }],
+  // The app's own version, so no update notice shows unless a test asks for one.
+  latestRelease: [{ tag_name: "v0.1.0" }, { option: true }],
   network: async ({ dataResponse }, use) => {
     let current = dataResponse;
     await use({
@@ -41,14 +45,15 @@ export const test = base.extend<Options & Fixtures>({
       current: () => current,
     });
   },
-  app: async ({ page, localFiles, network }, use) => {
+  app: async ({ page, localFiles, network, latestRelease }, use) => {
     // The clock starts at NOW and runs; tests can jump ahead with page.clock.runFor.
     await page.clock.install({ time: NOW });
     await page.addInitScript((files) => {
       // Read by src/e2e-mocks.ts when the app starts.
       (window as unknown as { __E2E_FILES__: typeof files }).__E2E_FILES__ = files;
     }, localFiles);
-    // Only the dev server and the data file are reachable; any other request fails the test.
+    // Only the dev server, the data file, and the latest-release API are reachable; any other
+    // request fails the test.
     const unexpected: string[] = [];
     await page.route("**/*", (route) => {
       const url = new URL(route.request().url());
@@ -57,6 +62,11 @@ export const test = base.extend<Options & Fixtures>({
         const response = network.current();
         if (response === "offline") return route.abort("internetdisconnected");
         return route.fulfill({ json: response.json });
+      }
+      if (url.href === "https://api.github.com/repos/dev1f965x/4ghz/releases/latest") {
+        return latestRelease === "none"
+          ? route.fulfill({ status: 404, json: { message: "Not Found" } })
+          : route.fulfill({ json: latestRelease });
       }
       unexpected.push(url.href);
       return route.abort();
