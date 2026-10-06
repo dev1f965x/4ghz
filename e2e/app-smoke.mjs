@@ -171,8 +171,12 @@ async function run(label) {
             for (const r of reports) violations.push(r.body.blockedURL + " " + r.body.effectiveDirective);
           }, { types: ["csp-violation"], buffered: true }).observe();
           await wait(500);
+          // The data file shipped with the test build (.env.app-e2e) loads within 10 seconds.
+          const sync = () => document.querySelector("[data-sync-status]")?.dataset.syncStatus;
+          for (let i = 0; i < 100 && sync() === "loading"; i++) await wait(100);
           done({
             game: document.documentElement.dataset.game ?? null,
+            sync: sync() ?? null,
             tabs: [...document.querySelectorAll('[role="tab"]')].map((t) => t.textContent),
             styleElements: document.querySelectorAll("style").length,
             violations,
@@ -186,6 +190,8 @@ async function run(label) {
     const problems = [];
     if (result.game !== "genshin") problems.push("the app did not render");
     if (result.tabs.length !== 3) problems.push(`expected 3 tabs, found ${result.tabs.length}`);
+    if (result.sync !== "ok")
+      problems.push(`the data file did not load (sync status ${result.sync})`);
     if (result.violations.length > 0) {
       problems.push(`CSP violations: ${result.violations.join(", ")}`);
     }

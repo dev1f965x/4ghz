@@ -107,7 +107,7 @@ Banned, because they read as translation or as an AI answer:
 
 Banned, for the same reasons:
 
-- Hype and filler: "seamless", "effortless", "simply", "just", "easily", "powerful", "robust", "leverage", "unlock"
+- Hype and filler: "seamless", "effortless", "simply", "just" (except the time phrase "just now"), "easily", "powerful", "robust", "leverage", "unlock"
 - "successfully", "please" in instructions, "Oops", "Uh-oh"
 - Exclamation marks and emoji
 - Directional words that assume a layout: "above", "below", "on the right"

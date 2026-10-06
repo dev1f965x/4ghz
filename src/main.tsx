@@ -2,6 +2,7 @@ import { CSPProvider } from "@base-ui/react/csp-provider";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
+import { startDataSync } from "./data/store";
 import { initI18n } from "./i18n";
 import "./index.css";
 
@@ -13,6 +14,7 @@ if (import.meta.env.MODE === "e2e") {
 
 // No language has been chosen in settings yet, so the Windows display language applies.
 await initI18n(undefined);
+startDataSync();
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
