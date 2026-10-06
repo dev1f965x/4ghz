@@ -1,0 +1,63 @@
+name: Publish data
+
+# Validates every data/v*.json and publishes data/ to GitHub Pages, where the app downloads it
+# (https://dev1f965x.github.io/4ghz/data/v1.json).
+on:
+  push:
+    branches: [main]
+    paths: ["data/**", "src/data/**", ".github/workflows/pages.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# One deployment at a time; a newer push replaces a queued one but never cancels a running deploy.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    name: Validate data
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # Only Node.js and pnpm are needed here; the Rust tools in mise.toml are not.
+      - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
+        with:
+          version: 2026.10.2
+          install_args: node pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate the data files against the strict schema
+        run: pnpm exec vitest run src/data
+
+      - name: Lay out the site
+        run: |
+          mkdir -p site
+          cp -r data site/data
+
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: site
+
+  deploy:
+    name: Deploy
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}data/v1.json
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
