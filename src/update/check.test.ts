@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
-import { findUpdate, isNewer, parseVersion } from "./check";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { fetchJson, findUpdate, isNewer, parseVersion } from "./check";
 
 const answer = (tag: unknown) => () => Promise.resolve({ tag_name: tag });
 
@@ -42,5 +42,20 @@ describe("findUpdate", () => {
 describe("before any release", () => {
   it("finds nothing when GitHub has no release yet", async () => {
     await expect(findUpdate("0.1.0", () => Promise.resolve(null))).resolves.toBeNull();
+  });
+});
+
+describe("fetchJson", () => {
+  const respond = (status: number, body: unknown = {}) =>
+    vi.stubGlobal("fetch", () => Promise.resolve(new Response(JSON.stringify(body), { status })));
+  afterEach(() => vi.unstubAllGlobals());
+
+  it("reads a release, treats 404 as none, and rejects other failures", async () => {
+    respond(200, { tag_name: "v1.0.0" });
+    await expect(fetchJson("https://example.test")).resolves.toEqual({ tag_name: "v1.0.0" });
+    respond(404);
+    await expect(fetchJson("https://example.test")).resolves.toBeNull();
+    respond(403);
+    await expect(fetchJson("https://example.test")).rejects.toThrow("403");
   });
 });

@@ -8,13 +8,18 @@ const listeners = new Set<() => void>();
 
 /** Checks once; a failure is logged and shows nothing (PRD Q8). */
 export function startUpdateCheck() {
-  findUpdate(__APP_VERSION__, fetchJson).then(
-    (found) => {
-      release = found;
-      for (const listener of listeners) listener();
-    },
-    (error: unknown) => logError("Checking for a new version failed", error),
-  );
+  findUpdate(__APP_VERSION__, fetchJson)
+    .then(
+      (found) => {
+        release = found;
+        for (const listener of listeners) listener();
+      },
+      (error: unknown) => logError("Checking for a new version failed", error),
+    )
+    // Lets tests and the smoke test tell a finished check from one still running.
+    .finally(() => {
+      document.documentElement.dataset.updateCheck = "done";
+    });
 }
 
 export function useAvailableUpdate() {

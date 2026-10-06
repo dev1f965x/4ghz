@@ -21,8 +21,11 @@ type Options = {
   localFiles: Partial<Record<"state" | "data-cache", string>>;
   /** The first answer for the data file; tests change later answers with `network.serve`. */
   dataResponse: DataResponse;
-  /** What the GitHub API answers for the latest release; "none" is a 404, as before any release. */
-  latestRelease: { tag_name: string } | "none";
+  /**
+   * What the GitHub API answers for the latest release: "none" is a 404, as before any release,
+   * and "error" a 500.
+   */
+  latestRelease: { tag_name: string } | "none" | "error";
 };
 
 type Fixtures = {
@@ -64,9 +67,11 @@ export const test = base.extend<Options & Fixtures>({
         return route.fulfill({ json: response.json });
       }
       if (url.href === "https://api.github.com/repos/dev1f965x/4ghz/releases/latest") {
-        return latestRelease === "none"
-          ? route.fulfill({ status: 404, json: { message: "Not Found" } })
-          : route.fulfill({ json: latestRelease });
+        if (latestRelease === "none") {
+          return route.fulfill({ status: 404, json: { message: "Not Found" } });
+        }
+        if (latestRelease === "error") return route.fulfill({ status: 500, body: "" });
+        return route.fulfill({ json: latestRelease });
       }
       unexpected.push(url.href);
       return route.abort();

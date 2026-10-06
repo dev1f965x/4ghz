@@ -26,6 +26,7 @@ export const en = {
     notices: "Third-party notices",
     feedback: "Send feedback",
     close: "Close",
+    loading: "Loading",
     loadFailed: "This text couldn’t be loaded.",
   },
   update: {

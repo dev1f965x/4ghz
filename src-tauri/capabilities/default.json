@@ -20,7 +20,8 @@
         { "url": "https://zenless.hoyoverse.com/*" },
         { "url": "https://hoyolab.com/*" },
         { "url": "https://www.hoyolab.com/*" },
-        { "url": "https://github.com/dev1f965x/4ghz/*" }
+        { "url": "https://github.com/dev1f965x/4ghz/issues" },
+        { "url": "https://github.com/dev1f965x/4ghz/releases/tag/v*" }
       ]
     }
   ]

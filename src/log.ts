@@ -6,7 +6,14 @@ import { error as writeError } from "@tauri-apps/plugin-log";
 function describe(error: unknown): string {
   if (error instanceof Error) return error.message;
   // Rust command errors arrive as objects such as { kind, message }.
-  if (typeof error === "object" && error !== null) return JSON.stringify(error);
+  if (typeof error === "object" && error !== null) {
+    try {
+      return JSON.stringify(error);
+    } catch {
+      // Circular or BigInt values cannot be serialized; the type name still helps.
+      return Object.prototype.toString.call(error);
+    }
+  }
   return String(error);
 }
 

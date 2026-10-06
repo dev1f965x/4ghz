@@ -84,6 +84,36 @@ export function Banners({ onOpenSettings }: { onOpenSettings?: () => void }) {
       ),
     });
   }
+  // Inside Settings the notice has nothing to point to, so it waits until the user leaves.
+  if (onOpenSettings && !state.settings.firstRunNoticeDismissed) {
+    banners.push({
+      key: "first-run",
+      node: (
+        <Banner
+          kind="notice"
+          title={t("firstRun.title")}
+          body={t("firstRun.body")}
+          actions={
+            <>
+              <Button variant="outline" size="sm" onClick={onOpenSettings}>
+                {t("firstRun.open")}
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                aria-label={t("firstRun.dismiss")}
+                onClick={() => void updateSettings({ firstRunNoticeDismissed: true })}
+              >
+                <XIcon aria-hidden />
+              </Button>
+            </>
+          }
+        />
+      ),
+    });
+  }
+  // After the first-run notice: setting up the app comes first, and this notice waits until
+  // it is dismissed.
   if (update !== null && update.version !== state.settings.dismissedUpdateVersion) {
     banners.push({
       key: "update-available",
@@ -110,34 +140,6 @@ export function Banners({ onOpenSettings }: { onOpenSettings?: () => void }) {
                 size="icon-sm"
                 aria-label={t("update.dismiss")}
                 onClick={() => void updateSettings({ dismissedUpdateVersion: update.version })}
-              >
-                <XIcon aria-hidden />
-              </Button>
-            </>
-          }
-        />
-      ),
-    });
-  }
-  // Inside Settings the notice has nothing to point to, so it waits until the user leaves.
-  if (onOpenSettings && !state.settings.firstRunNoticeDismissed) {
-    banners.push({
-      key: "first-run",
-      node: (
-        <Banner
-          kind="notice"
-          title={t("firstRun.title")}
-          body={t("firstRun.body")}
-          actions={
-            <>
-              <Button variant="outline" size="sm" onClick={onOpenSettings}>
-                {t("firstRun.open")}
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                aria-label={t("firstRun.dismiss")}
-                onClick={() => void updateSettings({ firstRunNoticeDismissed: true })}
               >
                 <XIcon aria-hidden />
               </Button>

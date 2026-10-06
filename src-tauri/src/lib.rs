@@ -20,9 +20,9 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         // Copies redeem codes; the capability grants only writing text.
         .plugin(tauri_plugin_clipboard_manager::init())
-        // Errors from both sides go to rotated files in the app's log folder
-        // (%LOCALAPPDATA%<identifier>ogs): at most three files of 1 MB. Messages carry no
-        // paths or personal data; the web view logs through src/log.ts.
+        // Warnings and errors from both sides go to rotated files in the app's log folder
+        // (%LOCALAPPDATA%\<identifier>\logs): at most three files of 1 MB. Warn keeps other
+        // crates' info lines, such as asset paths, out. The web view logs through src/log.ts.
         .plugin(
             tauri_plugin_log::Builder::new()
                 .clear_targets()
@@ -30,7 +30,7 @@ pub fn run() {
                     Target::new(TargetKind::LogDir { file_name: None }),
                     Target::new(TargetKind::Stdout),
                 ])
-                .level(log::LevelFilter::Info)
+                .level(log::LevelFilter::Warn)
                 .max_file_size(1_000_000)
                 .rotation_strategy(RotationStrategy::KeepSome(3))
                 .build(),

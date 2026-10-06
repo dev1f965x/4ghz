@@ -201,7 +201,11 @@ async function run(label, { check }) {
             await wait(1000);
           }
           // Generated at app build time; the About screen shows it.
-          const notices = await fetch("/third-party-notices.txt").then((r) => r.ok, () => false);
+          // A missing file comes back as index.html with status 200, so the type is checked too.
+          const notices = await fetch("/third-party-notices.txt").then(
+            (r) => r.ok && (r.headers.get("content-type") ?? "").startsWith("text/plain"),
+            () => false,
+          );
           done({
             game: document.documentElement.dataset.game ?? null,
             notices,

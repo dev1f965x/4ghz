@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import type { Page } from "@playwright/test";
 import { expect, expectNoA11yViolations, test } from "./fixtures";
 
@@ -12,6 +13,10 @@ const opened = (app: Page) =>
   app.evaluate(() => (window as unknown as { __E2E_OPENED__?: string[] }).__E2E_OPENED__);
 const updateNotice = (app: Page) =>
   app.getByText(/새 버전이 나왔습니다|A new version is available/);
+/** Waits until the startup check has answered, so "nothing shows" is not checked too early. */
+const checked = (app: Page) =>
+  app.locator("html[data-update-check=done]").waitFor({ state: "attached" });
+const { version } = JSON.parse(readFileSync("package.json", "utf8")) as { version: string };
 
 test.describe("with a newer release", () => {
   test.use({ localFiles: { state: state() }, latestRelease: { tag_name: "v0.2.0" } });
@@ -50,7 +55,7 @@ test.describe("with that release dismissed earlier", () => {
   });
 
   test("shows nothing until a later version", async ({ app }) => {
-    await expect(app.getByRole("tab", { name: /^(일정|Schedule)$/ })).toBeVisible();
+    await checked(app);
     await expect(updateNotice(app)).toHaveCount(0);
   });
 });
@@ -59,7 +64,16 @@ test.describe("before any release", () => {
   test.use({ localFiles: { state: state() }, latestRelease: "none" });
 
   test("shows nothing when the check fails", async ({ app }) => {
-    await expect(app.getByRole("tab", { name: /^(일정|Schedule)$/ })).toBeVisible();
+    await checked(app);
+    await expect(updateNotice(app)).toHaveCount(0);
+  });
+});
+
+test.describe("when the check fails", () => {
+  test.use({ localFiles: { state: state() }, latestRelease: "error" });
+
+  test("logs it and shows nothing", async ({ app }) => {
+    await checked(app);
     await expect(updateNotice(app)).toHaveCount(0);
   });
 });
@@ -74,7 +88,7 @@ test.describe("About", () => {
     );
     await app.getByRole("button", { name: /^(설정|Settings)$/ }).click();
     await app.getByRole("tab", { name: /^(정보|About)$/ }).click();
-    await expect(app.getByRole("heading", { name: "4ghz 0.1.0" })).toBeVisible();
+    await expect(app.getByRole("heading", { name: `4ghz ${version}` })).toBeVisible();
     await expect(app.getByText(/비공식 앱|unofficial app/)).toBeVisible();
     await expect(
       app.getByText(/각 권리자의 상표|trademarks of their respective owners/),

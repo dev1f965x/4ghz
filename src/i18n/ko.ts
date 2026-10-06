@@ -20,11 +20,12 @@ export const ko: Messages = {
     trademarks: "원신, 붕괴: 스타레일, 젠레스 존 제로는 각 권리자의 상표입니다.",
     privacyTitle: "개인정보",
     privacy:
-      "4ghz는 개인정보를 모으지 않습니다. 기록, 설정, 오류 로그는 이 PC에만 저장됩니다. 데이터 파일과 새 버전 정보를 GitHub에서 받으며, 이때 GitHub는 IP 주소를 받습니다.",
+      "4ghz는 개인정보를 모으지 않습니다. 기록, 설정, 오류 로그는 이 PC에만 저장됩니다. 데이터 파일과 새 버전 정보를 GitHub에서 받으며, 이때 GitHub은 IP 주소를 받습니다.",
     license: "MIT 라이선스",
     notices: "서드파티 고지",
     feedback: "의견 보내기",
     close: "닫기",
+    loading: "불러오는 중",
     loadFailed: "내용을 불러오지 못했습니다.",
   },
   update: {
