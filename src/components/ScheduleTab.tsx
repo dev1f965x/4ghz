@@ -1,4 +1,5 @@
 import { openUrl } from "@tauri-apps/plugin-opener";
+import { useId } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { useDataSync } from "@/data/store";
@@ -7,7 +8,7 @@ import type { Locale } from "@/i18n/locale";
 import { localText, type ScheduleRow, scheduleRows } from "@/schedule/model";
 import type { GameId } from "@/state/schema";
 import type { Region } from "@/time/clock";
-import { formatDateTime, formatRange } from "@/time/format";
+import { formatDateTime, formatRange, timeLeft } from "@/time/format";
 
 // The server is chosen in Settings (GHZ-20); until then every game uses the default, Asia.
 const region: Region = "asia";
@@ -52,9 +53,12 @@ function Section({
   now: number;
   ongoing: boolean;
 }) {
+  const headingId = useId();
   return (
-    <section className="flex flex-col gap-2">
-      <h2 className="font-bold">{title}</h2>
+    <section aria-labelledby={headingId} className="flex flex-col gap-2">
+      <h2 id={headingId} className="font-bold">
+        {title}
+      </h2>
       <ul className="flex flex-col gap-2">
         {rows.map((row) => (
           <Row key={row.id} row={row} now={now} ongoing={ongoing} />
@@ -72,13 +76,23 @@ function Row({ row, now, ongoing }: { row: ScheduleRow; now: number; ongoing: bo
     row.end === null ? formatDateTime(row.start, locale) : formatRange(row.start, row.end, locale);
 
   let countdown: string | null = null;
-  if (!ongoing) countdown = t("schedule.startsIn", { time: duration(row.start - now, t) });
+  if (!ongoing) countdown = t("schedule.startsIn", { time: duration(now, row.start, t) });
   else if (row.end !== null)
-    countdown = t("schedule.timeLeft", { time: duration(row.end - now, t) });
+    countdown = t("schedule.timeLeft", { time: duration(now, row.end, t) });
 
+  const { url } = row;
+  const open = () => {
+    if (!url) return;
+    openUrl(url).catch((error: unknown) => {
+      // The capability or a missing default browser refused it; nothing else to show yet.
+      console.error(`Opening ${url} failed`, error);
+    });
+  };
+
+  // Fixed widths for the type, countdown, and button columns keep titles aligned across rows.
   return (
     <li className="flex items-center gap-3 rounded-lg border bg-card px-3 py-2">
-      <span className="shrink-0 rounded-md border px-1.5 text-xs text-muted-foreground">
+      <span className="min-w-16 shrink-0 rounded-md border px-1.5 text-center text-xs text-muted-foreground">
         {t(`schedule.type.${row.type}`)}
       </span>
       <div className="grow">
@@ -92,29 +106,28 @@ function Row({ row, now, ongoing }: { row: ScheduleRow; now: number; ongoing: bo
           )}
         </p>
       </div>
-      {countdown && <span className="shrink-0 text-sm">{countdown}</span>}
-      {row.url && (
-        <Button
-          variant="outline"
-          size="sm"
-          // Names the entry too, since every row has the same button text.
-          aria-label={`${t("schedule.openAnnouncement")}: ${title}`}
-          onClick={() => void openUrl(row.url as string)}
-        >
-          {t("schedule.openAnnouncement")}
-          <span aria-hidden>↗</span>
-        </Button>
-      )}
+      <span className="min-w-32 shrink-0 text-right text-sm tabular-nums">{countdown}</span>
+      <Button
+        variant="outline"
+        size="sm"
+        // Rows without a link keep an invisible button, so the columns line up.
+        className={url ? undefined : "invisible"}
+        aria-hidden={url ? undefined : true}
+        tabIndex={url ? undefined : -1}
+        // Names the entry too, since every row has the same button text.
+        aria-label={`${t("schedule.openAnnouncement")}: ${title}`}
+        onClick={open}
+      >
+        {t("schedule.openAnnouncement")}
+        <span aria-hidden>↗</span>
+      </Button>
     </li>
   );
 }
 
-/** "3일 4시간", "4시간 5분", or "5분": minutes round up, so an entry never shows 0 while it runs. */
-function duration(ms: number, t: ReturnType<typeof useTranslation>["t"]) {
-  const total = Math.max(1, Math.ceil(ms / 60_000));
-  const d = Math.floor(total / 1440);
-  const h = Math.floor((total % 1440) / 60);
-  const m = total % 60;
+/** "3일 4시간", "4시간 5분", or "5분", from timeLeft. */
+function duration(from: number, to: number, t: ReturnType<typeof useTranslation>["t"]) {
+  const { days: d, hours: h, minutes: m } = timeLeft(from, to);
   if (d > 0) return t("duration.days", { d, h });
   if (h > 0) return t("duration.hours", { h, m });
   return t("duration.minutes", { m });

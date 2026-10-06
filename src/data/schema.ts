@@ -3,12 +3,13 @@
 // so a file with a typo cannot be published.
 // Imports carry the .ts extension so Node can load this file directly (scripts/data-schema.mjs).
 import { type Region, type Time, toInstant } from "../time/clock.ts";
+import { officialHosts } from "./official-hosts.ts";
 import { z } from "./zod.ts";
 
 const regions: readonly Region[] = ["asia", "america", "europe", "tw_hk_mo"];
 
-// Links open only official game sites (PRD, Security).
-const allowedHost = /^(?:[a-z0-9-]+\.)*(?:hoyoverse|hoyolab)\.com$/;
+// Links open only official game sites (PRD, Security); see official-hosts.ts.
+const isOfficialHost = (host: string) => officialHosts.some((h) => h === host);
 
 /** The instant on the Asia server, or null when the time is malformed or out of range. */
 function asiaInstant(time: Time): number | null {
@@ -32,6 +33,9 @@ function linkProblem(value: string): string | null {
   // The url check reports unparsable strings; this one must not throw on them.
   if (!URL.canParse(value)) return null;
   const url = new URL(value);
+  if (!isOfficialHost(url.hostname)) {
+    return `Use a link on an official site: ${officialHosts.join(", ")}`;
+  }
   if (url.port !== "" || url.username !== "" || url.password !== "") {
     return "Use a link without a port or user name";
   }
@@ -52,7 +56,7 @@ function build(strict: boolean) {
   const isoInstant = z.string().refine((at) => isValid({ kind: "instant", at }), {
     message: "Use ISO 8601 with an offset",
   });
-  const link = z.url({ protocol: /^https$/, hostname: allowedHost }).superRefine((value, ctx) => {
+  const link = z.url({ protocol: /^https$/ }).superRefine((value, ctx) => {
     const problem = linkProblem(value);
     if (problem) ctx.addIssue({ code: "custom", message: problem });
   });
@@ -74,7 +78,8 @@ function build(strict: boolean) {
       end: instant.optional(),
     }),
     object({ ...entryBase, type: z.literal("event"), start: anyTime, end: anyTime.optional() }),
-    object({ ...entryBase, type: z.literal("endgame"), start: server, end: server.optional() }),
+    // No "endgame" entries: endgame modes are periodic chores, and the Schedule tab shows their
+    // periods, so the owner enters each period once.
   ]);
 
   const code = object({

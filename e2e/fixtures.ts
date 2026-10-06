@@ -42,8 +42,8 @@ export const test = base.extend<Options & Fixtures>({
     });
   },
   app: async ({ page, localFiles, network }, use) => {
-    // Date.now() stays at NOW; timers still run, so countdown updates are exercised.
-    await page.clock.setFixedTime(NOW);
+    // The clock starts at NOW and runs; tests can jump ahead with page.clock.runFor.
+    await page.clock.install({ time: NOW });
     await page.addInitScript((files) => {
       // Read by src/e2e-mocks.ts when the app starts.
       (window as unknown as { __E2E_FILES__: typeof files }).__E2E_FILES__ = files;

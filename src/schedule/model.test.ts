@@ -62,8 +62,8 @@ describe("scheduleRows", () => {
   it("splits ongoing and upcoming, drops ended entries, and adds endgame periods", () => {
     const { ongoing, upcoming } = scheduleRows(game, "asia", NOW);
     // Ongoing by soonest end, upcoming by soonest start.
-    expect(ongoing.map((r) => r.id)).toEqual(["event", "period-a1"]);
-    expect(upcoming.map((r) => r.id)).toEqual(["period-a2", "live", "update"]);
+    expect(ongoing.map((r) => r.id)).toEqual(["event", "period:a1"]);
+    expect(upcoming.map((r) => r.id)).toEqual(["period:a2", "live", "update"]);
     expect(ongoing[1]).toMatchObject({ type: "endgame", title: { ko: "나선 비경" } });
     expect(upcoming.find((r) => r.id === "live")).toMatchObject({ estimated: true, end: null });
   });

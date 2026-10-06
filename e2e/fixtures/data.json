@@ -278,8 +278,8 @@
           "id": "v4-6-main-event",
           "type": "event",
           "title": {
-            "ko": "버전 4.6 이벤트: Love, Ghosts & Robots",
-            "en": "Version 4.6 event: Love, Ghosts & Robots"
+            "ko": "Love, Ghosts & Robots",
+            "en": "Love, Ghosts & Robots"
           },
           "start": {
             "kind": "instant",

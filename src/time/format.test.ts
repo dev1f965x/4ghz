@@ -22,15 +22,20 @@ describe("formatDateTime", () => {
 });
 
 describe("timeLeft", () => {
+  const MIN = 60_000;
   it.each([
-    [0, 0, { days: 0, hours: 0, minutes: 0 }],
-    [0, 14 * 86_400_000 + 18 * 3_600_000 + 18 * 60_000, { days: 14, hours: 18, minutes: 18 }],
-    [10, 0, { days: 0, hours: 0, minutes: 0 }],
-  ])("from %d to %d", (from, to, expected) => {
-    expect(timeLeft(from, to)).toEqual(expected);
+    [59_000, { days: 0, hours: 0, minutes: 1 }],
+    [MIN, { days: 0, hours: 0, minutes: 1 }],
+    [MIN + 1_000, { days: 0, hours: 0, minutes: 2 }],
+    [60 * MIN, { days: 0, hours: 1, minutes: 0 }],
+    [1440 * MIN, { days: 1, hours: 0, minutes: 0 }],
+    [14 * 86_400_000 + 18 * 3_600_000 + 18 * MIN, { days: 14, hours: 18, minutes: 18 }],
+    // Already over: still one minute, since the entry leaves the list on the next update.
+    [-10_000, { days: 0, hours: 0, minutes: 1 }],
+  ])("%d ms before the end", (ms, expected) => {
+    expect(timeLeft(0, ms)).toEqual(expected);
   });
 });
-
 describe("formatUpdated", () => {
   const at = Date.parse("2026-10-06T01:42:00Z");
 

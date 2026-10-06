@@ -49,8 +49,8 @@ describe("data file schema", () => {
   it.each([
     ["a livestream in server time", { type: "livestream", start: server("2026-10-10T20:00") }],
     [
-      "an endgame entry in instant time",
-      { type: "endgame", start: instant("2026-10-16T04:00:00+08:00") },
+      "an endgame entry, which comes from periods instead",
+      { type: "endgame", start: server("2026-10-16T04:00") },
     ],
     ["an instant without an offset", { type: "update", start: instant("2026-10-10T20:00") }],
     ["an impossible server time", { type: "event", start: server("2026-02-30T04:00") }],
@@ -150,6 +150,10 @@ describe("data file schema", () => {
     "HTTPS://hoyoverse.com/",
     "https://hoyoverse.com@evil.com/",
     "https://evil-hoyoverse.com/",
+    // Hosts outside the exact list, and look-alike paths that a glob would accept.
+    "https://act.hoyoverse.com/",
+    "https://evil.com/a.hoyoverse.com/b",
+    "https://evil.com/?x=.hoyoverse.com/",
   ])("rejects the link %s", (url) => {
     const entry = {
       id: "a",
@@ -267,5 +271,25 @@ describe("e2e test data", () => {
 
   it.each(fixtures)("%s passes the strict schema", (_, content) => {
     expect(errors(content)).toEqual([]);
+  });
+});
+
+describe("official hosts", () => {
+  it("are exactly the hosts the opener capability allows", async () => {
+    const { officialHosts } = await import("./official-hosts");
+    const capability = Object.values(
+      import.meta.glob<{ permissions: unknown[] }>("/src-tauri/capabilities/default.json", {
+        eager: true,
+        import: "default",
+      }),
+    )[0];
+    const opener = capability.permissions.find(
+      (p): p is { identifier: string; allow: { url: string }[] } =>
+        typeof p === "object" &&
+        p !== null &&
+        "identifier" in p &&
+        p.identifier === "opener:allow-open-url",
+    );
+    expect(opener?.allow.map((a) => a.url)).toEqual(officialHosts.map((h) => `https://${h}/*`));
   });
 });

@@ -41,7 +41,8 @@ export function scheduleRows(game: GameData, region: Region, now: number) {
     if (!chore) return [];
     return [
       {
-        id: `period-${p.id}`,
+        // ":" cannot appear in data ids, so these never collide with schedule entries.
+        id: `period:${p.id}`,
         type: "endgame" as const,
         title: chore.name,
         start: toInstant(p.start, region),

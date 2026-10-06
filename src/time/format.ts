@@ -15,19 +15,21 @@ export function formatDateTime(instant: number, locale: Locale, timeZone?: strin
   }).format(instant);
 }
 
-/** Time left until an instant, in whole minutes, as days, hours, and minutes. */
+/**
+ * Time left until an instant as days, hours, and minutes. Minutes round up, with at least one,
+ * so a countdown never shows zero while the entry still runs. (The wireframes rounded.)
+ */
 export function timeLeft(
   from: number,
   to: number,
 ): { days: number; hours: number; minutes: number } {
-  const total = Math.max(0, Math.floor((to - from) / 60_000));
+  const total = Math.max(1, Math.ceil((to - from) / 60_000));
   return {
     days: Math.floor(total / 1440),
     hours: Math.floor((total % 1440) / 60),
     minutes: total % 60,
   };
 }
-
 function sameLocalDay(a: number, b: number, timeZone?: string) {
   const day = (t: number) =>
     new Intl.DateTimeFormat("en-CA", { dateStyle: "short", timeZone }).format(t);
