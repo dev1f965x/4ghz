@@ -16,6 +16,8 @@ pub fn run() {
         }))
         // Opens official announcement links in the default browser; the capability limits the URLs.
         .plugin(tauri_plugin_opener::init())
+        // Copies redeem codes; the capability grants only writing text.
+        .plugin(tauri_plugin_clipboard_manager::init())
         .invoke_handler(tauri::generate_handler![
             storage::read_store,
             storage::write_store

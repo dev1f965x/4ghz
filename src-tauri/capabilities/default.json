@@ -6,6 +6,7 @@
   "permissions": [
     "allow-read-store",
     "allow-write-store",
+    "clipboard-manager:allow-write-text",
     {
       "identifier": "opener:allow-open-url",
       "allow": [

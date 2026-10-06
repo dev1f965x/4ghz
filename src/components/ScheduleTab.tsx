@@ -4,11 +4,12 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { useDataSync } from "@/data/store";
 import { useNow } from "@/hooks/useNow";
+import { formatDuration } from "@/i18n/duration";
 import type { Locale } from "@/i18n/locale";
 import { localText, type ScheduleRow, scheduleRows } from "@/schedule/model";
 import type { GameId } from "@/state/schema";
 import type { Region } from "@/time/clock";
-import { formatDateTime, formatRange, timeLeft } from "@/time/format";
+import { formatDateTime, formatRange } from "@/time/format";
 
 // The server is chosen in Settings (GHZ-20); until then every game uses the default, Asia.
 const region: Region = "asia";
@@ -76,9 +77,9 @@ function Row({ row, now, ongoing }: { row: ScheduleRow; now: number; ongoing: bo
     row.end === null ? formatDateTime(row.start, locale) : formatRange(row.start, row.end, locale);
 
   let countdown: string | null = null;
-  if (!ongoing) countdown = t("schedule.startsIn", { time: duration(now, row.start, t) });
+  if (!ongoing) countdown = t("schedule.startsIn", { time: formatDuration(t, now, row.start) });
   else if (row.end !== null)
-    countdown = t("schedule.timeLeft", { time: duration(now, row.end, t) });
+    countdown = t("schedule.timeLeft", { time: formatDuration(t, now, row.end) });
 
   const { url } = row;
   const open = () => {
@@ -123,12 +124,4 @@ function Row({ row, now, ongoing }: { row: ScheduleRow; now: number; ongoing: bo
       </Button>
     </li>
   );
-}
-
-/** "3일 4시간", "4시간 5분", or "5분", from timeLeft. */
-function duration(from: number, to: number, t: ReturnType<typeof useTranslation>["t"]) {
-  const { days: d, hours: h, minutes: m } = timeLeft(from, to);
-  if (d > 0) return t("duration.days", { d, h });
-  if (h > 0) return t("duration.hours", { h, m });
-  return t("duration.minutes", { m });
 }

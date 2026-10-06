@@ -2,9 +2,11 @@ import { ArrowLeftIcon, SettingsIcon } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Banners } from "@/components/Banners";
+import { CodesTab } from "@/components/CodesTab";
 import { DataState } from "@/components/DataState";
 import { GameSelect } from "@/components/GameSelect";
 import { Mark } from "@/components/Mark";
+import { RedemptionLink } from "@/components/RedemptionLink";
 import { ScheduleTab } from "@/components/ScheduleTab";
 import { SettingsView } from "@/components/SettingsView";
 import { SyncStatus } from "@/components/SyncStatus";
@@ -104,17 +106,24 @@ export default function App() {
                 if (tabIds.includes(value)) void updateSettings({ lastTab: value });
               }}
             >
-              <TabsList variant="line">
-                {tabIds.map((id) => (
-                  <TabsTrigger key={id} value={id}>
-                    {t(`tab.${id}`)}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
+              <div className="flex items-center justify-between gap-3">
+                <TabsList variant="line">
+                  {tabIds.map((id) => (
+                    <TabsTrigger key={id} value={id}>
+                      {t(`tab.${id}`)}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+                {/* As in the wireframes, the Codes tab offers the game's redemption page here. */}
+                {tab === "codes" && <RedemptionLink game={game} />}
+              </div>
               {tabIds.map((id) => (
                 <TabsContent key={id} value={id}>
-                  {/* The other tabs' content arrives with their stories (GHZ-17 to GHZ-19). */}
-                  <DataState>{id === "schedule" ? <ScheduleTab game={game} /> : null}</DataState>
+                  {/* The Calendar's content arrives with its stories (GHZ-18, GHZ-19). */}
+                  <DataState>
+                    {id === "schedule" && <ScheduleTab game={game} />}
+                    {id === "codes" && <CodesTab game={game} />}
+                  </DataState>
                 </TabsContent>
               ))}
             </Tabs>
