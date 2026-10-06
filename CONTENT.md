@@ -38,6 +38,7 @@ Use these words and no synonyms. A new product noun or verb is added here before
 | Records and settings on this PC | records and settings | 기록과 설정 | |
 | Folder that holds them | data folder | 데이터 폴더 | The Windows app data folder: "Open data folder" / "데이터 폴더 열기" |
 | Getting new data | refresh | 새로 고침 | |
+| A banner that informs, such as the first-run banner | notice | 알림 | Only for in-app banners, never Windows notifications. Problems are warnings |
 
 Product name: 4ghz, always lowercase Latin letters, in both languages.
 

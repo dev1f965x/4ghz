@@ -31,7 +31,6 @@ export function SyncStatus() {
           download in progress. */}
       <Button
         variant="outline"
-        size="sm"
         onClick={() => void refreshData()}
         aria-busy={status === "loading"}
         aria-keyshortcuts="F5"

@@ -5,6 +5,24 @@ export const en = {
     genshin: "Genshin Impact",
     hsr: "Honkai: Star Rail",
     zzz: "Zenless Zone Zero",
+    // Letter marks shown next to each game's name and in the calendar.
+    letter: { genshin: "G", hsr: "H", zzz: "Z" },
+  },
+  shell: {
+    settings: "Settings",
+    back: "Back",
+  },
+  firstRun: {
+    title: "Check your server and games",
+    body: "The default server is Asia.",
+    open: "Open settings",
+    dismiss: "Dismiss notice",
+  },
+  readOnly: {
+    title: "Records can’t be read",
+    invalidBody:
+      "The records file is damaged or was made by a newer version. Checks are turned off for this session.",
+    unreadableBody: "The records file can’t be opened. Checks are turned off for this session.",
   },
   tab: {
     schedule: "Schedule",

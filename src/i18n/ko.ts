@@ -7,6 +7,23 @@ export const ko: Messages = {
     genshin: "원신",
     hsr: "붕괴: 스타레일",
     zzz: "젠레스 존 제로",
+    letter: { genshin: "원", hsr: "스", zzz: "젠" },
+  },
+  shell: {
+    settings: "설정",
+    back: "돌아가기",
+  },
+  firstRun: {
+    title: "서버와 게임을 확인하세요",
+    body: "기본 서버는 아시아입니다.",
+    open: "설정 열기",
+    dismiss: "알림 닫기",
+  },
+  readOnly: {
+    title: "기록을 읽을 수 없습니다",
+    invalidBody:
+      "기록 파일이 손상됐거나 더 새 버전에서 만들어졌습니다. 이번 실행에서는 체크를 끕니다.",
+    unreadableBody: "기록 파일을 열 수 없습니다. 이번 실행에서는 체크를 끕니다.",
   },
   tab: {
     schedule: "일정",
