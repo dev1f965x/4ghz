@@ -166,6 +166,9 @@ test.describe("with a periodic chore that has no current period", () => {
       .filter({ hasText: /지맥 제압전|Stygian Onslaught/ });
     await expect(row).toContainText(/진행 중인 기간 없음|No current period/);
     await expect(row.getByRole("checkbox")).toBeDisabled();
+    await expect(row.getByRole("checkbox")).toHaveAccessibleDescription(
+      /진행 중인 기간 없음|No current period/,
+    );
     await expect(group(app, /^(기간|Periodic)$/)).toContainText("0 / 2");
   });
 });

@@ -98,10 +98,11 @@ export const ko: Messages = {
     noneBody: "설정에서 {{game}} 숙제를 켜세요.",
     checked: "체크함: “{{chore}}”.",
     unchecked: "체크 해제: “{{chore}}”.",
+    closed: "바꾸지 못함: “{{chore}}”. 기간이 끝났습니다.",
   },
   saveFailed: {
     title: "변경 사항을 저장하지 못했습니다",
-    body: "기록 파일에 쓸 수 없습니다. 디스크 공간을 확인하세요. 다음 변경 때 다시 저장합니다.",
+    body: "기록 파일에 쓸 수 없어 앱을 닫으면 최근 변경 사항이 사라질 수 있습니다. 다음에 바꿀 때 다시 저장합니다.",
   },
   duration: {
     days: "{{d}}일 {{h}}시간",

@@ -107,7 +107,10 @@ export function checklist(
   };
 }
 
-/** Checks or unchecks a daily chore on an editable day; throws for any other day. */
+/**
+ * Checks or unchecks a daily chore on `label`, or returns null when that day can no longer be
+ * changed, such as a click that lands just after the grace period ends.
+ */
 export function checkDaily(
   game: GameData,
   state: GameChores,
@@ -116,19 +119,39 @@ export function checkDaily(
   label: string,
   choreId: string,
   checked: boolean,
-): GameChores {
+): GameChores | null {
+  if (!editableDays(state, choreContext(game, region, now)).includes(label)) return null;
   const next = setDailyCheck(state, choreContext(game, region, now), label, choreId, checked);
-  return { ...next, cycleChecks: state.cycleChecks };
+  return { ...state, ...next };
 }
 
-/** Checks or unchecks a weekly or periodic chore in the cycle `key`. */
+/** The key of the cycle open now for a weekly or periodic chore, or null without one. */
+function currentCycleKey(game: GameData, choreId: string, region: Region, now: number) {
+  const chore = game.chores.find((c) => c.id === choreId);
+  if (chore?.cycle === "weekly") return `weekly:${weekLabel(now, region)}`;
+  if (chore?.cycle !== "periodic") return null;
+  const period = currentPeriod(
+    game.periods.filter((p) => p.choreId === choreId),
+    now,
+    region,
+  );
+  return period ? `period:${period.id}` : null;
+}
+
+/**
+ * Checks or unchecks a weekly or periodic chore in cycle `key`, or returns null when `key` is
+ * no longer the chore's open cycle: a click on a list drawn just before the Monday reset.
+ */
 export function checkCycle(
+  game: GameData,
   state: GameChores,
+  region: Region,
   now: number,
   key: string,
   choreId: string,
   checked: boolean,
-): GameChores {
+): GameChores | null {
+  if (currentCycleKey(game, choreId, region, now) !== key) return null;
   const current = { ...(state.cycleChecks[key] ?? {}) };
   if (checked) current[choreId] = now;
   else delete current[choreId];
@@ -140,7 +163,10 @@ const CYCLE_RETENTION_MS = 7 * DAY;
 
 /**
  * Applies resets and missed days (PRD FR28, FR29) and drops checks of cycles that ended more
- * than a week ago. A period that no longer exists in the data file has ended for good.
+ * than a week ago. Retention counts from when the app first saw the cycle as ended, not from
+ * the cycle's end, so a wrong future clock must last a week before it removes anything; when
+ * the clock moves back before a cycle's end, the cycle is open again. A period missing from the
+ * data file counts as ended, so a removed or renamed period keeps its checks for a week too.
  */
 export function advanceChores(
   game: GameData,
@@ -148,15 +174,47 @@ export function advanceChores(
   region: Region,
   now: number,
 ): GameChores {
-  const days = advance(state, choreContext(game, region, now));
+  const advanced = advance(state, choreContext(game, region, now));
   const periodEnds = new Map(game.periods.map((p) => [`period:${p.id}`, toInstant(p.end, region)]));
-  const cycleChecks = Object.fromEntries(
-    Object.entries(state.cycleChecks).filter(([key]) => {
-      let end: number | undefined;
-      if (key.startsWith("weekly:")) end = weekEnd(key.slice("weekly:".length), region);
-      else end = periodEnds.get(key);
-      return end !== undefined && now < end + CYCLE_RETENTION_MS;
-    }),
-  );
-  return { ...days, cycleChecks };
+  const cycleChecks: GameChores["cycleChecks"] = {};
+  const cycleEndedAt: GameChores["cycleEndedAt"] = {};
+  for (const [key, checks] of Object.entries(state.cycleChecks)) {
+    const end = key.startsWith("weekly:")
+      ? weekEnd(key.slice("weekly:".length), region)
+      : periodEnds.get(key);
+    if (end !== undefined && now < end) {
+      cycleChecks[key] = checks;
+      continue;
+    }
+    // A clock that moved back before the first sighting restarts the wait.
+    const seen = Math.min(state.cycleEndedAt[key] ?? now, now);
+    if (now < seen + CYCLE_RETENTION_MS) {
+      cycleChecks[key] = checks;
+      cycleEndedAt[key] = seen;
+    }
+  }
+  return { ...advanced, cycleChecks, cycleEndedAt };
+}
+
+// lastAdvancedAt moves on every tick; saving only for that would rewrite state.json every 30
+// seconds. A change of that field alone is saved once it is this old.
+const ADVANCE_SAVE_GAP_MS = 10 * 60_000;
+
+/** True when an advance changed more than lastAdvancedAt, or moved it far enough to save. */
+export function advanceNeedsSave(before: GameChores, after: GameChores) {
+  if (Math.abs(after.lastAdvancedAt - before.lastAdvancedAt) >= ADVANCE_SAVE_GAP_MS) return true;
+  const rest = (s: GameChores) => JSON.stringify({ ...s, lastAdvancedAt: 0 });
+  return rest(before) !== rest(after);
+}
+
+/** The next instant at which `list` changes: a reset, the grace end, or a period end. */
+export function nextChange(list: Checklist, now: number): number | null {
+  const instants = [
+    list.daily.resetsAt,
+    list.daily.resumesAt,
+    list.previous?.editableUntil,
+    list.weekly.resetsAt,
+    ...list.periodic.items.map((i) => i.endsAt),
+  ].filter((t): t is number => typeof t === "number" && t > now);
+  return instants.length === 0 ? null : Math.min(...instants);
 }

@@ -15,8 +15,9 @@ import { join, resolve } from "node:path";
 
 const app = resolve("src-tauri/target/e2e/release/4ghz.exe");
 if (!existsSync(app)) throw new Error(`${app} is missing; run pnpm app:build:e2e first`);
-// app_local_data_dir() of the test build's identifier.
-const stateFile = join(process.env.LOCALAPPDATA, "io.github.dev1f965x.4ghz.e2e", "state.json");
+// app_local_data_dir() of the test build, named by its identifier.
+const { identifier } = JSON.parse(readFileSync("src-tauri/tauri.e2e.conf.json", "utf8"));
+const stateFile = join(process.env.LOCALAPPDATA, identifier, "state.json");
 
 const debugPort = 9222;
 const driverPort = 4444;
@@ -139,7 +140,7 @@ async function close(appProcess) {
 
 /**
  * Starts the app, attaches to it, checks it, and closes it again. With `check`, it opens the
- * Calendar and checks the first chore; without, it expects that chore to be checked already.
+ * Calendar and checks the first daily chore; without, it expects that chore to be checked.
  */
 async function run(label, { check }) {
   if (await debugPortOpen()) {
@@ -192,7 +193,7 @@ async function run(label, { check }) {
           const tabs = [...document.querySelectorAll('[role="tab"]')];
           // The Calendar is the third tab; the restart opens it again as the last tab used.
           if (check) tabs[2]?.click();
-          const chore = () => document.querySelector('[role="tabpanel"] [role="checkbox"]');
+          const chore = () => document.querySelector('[data-group="daily"] [role="checkbox"]');
           for (let i = 0; i < 50 && !chore(); i++) await wait(100);
           if (check) {
             chore()?.click();
@@ -222,7 +223,8 @@ async function run(label, { check }) {
       problems.push(`CSP violations: ${result.violations.join(", ")}`);
     }
     if (result.styleElements > 0) problems.push("inline <style> elements, which the CSP blocks");
-    if (result.chore !== "true") problems.push(`the first chore is not checked (${result.chore})`);
+    if (result.chore !== "true")
+      problems.push(`the first daily chore is not checked (${result.chore})`);
     if (problems.length > 0) throw new Error(`${label}: ${problems.join("; ")}`);
   } catch (error) {
     failure = error;

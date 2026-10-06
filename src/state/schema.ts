@@ -27,6 +27,8 @@ const gameChores = z.object({
   ),
   dailyChecks: checks,
   cycleChecks: checks,
+  /** When the app first saw each checked cycle as ended; retention counts from here. */
+  cycleEndedAt: z.record(z.string(), z.number()),
 });
 
 export const localStateSchema = z.object({
@@ -58,7 +60,7 @@ function noChores(): LocalState["chores"] {
 }
 
 export function emptyGameChores(): GameChores {
-  return { ...emptyGameDays(), cycleChecks: {} };
+  return { ...emptyGameDays(), cycleChecks: {}, cycleEndedAt: {} };
 }
 
 /** Upper-case codes per game; a fresh object each time, so states never share arrays. */

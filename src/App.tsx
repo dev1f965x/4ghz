@@ -31,15 +31,12 @@ export default function App() {
   }, [game]);
 
   // Resets and missed days apply on start, every 30 seconds, and when the window regains focus
-  // after sleep or a clock change (PRD FR29).
+  // or becomes visible (PRD FR29). A clock change or a resume that triggers neither is picked up
+  // by the next 30-second tick.
   const { data } = useDataSync();
   const now = useNow(30_000);
   useEffect(() => {
-    if (data === null) return;
-    advanceAllChores(data, now);
-    const onFocus = () => advanceAllChores(data, Date.now());
-    window.addEventListener("focus", onFocus);
-    return () => window.removeEventListener("focus", onFocus);
+    if (data !== null) advanceAllChores(data, now);
   }, [data, now]);
   const openSettings = useCallback(() => setView("settings"), []);
   const closeSettings = useCallback(() => {

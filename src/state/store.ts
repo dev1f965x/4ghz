@@ -54,11 +54,14 @@ export function createLocalStore(deps: Deps) {
         readOnly: result.kind === "read-only" ? result.reason : null,
       });
     },
-    /** Applies a change and saves it; in read-only mode the change lasts for this session only. */
-    update(change: (state: LocalState) => LocalState) {
+    /**
+     * Applies a change and saves it; in read-only mode the change lasts for this session only.
+     * With save: false the change waits for the next save, for bookkeeping not worth a write.
+     */
+    update(change: (state: LocalState) => LocalState, { save = true } = {}) {
       const state = change(snapshot.state);
       publish({ ...snapshot, state });
-      if (snapshot.readOnly !== null) return saving;
+      if (snapshot.readOnly !== null || !save) return saving;
       const contents = JSON.stringify(state);
       saving = saving.then(() =>
         deps.write(contents).then(

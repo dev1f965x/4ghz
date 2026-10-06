@@ -97,10 +97,11 @@ export const en = {
     noneBody: "Turn on chores for {{game}} in Settings.",
     checked: "Checked “{{chore}}”.",
     unchecked: "Unchecked “{{chore}}”.",
+    closed: "Couldn’t change “{{chore}}”. Its cycle has ended.",
   },
   saveFailed: {
     title: "Changes couldn’t be saved",
-    body: "The records file can’t be written. Check the free disk space. The next change saves again.",
+    body: "The records file can’t be written, so recent changes may be lost when the app closes. The app tries to save again when you make another change.",
   },
   duration: {
     days: "{{d}}d {{h}}h",
