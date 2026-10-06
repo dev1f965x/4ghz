@@ -1,7 +1,7 @@
 // The app's single local store, wired to state.json, and its React binding.
 import { useSyncExternalStore } from "react";
 import { readStore, writeStore } from "@/storage";
-import type { LocalState } from "./schema";
+import type { GameId, LocalState } from "./schema";
 import { createLocalStore } from "./store";
 
 const localStore = createLocalStore({
@@ -22,4 +22,14 @@ export function useLocalState() {
 
 export function updateSettings(patch: Partial<LocalState["settings"]>) {
   return localStore.update((state) => ({ ...state, settings: { ...state.settings, ...patch } }));
+}
+
+export function setRedeemed(game: GameId, code: string, redeemed: boolean) {
+  return localStore.update((state) => {
+    const others = state.redeemedCodes[game].filter((c) => c !== code);
+    return {
+      ...state,
+      redeemedCodes: { ...state.redeemedCodes, [game]: redeemed ? [...others, code] : others },
+    };
+  });
 }

@@ -22,6 +22,14 @@ describe("parseLocalState", () => {
     });
   });
 
+  it("fills in fields added after a file was written", () => {
+    const { redeemedCodes: _, ...older } = defaultLocalState();
+    expect(parseLocalState(JSON.stringify(older))).toEqual({
+      kind: "ready",
+      state: defaultLocalState(),
+    });
+  });
+
   it.each([
     ["damaged", "{not json", "invalid"],
     ["not an object", "null", "invalid"],

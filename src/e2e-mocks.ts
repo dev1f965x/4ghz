@@ -11,6 +11,8 @@ declare global {
     __E2E_FILES__?: Partial<Record<StoreFile, string>>;
     /** URLs the app asked the opener plugin to open, for tests to inspect. */
     __E2E_OPENED__?: string[];
+    /** Text the app put on the clipboard, for tests to inspect. */
+    __E2E_CLIPBOARD__?: string;
   }
 }
 
@@ -35,6 +37,9 @@ export function installE2eMocks() {
           ...(window.__E2E_OPENED__ ?? []),
           (payload as { url: string }).url,
         ];
+        return null;
+      case "plugin:clipboard-manager|write_text":
+        window.__E2E_CLIPBOARD__ = (payload as { text: string }).text;
         return null;
       default:
         throw new Error(`No e2e mock for command ${command}`);

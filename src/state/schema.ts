@@ -19,6 +19,13 @@ export const localStateSchema = z.object({
     /** The first-run notice to check the server and games (PRD Q9). */
     firstRunNoticeDismissed: z.boolean(),
   }),
+  /**
+   * Codes the user marked as redeemed, by game (PRD Q4). Pre-release fields added after the
+   * first state.json default when missing, so earlier files stay valid instead of read-only.
+   */
+  redeemedCodes: z
+    .object({ genshin: z.array(z.string()), hsr: z.array(z.string()), zzz: z.array(z.string()) })
+    .default({ genshin: [], hsr: [], zzz: [] }),
 });
 
 export type LocalState = z.infer<typeof localStateSchema>;
@@ -27,5 +34,6 @@ export function defaultLocalState(): LocalState {
   return {
     schemaVersion: LOCAL_STATE_VERSION,
     settings: { lastGame: "genshin", lastTab: "schedule", firstRunNoticeDismissed: false },
+    redeemedCodes: { genshin: [], hsr: [], zzz: [] },
   };
 }

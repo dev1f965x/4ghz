@@ -20,6 +20,9 @@ allow = [
   "MIT-0",
   "Unlicense",
   "Unicode-3.0",
+  # Boost: permissive, OSI-approved; attribution is required only in source copies. Used by
+  # clipboard-win and error-code, through tauri-plugin-clipboard-manager (GHZ-17).
+  "BSL-1.0",
 ]
 confidence-threshold = 0.9
 # The list states the policy, so not every entry is in use at any time.
