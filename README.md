@@ -12,7 +12,7 @@ The app is developed natively on Windows 11. Install these first:
 
 - Visual Studio Build Tools with the “Desktop development with C++” workload
 - Rust through rustup
-- mise, which installs the Node.js, pnpm, cargo-deny, cargo-about, and tauri-driver versions the repository pins
+- mise, which installs the Node.js, pnpm, cargo-deny, and cargo-about versions the repository pins
 - Microsoft Edge (included with Windows 11), for the end-to-end tests
 
 Run `mise install` once in the repository to get the pinned tools, then `pnpm install`.
@@ -26,7 +26,8 @@ Run `mise install` once in the repository to get the pinned tools, then `pnpm in
 | `pnpm check` | All checks: Biome, type check, knip, design tokens and color contrast, UI text, tests, license check, `pnpm audit`, rustfmt, Clippy, Rust tests, and cargo-deny |
 | `pnpm test` | Unit tests (Vitest) |
 | `pnpm test:e2e` | End-to-end and accessibility tests of the frontend in Microsoft Edge, with Tauri IPC and the network mocked (Playwright, axe-core) |
-| `pnpm test:app` | Smoke test of the release build through tauri-driver; run `pnpm app:build` first |
+| `pnpm app:build:e2e` | Build a test copy of the app whose WebView2 opens a debugging port, in `src-tauri/target/e2e`; never shipped |
+| `pnpm test:app` | Smoke test of that test build through msedgedriver; run `pnpm app:build:e2e` first |
 | `pnpm license-check` | Check npm package licenses against the project's license policy |
 | `pnpm notices` | Write the third-party notices to `public/third-party-notices.txt`; `pnpm app:build` runs it |
 | `pnpm tokens` | Regenerate `src/tokens.css` and the `DESIGN.md` front matter after changing `design/visual/tokens.json` |

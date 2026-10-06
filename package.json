@@ -10,6 +10,7 @@
     "tauri": "tauri",
     "app:dev": "tauri dev",
     "app:build": "tauri build",
+    "app:build:e2e": "tauri build --no-bundle --config src-tauri/tauri.e2e.conf.json -- --target-dir target/e2e",
     "test": "vitest run --passWithNoTests",
     "test:e2e": "playwright test",
     "test:app": "node e2e/app-smoke.mjs",

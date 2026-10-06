@@ -1,12 +1,22 @@
-// Smoke test of the packaged app through tauri-driver (Design Doc, Testing): the release build
-// starts, shows its tabs, reports no CSP violations, and starts again after it is closed.
-// Run after pnpm app:build. Uses plain WebDriver over HTTP, so it needs no client library.
+// Smoke test of the packaged app (Design Doc, Testing): the build starts, shows its tabs,
+// reports no CSP violations, and starts again after it is closed.
+//
+// The app is a test build (pnpm app:build:e2e) whose WebView2 opens a debugging port through
+// src-tauri/tauri.e2e.conf.json; release builds never have it. msedgedriver attaches to that
+// port. The usual tauri-driver route passes the port in WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS,
+// which WebView2 150 and later ignore in elevated processes such as GitHub's Windows runners
+// (actions/runner-images#14738). Uses plain WebDriver over HTTP, so it needs no client library.
 import { execFileSync, spawn } from "node:child_process";
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 
-const app = resolve("src-tauri/target/release/4ghz.exe");
-if (!existsSync(app)) throw new Error(`${app} is missing; run pnpm app:build first`);
+const app = resolve("src-tauri/target/e2e/release/4ghz.exe");
+if (!existsSync(app)) throw new Error(`${app} is missing; run pnpm app:build:e2e first`);
+
+const debugPort = 9222;
+const driverPort = 4444;
+const driverBase = `http://127.0.0.1:${driverPort}`;
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 /**
  * msedgedriver must match the installed WebView2 runtime exactly. The runtime registers per
@@ -44,11 +54,8 @@ async function nativeDriver(version) {
   return exe;
 }
 
-const port = 4444;
-const base = `http://127.0.0.1:${port}`;
-
 async function webdriver(method, path, body) {
-  const response = await fetch(`${base}${path}`, {
+  const response = await fetch(`${driverBase}${path}`, {
     method,
     headers: { "Content-Type": "application/json" },
     body: body === undefined ? undefined : JSON.stringify(body),
@@ -58,82 +65,90 @@ async function webdriver(method, path, body) {
   return json.value;
 }
 
-async function waitForDriver(driver) {
+/** Polls `probe` every 200 ms for up to 15 seconds while `process` runs. */
+async function waitFor(what, process, probe) {
   let lastError;
-  for (let i = 0; i < 50 && driver.exitCode === null; i++) {
+  for (let i = 0; i < 75 && process.exitCode === null; i++) {
     try {
-      await webdriver("GET", "/status");
+      await probe();
       return;
     } catch (error) {
-      // Refused connections are expected while the driver starts; the last one is reported.
+      // Refused connections are expected while it starts; the last one is reported.
       lastError = error;
-      await new Promise((r) => setTimeout(r, 200));
+      await sleep(200);
     }
   }
-  throw new Error(`tauri-driver did not start (exit code ${driver.exitCode})`, {
-    cause: lastError,
-  });
+  throw new Error(`${what} did not start (exit code ${process.exitCode})`, { cause: lastError });
 }
 
-/** Starts the app, checks it, and closes it again. */
+function start(command, args) {
+  const child = spawn(command, args, { stdio: ["ignore", "inherit", "inherit"] });
+  child.on("error", (error) => console.error(`${command} could not start: ${error.message}`));
+  return child;
+}
+
+/** Starts the app, attaches to it, checks it, and closes it again. */
 async function run(label) {
-  const session = await webdriver("POST", "/session", {
-    capabilities: { alwaysMatch: { "tauri:options": { application: app } } },
-  });
-  const id = session.sessionId;
+  const appProcess = start(app, []);
   let failure;
   try {
-    const script = (source, args = []) =>
-      webdriver("POST", `/session/${id}/execute/async`, { script: source, args });
+    await waitFor("The app's debugging port", appProcess, async () => {
+      const response = await fetch(`http://127.0.0.1:${debugPort}/json/version`);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    });
+    const session = await webdriver("POST", "/session", {
+      capabilities: {
+        alwaysMatch: {
+          browserName: "webview2",
+          "ms:edgeOptions": { debuggerAddress: `127.0.0.1:${debugPort}` },
+        },
+      },
+    });
     // ReportingObserver with buffered: true also returns violations from before this script ran.
-    const result = await script(`
-      const done = arguments[arguments.length - 1];
-      const wait = (ms) => new Promise((r) => setTimeout(r, ms));
-      (async () => {
-        for (let i = 0; i < 50 && !document.documentElement.dataset.game; i++) await wait(100);
-        const violations = [];
-        new ReportingObserver((reports) => {
-          for (const r of reports) violations.push(r.body.blockedURL + " " + r.body.effectiveDirective);
-        }, { types: ["csp-violation"], buffered: true }).observe();
-        await wait(500);
-        done({
-          game: document.documentElement.dataset.game ?? null,
-          tabs: [...document.querySelectorAll('[role="tab"]')].map((t) => t.textContent),
-          styleElements: document.querySelectorAll("style").length,
-          violations,
-        });
-      })();
-    `);
+    const result = await webdriver("POST", `/session/${session.sessionId}/execute/async`, {
+      args: [],
+      script: `
+        const done = arguments[arguments.length - 1];
+        const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+        (async () => {
+          for (let i = 0; i < 50 && !document.documentElement.dataset.game; i++) await wait(100);
+          const violations = [];
+          new ReportingObserver((reports) => {
+            for (const r of reports) violations.push(r.body.blockedURL + " " + r.body.effectiveDirective);
+          }, { types: ["csp-violation"], buffered: true }).observe();
+          await wait(500);
+          done({
+            game: document.documentElement.dataset.game ?? null,
+            tabs: [...document.querySelectorAll('[role="tab"]')].map((t) => t.textContent),
+            styleElements: document.querySelectorAll("style").length,
+            violations,
+          });
+        })();
+      `,
+    });
+    // Detaches without closing the app; the app is closed below like a user would.
+    await webdriver("DELETE", `/session/${session.sessionId}`);
     console.log(`${label}: ${JSON.stringify(result)}`);
     const problems = [];
     if (result.game !== "genshin") problems.push("the app did not render");
     if (result.tabs.length !== 3) problems.push(`expected 3 tabs, found ${result.tabs.length}`);
-    if (result.violations.length > 0)
+    if (result.violations.length > 0) {
       problems.push(`CSP violations: ${result.violations.join(", ")}`);
+    }
     if (result.styleElements > 0) problems.push("inline <style> elements, which the CSP blocks");
     if (problems.length > 0) throw new Error(`${label}: ${problems.join("; ")}`);
   } catch (error) {
     failure = error;
   }
-  // Closing the session closes the app; a failure here must not hide the check's own failure.
-  try {
-    await webdriver("DELETE", `/session/${id}`);
-  } catch (error) {
-    if (!failure) failure = error;
-    else console.error(`Closing the session also failed: ${error.message}`);
-  }
+  appProcess.kill();
+  // The single-instance plugin would hand a restart to a process that is still closing.
+  while (appProcess.exitCode === null && appProcess.signalCode === null) await sleep(100);
   if (failure) throw failure;
 }
 
-const driverPath = await nativeDriver(webView2Version());
-const driver = spawn("tauri-driver", ["--port", String(port), "--native-driver", driverPath], {
-  stdio: ["ignore", "inherit", "inherit"],
-});
-driver.on("error", (error) => {
-  console.error(`tauri-driver could not start: ${error.message}. Run mise install.`);
-});
+const driver = start(await nativeDriver(webView2Version()), [`--port=${driverPort}`]);
 try {
-  await waitForDriver(driver);
+  await waitFor("msedgedriver", driver, () => webdriver("GET", "/status"));
   await run("first start");
   await run("restart");
   console.log("App smoke test passed.");

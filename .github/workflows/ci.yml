@@ -68,6 +68,10 @@ jobs:
           # Performance target: the installer stays under 10 MB.
           if ($installer.Length -ge 10MB) { throw "Installer is $mb MB; the limit is 10 MB." }
 
-      # The packaged app through tauri-driver: starts, restarts, and reports no CSP violations.
+      # A test build whose WebView2 opens a debugging port; release builds never have it.
+      - name: Build the app for the smoke test
+        run: pnpm app:build:e2e
+
+      # The built app through msedgedriver: starts, restarts, and reports no CSP violations.
       - name: Packaged-app smoke test
         run: pnpm test:app
