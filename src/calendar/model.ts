@@ -5,7 +5,7 @@ import { choreContext, type GameData } from "@/chores/model";
 import type { GameChores, GameId } from "@/state/schema";
 import { gameIds } from "@/state/schema";
 import { addDays, gameDayLabel, type Region } from "@/time/clock";
-import { type DayResult, isAllDone, openDayResult } from "@/time/days";
+import { type DayResult, isAllDone, unfixedDayResult } from "@/time/days";
 
 /** A game's state on one day; "none" is no record: not played, or before tracking began. */
 export type GameMark = DayResult | "none";
@@ -56,33 +56,31 @@ export function monthLabels(month: string): string[][] {
   return weeks;
 }
 
-function gameMark(input: CalendarInput, game: GameId, label: string, today: string): GameMark {
-  const state = input.chores[game];
-  if (label >= addDays(today, -1)) {
-    const data = input.games?.[game];
-    const open = data
-      ? openDayResult(state, choreContext(data, input.region, input.now), label)
-      : undefined;
-    if (open !== undefined) return open;
-  }
-  return state.days[label]?.result ?? "none";
+/** A day's live result while not yet fixed, or undefined once fixed or not counted. */
+function unfixed(input: CalendarInput, game: GameId, label: string) {
+  const data = input.games?.[game];
+  if (!data) return undefined;
+  return unfixedDayResult(input.chores[game], choreContext(data, input.region, input.now), label);
 }
 
 export function calendarDay(input: CalendarInput, label: string, month: string): CalendarDay {
   const today = gameDayLabel(input.now, input.region);
+  const live = Object.fromEntries(gameIds.map((g) => [g, unfixed(input, g, label)])) as Record<
+    GameId,
+    DayResult | undefined
+  >;
   const games = Object.fromEntries(
-    gameIds.map((g) => [g, label > today ? "none" : gameMark(input, g, label, today)]),
+    gameIds.map((g) => [
+      g,
+      label > today ? "none" : (live[g] ?? input.chores[g].days[label]?.result ?? "none"),
+    ]),
   ) as Record<GameId, GameMark>;
   let status: DayStatus = "past";
   if (label > today) status = "upcoming";
   else if (label === today) status = "today";
-  // The previous day is pending while any game can still change it.
-  else if (
-    label === addDays(today, -1) &&
-    gameIds.some((g) => input.chores[g].days[label] === undefined && games[g] !== "none")
-  ) {
-    status = "pending";
-  }
+  // An earlier day is pending until every game has fixed it: during the grace period, and in
+  // the moment between its end and the advance that records it.
+  else if (gameIds.some((g) => live[g] !== undefined)) status = "pending";
   const all = isAllDone(
     gameIds.map((g) => {
       const mark = games[g];

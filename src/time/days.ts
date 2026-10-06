@@ -258,11 +258,19 @@ export function isAllDone(records: readonly (DayRecord | undefined)[]): boolean 
 }
 
 /**
- * The result so far of a day that is still open (today, or the previous day in its grace
- * period), or undefined when the day is not open, not counted, or the game is not played.
- * During the day it follows the current chores and settings (PRD FR34).
+ * The result so far of a counted day that has not been fixed yet: today, the previous day in
+ * its grace period, or a day whose grace period just ended before the next advance fixes it.
+ * Undefined when the game is not played, the day is before countFrom, or it is already
+ * processed. During the day it follows the current chores and settings (PRD FR34).
  */
-export function openDayResult(state: GameDays, ctx: Context, label: string): DayResult | undefined {
-  if (!ctx.plays || !editableDays(state, ctx).includes(label)) return undefined;
+export function unfixedDayResult(
+  state: GameDays,
+  ctx: Context,
+  label: string,
+): DayResult | undefined {
+  if (!ctx.plays || state.countFrom === null) return undefined;
+  if (gameDayStart(label, ctx.region) < state.countFrom) return undefined;
+  if (state.lastFixedLabel !== null && label <= state.lastFixedLabel) return undefined;
+  if (label > gameDayLabel(ctx.now, ctx.region)) return undefined;
   return evaluateDay(state, ctx, label);
 }

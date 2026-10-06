@@ -1,4 +1,4 @@
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { ChevronLeftIcon, ChevronRightIcon, HourglassIcon } from "lucide-react";
 import { type KeyboardEvent, useEffect, useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -17,6 +17,7 @@ import type { Locale } from "@/i18n/locale";
 import { REGION, useLocalState } from "@/state/app-state";
 import { gameIds } from "@/state/schema";
 import { addDays, gameDayLabel, gameDayStart } from "@/time/clock";
+import { GRACE_MS } from "@/time/days";
 import { formatLabelLong, formatMonth, weekdayNames } from "@/time/format";
 
 /**
@@ -32,8 +33,9 @@ export function MonthCalendar() {
   const [boundary, setBoundary] = useState<number | null>(null);
   const now = useNow(30_000, boundary);
   const today = gameDayLabel(now, REGION);
-  // The grid changes when the day or the previous day's grace period ends.
-  const next = gameDayStart(addDays(today, 1), REGION);
+  // The grid changes when a day starts and when the previous day's grace period ends.
+  const graceEnd = gameDayStart(today, REGION) + GRACE_MS;
+  const next = graceEnd > now ? graceEnd : gameDayStart(addDays(today, 1), REGION);
   useEffect(() => setBoundary(next), [next]);
 
   const current = monthOf(today);
@@ -57,11 +59,16 @@ export function MonthCalendar() {
   const first = `${earliest}-01`;
   const last = addDays(`${addMonths(current, 1)}-01`, -1);
   const clamp = (label: string) => (label < first ? first : label > last ? last : label);
+  // Announces month changes made with the buttons, where focus stays on the button.
+  const [announcement, setAnnouncement] = useState("");
   const goToMonth = (target: string) => {
     // Keeps the day of the month where it exists, as calendar apps do.
     const day = Math.min(Number(focused.slice(8)), daysIn(target));
     setFocused(clamp(`${target}-${String(day).padStart(2, "0")}`));
+    setAnnouncement(formatMonth(target, locale));
   };
+  const atStart = month <= earliest;
+  const atEnd = month >= current;
 
   const onKeyDown = (event: KeyboardEvent, day: CalendarDay) => {
     const weekday = (new Date(`${day.label}T00:00:00Z`).getUTCDay() + 6) % 7;
@@ -78,8 +85,11 @@ export function MonthCalendar() {
     const move = moves[event.key];
     if (!move) return;
     event.preventDefault();
+    const target = clamp(move());
+    // An unchanged label renders nothing, so the flag would stay set for a later change.
+    if (target === focused) return;
     moveFocus.current = true;
-    setFocused(clamp(move()));
+    setFocused(target);
   };
 
   const markText = (mark: Mark, status: CalendarDay["status"]) => {
@@ -112,28 +122,41 @@ export function MonthCalendar() {
           variant="ghost"
           size="icon"
           aria-label={t("calendar.previous")}
-          disabled={month <= earliest}
-          onClick={() => goToMonth(addMonths(month, -1))}
+          // aria-disabled, not disabled: a disabled button would drop focus to the page.
+          aria-disabled={atStart || undefined}
+          className="aria-disabled:opacity-50"
+          onClick={() => !atStart && goToMonth(addMonths(month, -1))}
         >
           <ChevronLeftIcon aria-hidden />
         </Button>
-        <h2 id={titleId} className="min-w-32 text-center font-bold" aria-live="polite">
+        <h2 id={titleId} className="min-w-32 text-center font-bold">
           {formatMonth(month, locale)}
         </h2>
         <Button
           variant="ghost"
           size="icon"
           aria-label={t("calendar.next")}
-          disabled={month >= current}
-          onClick={() => goToMonth(addMonths(month, 1))}
+          aria-disabled={atEnd || undefined}
+          className="aria-disabled:opacity-50"
+          onClick={() => !atEnd && goToMonth(addMonths(month, 1))}
         >
           <ChevronRightIcon aria-hidden />
         </Button>
         <span className="grow" />
-        <Button variant="outline" size="sm" onClick={() => setFocused(today)}>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            if (month !== current) setAnnouncement(formatMonth(current, locale));
+            setFocused(today);
+          }}
+        >
           {t("calendar.today")}
         </Button>
       </div>
+      <p role="status" className="sr-only">
+        {announcement}
+      </p>
 
       {/* A table with role="grid", as in the APG date picker: rows and headers stay native. */}
       <table
@@ -163,7 +186,7 @@ export function MonthCalendar() {
                   readOnly={readOnly !== null}
                   focused={day.label === focused}
                   allLabel={t("calendar.all")}
-                  onFocus={() => setFocused(day.label)}
+                  onFocus={() => setFocused(clamp(day.label))}
                   onKeyDown={(event) => onKeyDown(event, day)}
                 />
               ))}
@@ -190,6 +213,17 @@ function shiftMonth(label: string, months: number) {
   return `${target}-${String(day).padStart(2, "0")}`;
 }
 
+// Each state has a cue besides color: the highlight a double border and "All", pending a dotted
+// border and an hourglass, upcoming a dashed border, today an inverted date. Days of the next
+// or previous month are plain and muted, as in most calendars.
+function cellStyle(day: CalendarDay) {
+  if (!day.inMonth) return "border-transparent text-muted-foreground";
+  if (day.all) return "border-4 border-double border-foreground bg-muted";
+  if (day.status === "pending") return "border-2 border-dotted border-foreground bg-card";
+  if (day.status === "upcoming") return "border-dashed border-input text-muted-foreground";
+  return "border-input bg-card";
+}
+
 function DayCell({
   day,
   name,
@@ -208,14 +242,11 @@ function DayCell({
   onKeyDown: (event: KeyboardEvent) => void;
 }) {
   const done = gameIds.filter((g) => day.games[g] === "done");
-  const noRecord = day.status === "past" && gameIds.every((g) => day.games[g] === "none");
-  const border = day.all
-    ? "border-4 border-double border-foreground bg-muted"
-    : day.status === "pending"
-      ? "border-2 border-dotted border-foreground"
-      : day.inMonth
-        ? "border-input"
-        : "border-dashed border-input";
+  const noRecord =
+    day.inMonth &&
+    (day.status === "past" || (readOnly && day.status !== "upcoming")) &&
+    done.length === 0 &&
+    gameIds.every((g) => day.games[g] === "none");
   return (
     // In a grid table the cell is a gridcell; it holds focus itself, as the grid has no actions.
     <td
@@ -225,30 +256,28 @@ function DayCell({
       data-label={day.label}
       onFocus={onFocus}
       onKeyDown={onKeyDown}
-      className={`relative h-14 rounded-md border bg-card p-1 align-top ${border} ${
-        day.inMonth && day.status !== "upcoming" ? "" : "text-muted-foreground"
-      }`}
+      className={`relative h-14 rounded-md border p-1 align-top ${cellStyle(day)}`}
     >
       <span
         aria-hidden
-        className={`inline-flex min-w-5 justify-center self-start rounded-full px-1 ${
+        className={`inline-flex min-w-5 justify-center rounded-full px-1 ${
           day.status === "today" ? "bg-foreground font-bold text-background" : ""
         }`}
       >
         {Number(day.label.slice(8))}
       </span>
-      {day.all && (
-        <span aria-hidden className="absolute top-1 right-1 text-xs font-bold">
-          {allLabel}
-        </span>
-      )}
+      <span
+        aria-hidden
+        className="absolute top-1 right-1 flex items-center gap-0.5 text-xs font-bold"
+      >
+        {day.status === "pending" && <HourglassIcon className="size-3.5" />}
+        {day.all && allLabel}
+      </span>
       <span aria-hidden className="mt-1 flex flex-wrap gap-0.5">
         {done.map((g) => (
           <GameMark key={g} game={g} />
         ))}
-        {(noRecord || (readOnly && day.status === "past")) && done.length === 0 && (
-          <span className="text-muted-foreground">—</span>
-        )}
+        {noRecord && <span className="text-muted-foreground">—</span>}
       </span>
     </td>
   );
@@ -256,7 +285,7 @@ function DayCell({
 
 function Legend() {
   const { t } = useTranslation();
-  const sample = "inline-block size-4 rounded-sm border bg-card";
+  const sample = "inline-flex size-5 items-center justify-center rounded-sm border";
   return (
     <ul className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-muted-foreground">
       {gameIds.map((g) => (
@@ -277,17 +306,19 @@ function Legend() {
         {t("calendar.legend.today")}
       </li>
       <li className="inline-flex items-center gap-1.5">
-        <span aria-hidden className={`${sample} border-2 border-dotted border-foreground`} />
+        <span aria-hidden className={`${sample} border-2 border-dotted border-foreground`}>
+          <HourglassIcon className="size-3" />
+        </span>
         {t("calendar.legend.pending")}
       </li>
       <li className="inline-flex items-center gap-1.5">
-        <span aria-hidden className="w-4 text-center">
+        <span aria-hidden className="w-5 text-center">
           —
         </span>
         {t("calendar.legend.noRecord")}
       </li>
       <li className="inline-flex items-center gap-1.5">
-        <span aria-hidden className={`${sample} border-input`} />
+        <span aria-hidden className={`${sample} border-dashed border-input`} />
         {t("calendar.legend.upcoming")}
       </li>
     </ul>

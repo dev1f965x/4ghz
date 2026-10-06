@@ -143,7 +143,9 @@ test.describe("in read-only mode", () => {
       await expect(checkbox).not.toBeChecked();
     }
     await expect(group(app, /^(주간|Weekly)$/)).toContainText("— / 2");
-    await expect(app.getByText(/지난 날을 표시하지 않습니다|Past days aren’t shown/)).toBeVisible();
+    await expect(
+      app.getByText(/날짜별 결과를 표시하지 않습니다|Daily results aren’t shown/),
+    ).toBeVisible();
   });
 });
 

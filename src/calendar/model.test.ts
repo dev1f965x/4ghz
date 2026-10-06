@@ -132,3 +132,24 @@ describe("firstMonth", () => {
     expect(firstMonth(chores, "2026-10")).toBe("2026-08");
   });
 });
+
+describe("days not fixed yet", () => {
+  it("keeps the previous day pending between its grace end and the advance that fixes it", () => {
+    const chores = fresh(NOW);
+    chores.genshin = check(chores.genshin, game, NOW, "2026-10-06");
+    // Just after the grace period ends, before App's next tick records the day.
+    const gap = gameDayStart("2026-10-07", "asia") + 2 * HOUR + 1000;
+    const day = calendarDay({ chores, games, region: "asia", now: gap }, "2026-10-06", "2026-10");
+    expect(day).toMatchObject({ status: "pending", games: { genshin: "done" } });
+  });
+
+  it("follows a chore turned off during the day (PRD FR34)", () => {
+    const chores = fresh(NOW);
+    const off: GameData = {
+      ...game,
+      chores: game.chores.map((c) => ({ ...c, enabledByDefault: false })),
+    };
+    const input = { chores, games: { ...games, genshin: off }, region: "asia" as const, now: NOW };
+    expect(calendarDay(input, "2026-10-06", "2026-10").games.genshin).toBe("untracked");
+  });
+});

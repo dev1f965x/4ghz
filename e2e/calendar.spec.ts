@@ -68,13 +68,52 @@ test.describe("the month calendar", () => {
       /원신 미완료|Genshin Impact not done/,
     );
     // Nothing is recorded before September.
-    await expect(app.getByRole("button", { name: /이전 달|Previous month/ })).toBeDisabled();
-    await app.getByRole("button", { name: /다음 달|Next month/ }).click();
+    const previous = app.getByRole("button", { name: /이전 달|Previous month/ });
+    const next = app.getByRole("button", { name: /다음 달|Next month/ });
+    await expect(previous).toHaveAttribute("aria-disabled", "true");
+    await next.click();
     await expect(app.getByRole("heading", { name: /2026년 10월|October 2026/ })).toBeVisible();
-    await expect(app.getByRole("button", { name: /다음 달|Next month/ })).toBeDisabled();
-    await app.keyboard.press("Tab");
+    await expect(
+      app.getByRole("status").filter({ hasText: /2026년 10월|October 2026/ }),
+    ).toBeAttached();
+    // The button turns inactive at the last month but keeps focus.
+    await expect(next).toHaveAttribute("aria-disabled", "true");
+    await expect(next).toBeFocused();
+    // Pressing it again does nothing; Playwright will not click an aria-disabled button.
+    await app.keyboard.press("Enter");
+    await expect(app.getByRole("heading", { name: /2026년 10월|October 2026/ })).toBeVisible();
+    await previous.click();
+    await expect(previous).toBeFocused();
+    await expect(app.getByRole("heading", { name: /2026년 9월|September 2026/ })).toBeVisible();
     await app.getByRole("button", { name: /^(오늘|Today)$/ }).click();
     await expect(today).toHaveAttribute("tabindex", "0");
+    await expect(app.getByRole("button", { name: /^(오늘|Today)$/ })).toBeFocused();
+  });
+
+  test("moves to the week's ends and by month, never past the current month", async ({ app }) => {
+    await cell(app, /^(10월 6일 화요일|Tuesday, October 6)/).focus();
+    await app.keyboard.press("Home");
+    await expect(cell(app, /^(10월 5일 월요일|Monday, October 5)/)).toBeFocused();
+    await app.keyboard.press("End");
+    await expect(cell(app, /^(10월 11일 일요일|Sunday, October 11)/)).toBeFocused();
+    // October is the last month: Page Down moves to its last day at most.
+    await app.keyboard.press("PageDown");
+    await expect(cell(app, /^(10월 31일 토요일|Saturday, October 31)/)).toBeFocused();
+    // Already at the last day: nothing moves, and a later button click keeps its focus.
+    await app.keyboard.press("ArrowRight");
+    await expect(cell(app, /^(10월 31일 토요일|Saturday, October 31)/)).toBeFocused();
+    const todayButton = app.getByRole("button", { name: /^(오늘|Today)$/ });
+    await todayButton.click();
+    await expect(todayButton).toBeFocused();
+  });
+
+  test("a click on a day of the next month stays within the allowed months", async ({ app }) => {
+    await cell(app, /^(11월 1일 일요일|Sunday, November 1)/).click();
+    await expect(app.getByRole("heading", { name: /2026년 10월|October 2026/ })).toBeVisible();
+    await expect(cell(app, /^(10월 31일 토요일|Saturday, October 31)/)).toHaveAttribute(
+      "tabindex",
+      "0",
+    );
   });
 
   test("puts the grid below the checklist at 720 x 560", async ({ app }) => {
