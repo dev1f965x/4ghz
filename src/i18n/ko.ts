@@ -129,6 +129,8 @@ export const ko: Messages = {
       dropped:
         "{{date}}은 체크한 숙제가 없어 기록하지 않습니다. 일간 숙제는 {{when}}부터 {{region}} 서버 기준으로 다시 기록하며, 그 전에는 체크할 수 없습니다.",
       now: "일간 숙제를 지금부터 {{region}} 서버 기준으로 기록합니다.",
+      resume:
+        "일간 숙제는 {{when}}부터 {{region}} 서버 기준으로 다시 기록하며, 그 전에는 체크할 수 없습니다.",
       cancel: "취소",
       confirm: "서버 바꾸기",
     },

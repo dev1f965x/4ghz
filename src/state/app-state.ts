@@ -6,6 +6,7 @@ import {
   changeGameRegion,
   checkCycle,
   checkDaily,
+  fixGraceDayForGame,
   type GamePrefs,
 } from "@/chores/model";
 import type { DataFile } from "@/data/classify";
@@ -157,11 +158,21 @@ function advanceBeforeChange(data: DataFile | null, now: number) {
   if (data !== null) advanceAllChores(data, now);
 }
 
-/** Turns a game on or off in "games I play" (PRD Q2). */
+/**
+ * Turns a game on or off in "games I play" (PRD Q2). Turning it off first records the previous
+ * day if it is still in its grace period, so a finished day is not lost to the new setting.
+ */
 export function setPlays(data: DataFile | null, game: GameId, plays: boolean, now: number) {
   advanceBeforeChange(data, now);
   return localStore.update((s) => ({
     ...s,
+    chores:
+      data !== null && !plays
+        ? {
+            ...s.chores,
+            [game]: fixGraceDayForGame(data.games[game], s.chores[game], gamePrefs(s, game), now),
+          }
+        : s.chores,
     settings: {
       ...s.settings,
       games: { ...s.settings.games, [game]: { ...s.settings.games[game], plays } },

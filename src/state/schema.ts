@@ -49,7 +49,8 @@ export const localStateSchema = z.object({
     /** The first-run notice to check the server and games (PRD Q9). */
     firstRunNoticeDismissed: z.boolean(),
     /** Only an explicit choice is stored; without one the Windows language applies (PRD FR4). */
-    locale: z.enum(locales).optional(),
+    // An unknown value, such as a language a later version adds, falls back to Windows.
+    locale: z.enum(locales).optional().catch(undefined),
     /** Whether the user plays each game and on which server (PRD Q1, Q2). */
     games: z
       .object({ genshin: gameSettings, hsr: gameSettings, zzz: gameSettings })

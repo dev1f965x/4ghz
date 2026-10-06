@@ -194,7 +194,15 @@ function GameSettings({ game }: { game: GameId }) {
               <AlertDialogCancel>{t("settings.regionDialog.cancel")}</AlertDialogCancel>
               <AlertDialogAction
                 onClick={() => {
-                  void setRegion(data, game, change.region, Date.now());
+                  // Time may have passed since the dialog opened; a different outcome is shown
+                  // again instead of being applied unseen.
+                  const now = Date.now();
+                  const fresh = previewRegionChange(data, game, change.region, now);
+                  if (!samePreview(fresh, change.preview)) {
+                    setChange({ region: change.region, preview: fresh });
+                    return;
+                  }
+                  void setRegion(data, game, change.region, now);
                   setChange(null);
                 }}
               >
@@ -208,6 +216,14 @@ function GameSettings({ game }: { game: GameId }) {
   );
 }
 
+function samePreview(a: RegionChange, b: RegionChange) {
+  return (
+    a.today.label === b.today.label &&
+    a.today.outcome === b.today.outcome &&
+    a.resumesAt === b.resumesAt
+  );
+}
+
 /** The confirmation names what happens to today and when recording resumes (PRD Q1). */
 function regionMessage(
   preview: RegionChange,
@@ -216,7 +232,11 @@ function regionMessage(
   region: string,
 ) {
   const { today, resumesAt } = preview;
-  if (today.outcome === "none") return t("settings.regionDialog.now", { region });
+  if (today.outcome === "none") {
+    return resumesAt > Date.now()
+      ? t("settings.regionDialog.resume", { region, when: formatDateTime(resumesAt, locale) })
+      : t("settings.regionDialog.now", { region });
+  }
   return t(`settings.regionDialog.${today.outcome}`, {
     date: formatLabelDate(today.label, locale),
     when: formatDateTime(resumesAt, locale),
@@ -264,7 +284,6 @@ function DataSettings() {
   const { t } = useTranslation();
   const syncText = useSyncText();
   const [folder, setFolder] = useState<string | null>(null);
-  const [failed, setFailed] = useState(false);
   useEffect(() => {
     dataFolderName().then(setFolder, (error: unknown) =>
       // The path is then left out; opening the folder still works.
@@ -291,13 +310,8 @@ function DataSettings() {
               %LOCALAPPDATA%\{folder}
             </span>
           )}
-          {failed && (
-            <span role="alert" className="text-sm">
-              {t("settings.openFolderFailed")}
-            </span>
-          )}
         </div>
-        <OpenFolderButton onResult={(ok) => setFailed(!ok)} />
+        <OpenFolderButton />
       </div>
       <p className="py-2 text-sm text-muted-foreground">{t("settings.uninstall")}</p>
     </div>
@@ -305,23 +319,32 @@ function DataSettings() {
 }
 
 /** Opens the data folder; also offered on the read-only banner. */
-export function OpenFolderButton({ onResult }: { onResult?: (ok: boolean) => void }) {
+export function OpenFolderButton() {
   const { t } = useTranslation();
+  const [failed, setFailed] = useState(false);
   return (
-    <Button
-      variant="outline"
-      onClick={() =>
-        openDataFolder().then(
-          () => onResult?.(true),
-          (error: unknown) => {
-            console.error("Opening the data folder failed", error);
-            onResult?.(false);
-          },
-        )
-      }
-    >
-      {t("settings.openFolder")}
-    </Button>
+    <span className="flex flex-col items-end gap-1">
+      <Button
+        variant="outline"
+        onClick={() =>
+          openDataFolder().then(
+            () => setFailed(false),
+            (error: unknown) => {
+              console.error("Opening the data folder failed", error);
+              setFailed(true);
+            },
+          )
+        }
+      >
+        {t("settings.openFolder")}
+      </Button>
+      {/* Next to the button wherever it appears, the read-only banner included. */}
+      {failed && (
+        <span role="alert" className="text-sm">
+          {t("settings.openFolderFailed")}
+        </span>
+      )}
+    </span>
   );
 }
 

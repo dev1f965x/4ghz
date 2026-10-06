@@ -37,12 +37,14 @@ export function MonthCalendar() {
   const today = calendarToday(prefs, now);
   // The grid changes when any game's day starts or its previous day's grace period ends.
   const next = Math.min(
-    ...gameIds.map((g) => {
-      const { region } = prefs[g];
-      const label = gameDayLabel(now, region);
-      const graceEnd = gameDayStart(label, region) + GRACE_MS;
-      return graceEnd > now ? graceEnd : gameDayStart(addDays(label, 1), region);
-    }),
+    ...gameIds
+      .filter((g) => prefs[g].plays || gameIds.every((other) => !prefs[other].plays))
+      .map((g) => {
+        const { region } = prefs[g];
+        const label = gameDayLabel(now, region);
+        const graceEnd = gameDayStart(label, region) + GRACE_MS;
+        return graceEnd > now ? graceEnd : gameDayStart(addDays(label, 1), region);
+      }),
   );
   useEffect(() => setBoundary(next), [next]);
 

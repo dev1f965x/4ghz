@@ -129,6 +129,8 @@ export const en = {
       dropped:
         "{{date}} has no checks, so it isn’t recorded. Daily chores are recorded again on {{region}} server time from {{when}}, and can’t be checked before then.",
       now: "Daily chores are recorded on {{region}} server time from now on.",
+      resume:
+        "Daily chores are recorded again on {{region}} server time from {{when}}, and can’t be checked before then.",
       cancel: "Cancel",
       confirm: "Change server",
     },

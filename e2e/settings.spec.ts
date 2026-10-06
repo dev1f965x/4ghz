@@ -166,6 +166,9 @@ test.describe("language", () => {
     await app.getByRole("radio", { name: "한국어" }).click();
     await expect(app.getByRole("heading", { name: "설정", exact: true })).toBeVisible();
     await expect.poll(async () => (await savedSettings(app)).locale).toBe("ko");
+    // Back to the Windows setting: nothing is stored, so the next start follows Windows again.
+    await app.getByRole("radio", { name: /Windows/ }).click();
+    await expect.poll(async () => "locale" in (await savedSettings(app))).toBe(false);
   });
 });
 

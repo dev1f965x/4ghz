@@ -70,7 +70,7 @@ function unfixed(input: CalendarInput, game: GameId, label: string) {
 
 /**
  * The grid's today: the latest current game day among the games the user plays, so no game's
- * open day shows as upcoming. With no game played, the default server's day.
+ * open day shows as upcoming. With no game played, the latest day across all games.
  */
 export function calendarToday(prefs: Record<GameId, GamePrefs>, now: number): string {
   const played = gameIds.filter((g) => prefs[g].plays);

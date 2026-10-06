@@ -238,3 +238,14 @@ describe("changeGameRegion", () => {
     expect(change.today.outcome).toBe("none");
   });
 });
+
+describe("changeGameRegion twice in one day", () => {
+  it("has nothing to keep or drop the second time, and names when recording resumes", () => {
+    const history = advanceChores(game, started(gameDayStart("2026-10-04", "asia")), ASIA, NOW);
+    const first = changeGameRegion(game, history, ASIA, "america", NOW).next;
+    const america = { ...ASIA, region: "america" as const };
+    const second = changeGameRegion(game, first, america, "europe", NOW + 60_000);
+    expect(second.today.outcome).toBe("none");
+    expect(second.resumesAt).toBeGreaterThan(NOW + 60_000);
+  });
+});

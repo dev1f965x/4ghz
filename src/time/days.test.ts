@@ -6,6 +6,7 @@ import {
   changeRegion,
   editableDays,
   emptyGameDays,
+  fixGraceDay,
   type GameDays,
   GRACE_MS,
   isAllDone,
@@ -368,5 +369,25 @@ describe("isAllDone", () => {
     [[], false],
   ])("%#", (records, expected) => {
     expect(isAllDone(records)).toBe(expected);
+  });
+});
+
+describe("fixGraceDay", () => {
+  it("records the previous day during its grace period, before a game is turned off", () => {
+    const installed = install(asiaStart("2026-10-05") + HOUR);
+    const done = checkAll(installed, ctx(asiaStart("2026-10-05") + 2 * HOUR), "2026-10-05");
+    const inGrace = asiaStart("2026-10-06") + HOUR;
+    const fixed = fixGraceDay(done, ctx(inGrace));
+    expect(fixed.days["2026-10-05"]?.result).toBe("done");
+    // Turned off afterwards, the recorded day stays.
+    const off = advance(fixed, ctx(asiaStart("2026-10-07") + 3 * HOUR, "asia", { plays: false }));
+    expect(off.days["2026-10-05"]?.result).toBe("done");
+  });
+
+  it("leaves a day that is already fixed alone", () => {
+    const installed = install(asiaStart("2026-10-05") + HOUR);
+    const afterGrace = asiaStart("2026-10-06") + GRACE_MS + HOUR;
+    const state = advance(installed, ctx(afterGrace));
+    expect(fixGraceDay(state, ctx(afterGrace))).toEqual(advance(state, ctx(afterGrace)));
   });
 });

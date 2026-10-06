@@ -19,6 +19,7 @@ import {
   type Context,
   changeRegion,
   editableDays,
+  fixGraceDay,
   GRACE_MS,
   setDailyCheck,
 } from "@/time/days";
@@ -274,12 +275,25 @@ export function changeGameRegion(
 ): RegionChange {
   const ctx = choreContext(game, prefs, now);
   const label = gameDayLabel(now, prefs.region);
+  // Today matters only when it is a counted day still open under the old server; after an
+  // earlier change the same day, or before tracking began, nothing is kept or dropped.
+  const counted = prefs.plays && editableDays(advance(state, ctx), ctx).includes(label);
   const days = changeRegion(state, ctx, newRegion);
   const next = { ...state, ...days };
   const resumesAt = next.countFrom ?? now;
   let outcome: RegionChange["today"]["outcome"] = "none";
-  if (prefs.plays && resumesAt > now) {
+  if (counted && resumesAt > now) {
     outcome = next.days[label] === undefined ? "dropped" : "kept";
   }
   return { next, today: { label, outcome }, resumesAt };
+}
+
+/** Records the previous day if it is still in its grace period; used before turning a game off. */
+export function fixGraceDayForGame(
+  game: GameData,
+  state: GameChores,
+  prefs: GamePrefs,
+  now: number,
+): GameChores {
+  return { ...state, ...fixGraceDay(state, choreContext(game, prefs, now)) };
 }
