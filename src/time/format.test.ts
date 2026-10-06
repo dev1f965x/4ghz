@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { formatDateTime, formatRange, formatUpdated, timeLeft } from "./format";
+import {
+  formatDateTime,
+  formatDateTimeWithWeekday,
+  formatRange,
+  formatUpdated,
+  isTomorrow,
+  timeLeft,
+} from "./format";
 
 describe("formatDateTime", () => {
   // The Asia reset (04:00 server time) is a fixed instant; local display follows each zone's rules.
@@ -81,5 +88,32 @@ describe("formatRange", () => {
     ],
   ] as const)("in %s from %s to %s", (zone, start, end, locale, expected) => {
     expect(formatRange(Date.parse(start), Date.parse(end), locale, zone)).toBe(expected);
+  });
+});
+
+describe("isTomorrow", () => {
+  const now = Date.parse("2026-10-06T01:42:00Z");
+  it.each([
+    ["Asia/Seoul", "2026-10-06T20:00:00Z", true],
+    ["Asia/Seoul", "2026-10-06T14:00:00Z", false],
+    ["Asia/Seoul", "2026-10-07T16:00:00Z", false],
+    // In New York it is still Oct 5, so the Asia reset (Oct 6, 16:00 there) is tomorrow.
+    ["America/New_York", "2026-10-06T20:00:00Z", true],
+    // Across the end of daylight saving time on Nov 1: 00:30 on Nov 2 in New York.
+    ["America/New_York", "2026-11-02T05:30:00Z", true],
+  ] as const)("in %s, %s", (zone, at, expected) => {
+    const from =
+      zone === "America/New_York" && at.startsWith("2026-11")
+        ? Date.parse("2026-11-01T14:00:00Z")
+        : now;
+    expect(isTomorrow(Date.parse(at), from, zone)).toBe(expected);
+  });
+});
+
+describe("formatDateTimeWithWeekday", () => {
+  it("names the day of the week", () => {
+    const reset = Date.parse("2026-10-11T20:00:00Z");
+    expect(formatDateTimeWithWeekday(reset, "ko", "Asia/Seoul")).toBe("10월 12일 (월) 05:00");
+    expect(formatDateTimeWithWeekday(reset, "en", "Asia/Seoul")).toBe("Mon, Oct 12, 05:00");
   });
 });

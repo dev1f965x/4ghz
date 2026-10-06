@@ -36,7 +36,7 @@ function sameLocalDay(a: number, b: number, timeZone?: string) {
   return day(a) === day(b);
 }
 
-function formatTime(instant: number, locale: Locale, timeZone?: string) {
+export function formatTime(instant: number, locale: Locale, timeZone?: string) {
   return new Intl.DateTimeFormat(locale === "ko" ? "ko-KR" : "en-US", {
     hour: "2-digit",
     minute: "2-digit",
@@ -50,6 +50,38 @@ export function formatUpdated(instant: number, now: number, locale: Locale, time
   return sameLocalDay(instant, now, timeZone)
     ? formatTime(instant, locale, timeZone)
     : formatDateTime(instant, locale, timeZone);
+}
+
+/** A game-day label such as "2026-10-05" as "Oct 5" / "10월 5일"; labels are server dates. */
+export function formatLabelDate(label: string, locale: Locale) {
+  return new Intl.DateTimeFormat(locale === "ko" ? "ko-KR" : "en-US", {
+    month: "short",
+    day: "numeric",
+    timeZone: "UTC",
+  }).format(Date.parse(`${label}T00:00:00Z`));
+}
+
+/** True when `instant` falls on the local day after `now`'s. */
+export function isTomorrow(instant: number, now: number, timeZone?: string) {
+  const date = (t: number) =>
+    new Intl.DateTimeFormat("en-CA", { dateStyle: "short", timeZone }).format(t);
+  // Calendar arithmetic on the date label, so daylight saving changes cannot shift the day.
+  const next = new Date(`${date(now)}T00:00:00Z`);
+  next.setUTCDate(next.getUTCDate() + 1);
+  return date(instant) === next.toISOString().slice(0, 10);
+}
+
+/** "Mon, Oct 12, 05:00" / "10월 12일 (월) 05:00": weekly resets name the day of the week. */
+export function formatDateTimeWithWeekday(instant: number, locale: Locale, timeZone?: string) {
+  return new Intl.DateTimeFormat(locale === "ko" ? "ko-KR" : "en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+    timeZone,
+  }).format(instant);
 }
 
 /** "Nov 4, 07:00 – 12:00" within one local day, the full end date otherwise. */

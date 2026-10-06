@@ -13,6 +13,8 @@ declare global {
     __E2E_OPENED__?: string[];
     /** Text the app put on the clipboard, for tests to inspect. */
     __E2E_CLIPBOARD__?: string;
+    /** While true, write_store fails the way a full disk would. */
+    __E2E_WRITE_FAILS__?: boolean;
   }
 }
 
@@ -30,6 +32,7 @@ export function installE2eMocks() {
       case "read_store":
         return files[storeFile(payload)] ?? null;
       case "write_store":
+        if (window.__E2E_WRITE_FAILS__) throw new Error("Writing failed: disk full");
         files[storeFile(payload)] = (payload as { contents: string }).contents;
         return null;
       case "plugin:opener|open_url":

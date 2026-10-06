@@ -7,6 +7,8 @@ export type LocalStore = {
   state: LocalState;
   /** Why the app runs read-only this session, or null when changes are saved. */
   readOnly: ReadOnlyReason | null;
+  /** The last save failed; cleared by the next one that succeeds. */
+  saveFailed: boolean;
 };
 
 type Deps = {
@@ -16,7 +18,11 @@ type Deps = {
 };
 
 export function createLocalStore(deps: Deps) {
-  let snapshot: LocalStore = { state: parseLocalState(null).state, readOnly: null };
+  let snapshot: LocalStore = {
+    state: parseLocalState(null).state,
+    readOnly: null,
+    saveFailed: false,
+  };
   const listeners = new Set<() => void>();
   // Saves run one after another, so an older state never overwrites a newer one.
   let saving: Promise<void> = Promise.resolve();
@@ -38,11 +44,12 @@ export function createLocalStore(deps: Deps) {
         text = await deps.read();
       } catch (error) {
         deps.logError("Reading state.json failed", error);
-        publish({ state: snapshot.state, readOnly: "unreadable" });
+        publish({ ...snapshot, readOnly: "unreadable" });
         return;
       }
       const result = parseLocalState(text);
       publish({
+        ...snapshot,
         state: result.state,
         readOnly: result.kind === "read-only" ? result.reason : null,
       });
@@ -54,10 +61,16 @@ export function createLocalStore(deps: Deps) {
       if (snapshot.readOnly !== null) return saving;
       const contents = JSON.stringify(state);
       saving = saving.then(() =>
-        deps.write(contents).catch((error: unknown) => {
-          // The change stays on screen; it is lost only if the app closes before the next save.
-          deps.logError("Saving state.json failed", error);
-        }),
+        deps.write(contents).then(
+          () => {
+            if (snapshot.saveFailed) publish({ ...snapshot, saveFailed: false });
+          },
+          (error: unknown) => {
+            // The change stays on screen; a banner says it may be lost when the app closes.
+            deps.logError("Saving state.json failed", error);
+            publish({ ...snapshot, saveFailed: true });
+          },
+        ),
       );
       return saving;
     },

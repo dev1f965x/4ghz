@@ -1,5 +1,8 @@
 // Smoke test of the packaged app (Design Doc, Testing): the build starts, shows its tabs,
-// reports no CSP violations, and starts again after it is closed.
+// reports no CSP violations, saves a checked chore, and shows it again after a restart.
+//
+// The test build has its own identifier (tauri.e2e.conf.json), so its records live in a
+// separate folder and the test never touches the records of an installed 4ghz.
 //
 // The app is a test build (pnpm app:build:e2e) whose WebView2 opens a debugging port through
 // src-tauri/tauri.e2e.conf.json; release builds never have it. msedgedriver attaches to that
@@ -7,11 +10,13 @@
 // which WebView2 150 and later ignore in elevated processes such as GitHub's Windows runners
 // (actions/runner-images#14738). Uses plain WebDriver over HTTP, so it needs no client library.
 import { execFileSync, spawn } from "node:child_process";
-import { existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 
 const app = resolve("src-tauri/target/e2e/release/4ghz.exe");
 if (!existsSync(app)) throw new Error(`${app} is missing; run pnpm app:build:e2e first`);
+// app_local_data_dir() of the test build's identifier.
+const stateFile = join(process.env.LOCALAPPDATA, "io.github.dev1f965x.4ghz.e2e", "state.json");
 
 const debugPort = 9222;
 const driverPort = 4444;
@@ -132,8 +137,11 @@ async function close(appProcess) {
     throw new Error(`Port ${debugPort} is still open after the app closed`);
 }
 
-/** Starts the app, attaches to it, checks it, and closes it again. */
-async function run(label) {
+/**
+ * Starts the app, attaches to it, checks it, and closes it again. With `check`, it opens the
+ * Calendar and checks the first chore; without, it expects that chore to be checked already.
+ */
+async function run(label, { check }) {
   if (await debugPortOpen()) {
     throw new Error(`Port ${debugPort} is already in use; the test would attach to the wrong app`);
   }
@@ -166,8 +174,9 @@ async function run(label) {
     });
     // ReportingObserver with buffered: true also returns violations from before this script ran.
     const result = await webdriver("POST", `/session/${session.sessionId}/execute/async`, {
-      args: [],
+      args: [check],
       script: `
+        const check = arguments[0];
         const done = arguments[arguments.length - 1];
         const wait = (ms) => new Promise((r) => setTimeout(r, ms));
         (async () => {
@@ -180,10 +189,21 @@ async function run(label) {
           // The data file shipped with the test build (.env.app-e2e) loads within 10 seconds.
           const sync = () => document.querySelector("[data-sync-status]")?.dataset.syncStatus;
           for (let i = 0; i < 100 && sync() === "loading"; i++) await wait(100);
+          const tabs = [...document.querySelectorAll('[role="tab"]')];
+          // The Calendar is the third tab; the restart opens it again as the last tab used.
+          if (check) tabs[2]?.click();
+          const chore = () => document.querySelector('[role="tabpanel"] [role="checkbox"]');
+          for (let i = 0; i < 50 && !chore(); i++) await wait(100);
+          if (check) {
+            chore()?.click();
+            // Saving goes through IPC to disk; give it time before the window closes.
+            await wait(1000);
+          }
           done({
             game: document.documentElement.dataset.game ?? null,
             sync: sync() ?? null,
-            tabs: [...document.querySelectorAll('[role="tab"]')].map((t) => t.textContent),
+            chore: chore()?.getAttribute("aria-checked") ?? null,
+            tabs: tabs.map((t) => t.textContent),
             styleElements: document.querySelectorAll("style").length,
             violations,
           });
@@ -202,6 +222,7 @@ async function run(label) {
       problems.push(`CSP violations: ${result.violations.join(", ")}`);
     }
     if (result.styleElements > 0) problems.push("inline <style> elements, which the CSP blocks");
+    if (result.chore !== "true") problems.push(`the first chore is not checked (${result.chore})`);
     if (problems.length > 0) throw new Error(`${label}: ${problems.join("; ")}`);
   } catch (error) {
     failure = error;
@@ -219,8 +240,15 @@ async function run(label) {
 const driver = start(await nativeDriver(webView2Version()), [`--port=${driverPort}`]);
 try {
   await waitFor("msedgedriver", driver, () => webdriver("GET", "/status"));
-  await run("first start");
-  await run("restart");
+  // Every run starts from a first start; the folder belongs to the test build only.
+  rmSync(stateFile, { force: true });
+  await run("first start", { check: true });
+  const saved = JSON.parse(readFileSync(stateFile, "utf8"));
+  const checks = Object.values(saved.chores?.genshin?.dailyChecks ?? {});
+  if (!checks.some((day) => Object.keys(day).length > 0)) {
+    throw new Error(`state.json has no checked chore: ${JSON.stringify(saved.chores?.genshin)}`);
+  }
+  await run("restart", { check: false });
   console.log("App smoke test passed.");
 } finally {
   driver.kill();

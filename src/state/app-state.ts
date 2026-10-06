@@ -1,8 +1,14 @@
 // The app's single local store, wired to state.json, and its React binding.
 import { useSyncExternalStore } from "react";
+import { advanceChores, checkCycle, checkDaily } from "@/chores/model";
+import type { DataFile } from "@/data/classify";
 import { readStore, writeStore } from "@/storage";
-import type { GameId, LocalState } from "./schema";
+import type { Region } from "@/time/clock";
+import { type GameId, gameIds, type LocalState } from "./schema";
 import { createLocalStore } from "./store";
+
+// The server is chosen in Settings (GHZ-20); until then every game uses the default, Asia.
+export const REGION: Region = "asia";
 
 const localStore = createLocalStore({
   read: () => readStore("state"),
@@ -42,4 +48,59 @@ export function setRedeemed(game: GameId, code: string, redeemed: boolean) {
       },
     };
   });
+}
+
+// Saving only because lastAdvancedAt moved would rewrite state.json every 30 seconds. Below
+// this gap such a change stays unsaved; it only sharpens wrong-clock detection.
+const ADVANCE_SAVE_GAP_MS = 10 * 60_000;
+
+/** Applies resets and missed days to every game (PRD FR28, FR29); saves only real changes. */
+export function advanceAllChores(data: DataFile, now: number) {
+  const { state } = localStore.getSnapshot();
+  const next = Object.fromEntries(
+    gameIds.map((g) => [g, advanceChores(data.games[g], state.chores[g], REGION, now)]),
+  ) as LocalState["chores"];
+  const meaningful = gameIds.some((g) => {
+    const before = state.chores[g];
+    const after = next[g];
+    if (after.lastAdvancedAt - before.lastAdvancedAt >= ADVANCE_SAVE_GAP_MS) return true;
+    return (
+      JSON.stringify({ ...after, lastAdvancedAt: 0 }) !==
+      JSON.stringify({ ...before, lastAdvancedAt: 0 })
+    );
+  });
+  if (meaningful) void localStore.update((s) => ({ ...s, chores: next }));
+}
+
+export function checkDailyChore(
+  data: DataFile,
+  game: GameId,
+  label: string,
+  choreId: string,
+  checked: boolean,
+  now: number,
+) {
+  const { state } = localStore.getSnapshot();
+  let next: LocalState["chores"][GameId];
+  try {
+    next = checkDaily(data.games[game], state.chores[game], REGION, now, label, choreId, checked);
+  } catch (error) {
+    // The day closed between showing the box and the click; the next render shows it closed.
+    console.error(`Checking ${choreId} on ${label} was refused`, error);
+    return Promise.resolve();
+  }
+  return localStore.update((s) => ({ ...s, chores: { ...s.chores, [game]: next } }));
+}
+
+export function checkCycleChore(
+  game: GameId,
+  key: string,
+  choreId: string,
+  checked: boolean,
+  now: number,
+) {
+  return localStore.update((s) => ({
+    ...s,
+    chores: { ...s.chores, [game]: checkCycle(s.chores[game], now, key, choreId, checked) },
+  }));
 }
