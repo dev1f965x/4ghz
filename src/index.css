@@ -99,3 +99,13 @@
 .base-ui-disable-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+/* Windows contrast themes: system colors win, so each game's letter tile becomes a CanvasText
+   tile with a Canvas letter (DESIGN.md, Themes). */
+@media (forced-colors: active) {
+  .game-mark {
+    forced-color-adjust: none;
+    background: CanvasText;
+    color: Canvas;
+  }
+}
