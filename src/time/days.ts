@@ -9,7 +9,7 @@ const CLOCK_TOLERANCE_MS = 60 * 1000;
 // Checks of a recorded day are kept this long after the day was fixed.
 const CHECK_RETENTION_MS = 7 * DAY;
 
-type DayResult = "done" | "not-done" | "untracked";
+export type DayResult = "done" | "not-done" | "untracked";
 export type DayRecord = { result: DayResult; fixedAt: number };
 
 type DailyChore = { id: string; enabled: boolean };
@@ -255,4 +255,14 @@ export function isAllDone(records: readonly (DayRecord | undefined)[]): boolean 
     (r): r is DayRecord => r !== undefined && r.result !== "untracked",
   );
   return tracked.length > 0 && tracked.every((r) => r.result === "done");
+}
+
+/**
+ * The result so far of a day that is still open (today, or the previous day in its grace
+ * period), or undefined when the day is not open, not counted, or the game is not played.
+ * During the day it follows the current chores and settings (PRD FR34).
+ */
+export function openDayResult(state: GameDays, ctx: Context, label: string): DayResult | undefined {
+  if (!ctx.plays || !editableDays(state, ctx).includes(label)) return undefined;
+  return evaluateDay(state, ctx, label);
 }

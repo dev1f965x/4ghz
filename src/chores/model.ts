@@ -16,7 +16,7 @@ import {
 } from "@/time/clock";
 import { advance, type Context, editableDays, GRACE_MS, setDailyCheck } from "@/time/days";
 
-type GameData = DataFile["games"]["genshin"];
+export type GameData = DataFile["games"]["genshin"];
 type Chore = GameData["chores"][number];
 
 export type ChoreItem = { id: string; name: Chore["name"]; checked: boolean };
@@ -40,7 +40,7 @@ const enabled = (chores: readonly Chore[], cycle: Chore["cycle"]) =>
   chores.filter((c) => c.cycle === cycle && c.enabledByDefault);
 
 /** The context the time model needs; settings for playing and region arrive with GHZ-20. */
-function choreContext(game: GameData, region: Region, now: number): Context {
+export function choreContext(game: GameData, region: Region, now: number): Context {
   return {
     now,
     region,

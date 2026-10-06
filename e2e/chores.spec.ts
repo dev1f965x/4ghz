@@ -136,13 +136,14 @@ test.describe("in read-only mode", () => {
   test("shows every box unchecked and disabled", async ({ app }) => {
     await app.getByRole("tab", { name: /캘린더|Calendar/ }).click();
     // The read-only banner explains why; the panel does not repeat it.
-    await expect(app.getByText(/기록을 읽을 수 없습니다|can’t be read/)).toBeVisible();
+    await expect(app.getByText(/^(기록을 읽을 수 없습니다|Records can’t be read)$/)).toBeVisible();
     await expect(group(app, /^(주간|Weekly)$/)).toBeVisible();
     for (const checkbox of await app.getByRole("checkbox").all()) {
       await expect(checkbox).toBeDisabled();
       await expect(checkbox).not.toBeChecked();
     }
     await expect(group(app, /^(주간|Weekly)$/)).toContainText("— / 2");
+    await expect(app.getByText(/지난 날을 표시하지 않습니다|Past days aren’t shown/)).toBeVisible();
   });
 });
 
