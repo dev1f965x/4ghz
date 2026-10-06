@@ -15,12 +15,15 @@ pub fn run() {
             }
         }))
         // Opens official announcement links in the default browser; the capability limits the URLs.
+        // The data folder is opened from Rust (storage::open_data_folder), never by a web path.
         .plugin(tauri_plugin_opener::init())
         // Copies redeem codes; the capability grants only writing text.
         .plugin(tauri_plugin_clipboard_manager::init())
         .invoke_handler(tauri::generate_handler![
             storage::read_store,
-            storage::write_store
+            storage::write_store,
+            storage::data_folder_name,
+            storage::open_data_folder
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

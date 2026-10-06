@@ -1,7 +1,8 @@
 // Server clocks and cycle boundaries. All instants are UTC epoch milliseconds.
 // Servers use fixed offsets without daylight saving time, so no time zone database is needed.
 
-export type Region = "asia" | "america" | "europe" | "tw_hk_mo";
+export const regions = ["asia", "america", "europe", "tw_hk_mo"] as const;
+export type Region = (typeof regions)[number];
 
 export type Time = { kind: "instant"; at: string } | { kind: "server"; at: string };
 

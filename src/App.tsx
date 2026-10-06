@@ -109,7 +109,7 @@ export default function App() {
         <Banners onOpenSettings={inSettings ? undefined : openSettings} />
         <main className="flex grow flex-col">
           {inSettings ? (
-            <SettingsView />
+            <SettingsView game={game} />
           ) : (
             <Tabs
               value={tab}

@@ -15,6 +15,8 @@ declare global {
     __E2E_CLIPBOARD__?: string;
     /** While true, write_store fails the way a full disk would. */
     __E2E_WRITE_FAILS__?: boolean;
+    /** How many times the app asked to open its data folder. */
+    __E2E_FOLDER_OPENED__?: number;
   }
 }
 
@@ -34,6 +36,11 @@ export function installE2eMocks() {
       case "write_store":
         if (window.__E2E_WRITE_FAILS__) throw new Error("Writing failed: disk full");
         files[storeFile(payload)] = (payload as { contents: string }).contents;
+        return null;
+      case "data_folder_name":
+        return "io.github.dev1f965x.4ghz";
+      case "open_data_folder":
+        window.__E2E_FOLDER_OPENED__ = (window.__E2E_FOLDER_OPENED__ ?? 0) + 1;
         return null;
       case "plugin:opener|open_url":
         window.__E2E_OPENED__ = [

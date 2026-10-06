@@ -7,19 +7,18 @@ import { useNow } from "@/hooks/useNow";
 import { formatDuration } from "@/i18n/duration";
 import type { Locale } from "@/i18n/locale";
 import { localText, type ScheduleRow, scheduleRows } from "@/schedule/model";
+import { useLocalState } from "@/state/app-state";
 import type { GameId } from "@/state/schema";
-import type { Region } from "@/time/clock";
 import { formatDateTime, formatRange } from "@/time/format";
-
-// The server is chosen in Settings (GHZ-20); until then every game uses the default, Asia.
-const region: Region = "asia";
 
 /** The Schedule tab: ongoing and upcoming entries with live countdowns (PRD FR15 to FR18). */
 export function ScheduleTab({ game }: { game: GameId }) {
   const { t, i18n } = useTranslation();
   const { data } = useDataSync();
+  const { state } = useLocalState();
   const now = useNow(30_000);
   if (data === null) return null;
+  const { region } = state.settings.games[game];
   const { ongoing, upcoming } = scheduleRows(data.games[game], region, now);
 
   if (ongoing.length === 0 && upcoming.length === 0) {

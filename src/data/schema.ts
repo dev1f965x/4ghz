@@ -2,11 +2,9 @@
 // the app strips keys it does not know, so additive changes stay compatible, and CI rejects them,
 // so a file with a typo cannot be published.
 // Imports carry the .ts extension so Node can load this file directly (scripts/data-schema.mjs).
-import { type Region, type Time, toInstant } from "../time/clock.ts";
+import { regions, type Time, toInstant } from "../time/clock.ts";
 import { officialHosts } from "./official-hosts.ts";
 import { z } from "./zod.ts";
-
-const regions: readonly Region[] = ["asia", "america", "europe", "tw_hk_mo"];
 
 // Links open only official game sites (PRD, Security); see official-hosts.ts.
 const isOfficialHost = (host: string) => officialHosts.some((h) => h === host);

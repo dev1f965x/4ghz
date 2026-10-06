@@ -95,6 +95,8 @@ export const en = {
     resumes: "Daily chores are recorded again from {{when}}.",
     noneTitle: "No chores are turned on",
     noneBody: "Turn on chores for {{game}} in Settings.",
+    notPlayedTitle: "{{game}} isn’t tracked",
+    notPlayedBody: "It’s turned off in your games. Turn it on in Settings to track it.",
     checked: "Checked “{{chore}}”.",
     unchecked: "Unchecked “{{chore}}”.",
     closed: "Couldn’t change “{{chore}}”. Its cycle has ended.",
@@ -102,6 +104,34 @@ export const en = {
   saveFailed: {
     title: "Changes couldn’t be saved",
     body: "The records file can’t be written, so recent changes may be lost when the app closes. The app tries to save again when you make another change.",
+  },
+  region: { asia: "Asia", america: "America", europe: "Europe", tw_hk_mo: "TW, HK, MO" },
+  settings: {
+    sections: "Settings sections",
+    playing: "Playing",
+    playingHint:
+      "When off, chores and the calendar don’t track this game. Schedules and codes stay available.",
+    server: "Server",
+    serverNeedsData: "You can change it once the data has loaded.",
+    chores: { daily: "Daily chores", weekly: "Weekly chores", periodic: "Periodic chores" },
+    choresNeedData: "Chores can be chosen once the data has loaded.",
+    language: "Language",
+    languageSystem: "Use the Windows setting",
+    data: "Data",
+    schedulesAndCodes: "Schedules and codes",
+    location: "Records and settings location",
+    openFolder: "Open data folder",
+    openFolderFailed: "The folder couldn’t be opened.",
+    uninstall: "Records stay after uninstall unless you choose to delete app data.",
+    regionDialog: {
+      title: "Change the server to {{region}}?",
+      kept: "The record for {{date}} is kept as checked so far. Daily chores are recorded again on {{region}} server time from {{when}}, and can’t be checked before then.",
+      dropped:
+        "{{date}} has no checks, so it isn’t recorded. Daily chores are recorded again on {{region}} server time from {{when}}, and can’t be checked before then.",
+      now: "Daily chores are recorded on {{region}} server time from now on.",
+      cancel: "Cancel",
+      confirm: "Change server",
+    },
   },
   calendar: {
     previous: "Previous month",

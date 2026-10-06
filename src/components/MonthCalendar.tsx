@@ -5,6 +5,7 @@ import {
   addMonths,
   type CalendarDay,
   calendarMonth,
+  calendarToday,
   firstMonth,
   type GameMark as Mark,
   monthOf,
@@ -14,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { useDataSync } from "@/data/store";
 import { useNow } from "@/hooks/useNow";
 import type { Locale } from "@/i18n/locale";
-import { REGION, useLocalState } from "@/state/app-state";
+import { allPrefs, useLocalState } from "@/state/app-state";
 import { gameIds } from "@/state/schema";
 import { addDays, gameDayLabel, gameDayStart } from "@/time/clock";
 import { GRACE_MS } from "@/time/days";
@@ -32,10 +33,17 @@ export function MonthCalendar() {
   const { state, readOnly } = useLocalState();
   const [boundary, setBoundary] = useState<number | null>(null);
   const now = useNow(30_000, boundary);
-  const today = gameDayLabel(now, REGION);
-  // The grid changes when a day starts and when the previous day's grace period ends.
-  const graceEnd = gameDayStart(today, REGION) + GRACE_MS;
-  const next = graceEnd > now ? graceEnd : gameDayStart(addDays(today, 1), REGION);
+  const prefs = allPrefs(state);
+  const today = calendarToday(prefs, now);
+  // The grid changes when any game's day starts or its previous day's grace period ends.
+  const next = Math.min(
+    ...gameIds.map((g) => {
+      const { region } = prefs[g];
+      const label = gameDayLabel(now, region);
+      const graceEnd = gameDayStart(label, region) + GRACE_MS;
+      return graceEnd > now ? graceEnd : gameDayStart(addDays(label, 1), region);
+    }),
+  );
   useEffect(() => setBoundary(next), [next]);
 
   const current = monthOf(today);
@@ -43,7 +51,7 @@ export function MonthCalendar() {
   const [focused, setFocused] = useState(today);
   const month = monthOf(focused);
   const weeks = calendarMonth(
-    { chores: state.chores, games: data?.games ?? null, region: REGION, now },
+    { chores: state.chores, games: data?.games ?? null, prefs, now },
     month,
   );
   const titleId = useId();

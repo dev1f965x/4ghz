@@ -1,6 +1,7 @@
 import { XIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
+import { OpenFolderButton } from "@/components/SettingsView";
 import { Button } from "@/components/ui/button";
 import { refreshData, useDataSync } from "@/data/store";
 import { updateSettings, useLocalState } from "@/state/app-state";
@@ -36,6 +37,7 @@ export function Banners({ onOpenSettings }: { onOpenSettings?: () => void }) {
           body={
             readOnly === "unreadable" ? t("readOnly.unreadableBody") : t("readOnly.invalidBody")
           }
+          actions={<OpenFolderButton />}
         />
       ),
     });

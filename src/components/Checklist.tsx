@@ -7,7 +7,7 @@ import { useDataSync } from "@/data/store";
 import { useNow } from "@/hooks/useNow";
 import type { Locale } from "@/i18n/locale";
 import { localText } from "@/schedule/model";
-import { checkCycleChore, checkDailyChore, REGION, useLocalState } from "@/state/app-state";
+import { checkCycleChore, checkDailyChore, gamePrefs, useLocalState } from "@/state/app-state";
 import type { GameId } from "@/state/schema";
 import {
   formatDateTime,
@@ -28,7 +28,10 @@ export function Checklist({ game, onOpenSettings }: { game: GameId; onOpenSettin
   // Re-rendered exactly at the next reset or grace end, so a click rarely meets a closed cycle.
   const [boundary, setBoundary] = useState<number | null>(null);
   const now = useNow(30_000, boundary);
-  const list = data === null ? null : checklist(data.games[game], state.chores[game], REGION, now);
+  const list =
+    data === null
+      ? null
+      : checklist(data.games[game], state.chores[game], gamePrefs(state, game), now);
   const next = list === null ? null : nextChange(list, now);
   useEffect(() => setBoundary(next), [next]);
   const [announcement, setAnnouncement] = useState("");
@@ -40,18 +43,26 @@ export function Checklist({ game, onOpenSettings }: { game: GameId; onOpenSettin
   if (data === null || list === null) return null;
   const ro = readOnly !== null;
 
+  // A game the user does not play has no checklist and no records (PRD Q2, FR38).
+  if (!state.settings.games[game].plays) {
+    return (
+      <EmptyState
+        title={t("chores.notPlayedTitle", { game: t(`game.${game}`) })}
+        body={t("chores.notPlayedBody")}
+        action={t("firstRun.open")}
+        onAction={onOpenSettings}
+      />
+    );
+  }
   const total = list.daily.items.length + list.weekly.items.length + list.periodic.items.length;
   if (total === 0) {
     return (
-      <div className="flex flex-col items-center gap-2 rounded-lg border border-input bg-card px-4 py-8 text-center">
-        <h2 className="font-bold">{t("chores.noneTitle")}</h2>
-        <p className="text-sm text-muted-foreground">
-          {t("chores.noneBody", { game: t(`game.${game}`) })}
-        </p>
-        <Button variant="outline" onClick={onOpenSettings}>
-          {t("firstRun.open")}
-        </Button>
-      </div>
+      <EmptyState
+        title={t("chores.noneTitle")}
+        body={t("chores.noneBody", { game: t(`game.${game}`) })}
+        action={t("firstRun.open")}
+        onAction={onOpenSettings}
+      />
     );
   }
 
@@ -259,5 +270,27 @@ function Note({ children }: { children: ReactNode }) {
     <p className="rounded-lg border border-dashed border-input bg-card px-3 py-2 text-sm">
       {children}
     </p>
+  );
+}
+
+function EmptyState({
+  title,
+  body,
+  action,
+  onAction,
+}: {
+  title: string;
+  body: string;
+  action: string;
+  onAction: () => void;
+}) {
+  return (
+    <div className="flex flex-col items-center gap-2 rounded-lg border border-input bg-card px-4 py-8 text-center">
+      <h2 className="font-bold">{title}</h2>
+      <p className="text-sm text-muted-foreground">{body}</p>
+      <Button variant="outline" onClick={onAction}>
+        {action}
+      </Button>
+    </div>
   );
 }
