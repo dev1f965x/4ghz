@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
-import { useDataSync } from "@/data/store";
+import { Button } from "@/components/ui/button";
+import { refreshData, useDataSync } from "@/data/store";
 import { WarningBanner } from "./Banner";
 
 /** Banners for data problems while the last valid copy is in use (PRD FR9 to FR11). */
@@ -11,7 +12,15 @@ export function DataBanners() {
   return (
     <>
       {status === "failed" && (
-        <WarningBanner title={t("banner.staleTitle")} body={t("banner.staleBody")} />
+        <WarningBanner
+          title={t("banner.staleTitle")}
+          body={t("banner.staleBody")}
+          action={
+            <Button variant="outline" size="sm" onClick={() => void refreshData()}>
+              {t("load.retry")}
+            </Button>
+          }
+        />
       )}
       {(problem === "retired" || problem === "unsupported") && (
         <WarningBanner title={t("banner.unavailableTitle")} body={t("banner.updateBody")} />

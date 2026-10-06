@@ -3,9 +3,12 @@ import { useSyncExternalStore } from "react";
 import { readStore, writeStore } from "@/storage";
 import { createDataSync, REFRESH_INTERVAL_MS } from "./sync";
 
-// Test builds of the app point at a copy shipped with them (vite.config.ts); release builds
-// always use GitHub Pages.
-const DATA_URL = import.meta.env.VITE_DATA_URL ?? "https://dev1f965x.github.io/4ghz/data/v1.json";
+// Test builds of the app (mode app-e2e) read a copy shipped with them (vite.config.ts). The mode
+// check keeps a stray VITE_DATA_URL in the environment from reaching a release build.
+const DATA_URL =
+  import.meta.env.MODE === "app-e2e" && import.meta.env.VITE_DATA_URL
+    ? import.meta.env.VITE_DATA_URL
+    : "https://dev1f965x.github.io/4ghz/data/v1.json";
 
 const dataSync = createDataSync({
   url: DATA_URL,

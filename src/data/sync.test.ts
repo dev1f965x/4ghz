@@ -111,7 +111,8 @@ describe("data sync", () => {
       response: () => Promise.resolve(Response.json(json)),
     });
     await sync.start();
-    expect(sync.getState()).toMatchObject({ status: "ok", problem });
+    // The update time stays that of the cached copy still in use.
+    expect(sync.getState()).toMatchObject({ status: "ok", problem, checkedAt: NOW - 3_600_000 });
     expect(sync.getState().data?.updatedAt).toBe("2026-10-06T10:00:00+09:00");
     expect(writes).toEqual([]);
   });
@@ -126,6 +127,44 @@ describe("data sync", () => {
     expect(sync.getState()).toMatchObject({ problem: null, status: "ok" });
   });
 
+  it("has no data and no update time on a first run that gets a retired file", async () => {
+    const { sync } = setup({
+      response: () => Promise.resolve(Response.json({ schemaVersion: 1, retired: true })),
+    });
+    await sync.start();
+    expect(sync.getState()).toMatchObject({ data: null, checkedAt: null, problem: "retired" });
+  });
+
+  it("treats a timed-out download as a failed refresh", async () => {
+    const { sync } = setup({
+      response: () => Promise.reject(new DOMException("The operation timed out.", "TimeoutError")),
+    });
+    await sync.start();
+    expect(sync.getState().status).toBe("failed");
+  });
+
+  it("still downloads when the cache cannot be read", async () => {
+    const { deps, logError } = setup({});
+    deps.readCache = () => Promise.reject(new Error("access denied"));
+    const fresh = createDataSync(deps);
+    await fresh.start();
+    expect(fresh.getState().status).toBe("ok");
+    expect(logError).toHaveBeenCalledWith("Reading the data cache failed", expect.any(Error));
+  });
+
+  it.each([["null"], [JSON.stringify({ savedAt: 1, file: { schemaVersion: 2 } })]])(
+    "logs a cache it cannot use: %s",
+    async (cache) => {
+      const { sync, logError } = setup({
+        cache,
+        response: () => Promise.reject(new TypeError("Failed to fetch")),
+      });
+      await sync.start();
+      expect(sync.getState().data).toBeNull();
+      expect(logError).toHaveBeenCalledWith("The data cache is not usable", expect.anything());
+    },
+  );
+
   it("ignores a cache that is not valid and logs why", async () => {
     const { sync, logError } = setup({
       cache: "{not json",
@@ -133,7 +172,7 @@ describe("data sync", () => {
     });
     await sync.start();
     expect(sync.getState().data).toBeNull();
-    expect(logError).toHaveBeenCalledWith("The data cache is not valid JSON", expect.anything());
+    expect(logError).toHaveBeenCalledWith("The data cache could not be read", expect.anything());
   });
 
   it("keeps the new data when saving the cache fails", async () => {

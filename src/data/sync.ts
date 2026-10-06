@@ -11,7 +11,7 @@ export type SyncState = {
   data: DataFile | null;
   /** loading: a download is in progress; ok: the latest download arrived; failed: it did not. */
   status: "loading" | "ok" | "failed";
-  /** When a download last arrived (valid or not), or when the cached copy was saved. */
+  /** When the data in use was downloaded, from the cache or the network; null without data. */
   checkedAt: number | null;
   problem: Problem | null;
 };
@@ -53,15 +53,21 @@ export function createDataSync(deps: SyncDeps) {
       return;
     }
     if (text === null) return;
+    let entry: CacheEntry | null;
     try {
-      const entry = JSON.parse(text) as CacheEntry;
-      const result = classify(entry.file);
-      if (result.kind === "valid" && state.data === null) {
-        set({ data: result.file, checkedAt: entry.savedAt });
-      }
+      entry = JSON.parse(text) as CacheEntry | null;
     } catch (error) {
-      deps.logError("The data cache is not valid JSON", error);
+      deps.logError("The data cache could not be read", error);
+      return;
     }
+    const result = classify(entry?.file);
+    if (result.kind !== "valid" || typeof entry?.savedAt !== "number") {
+      // For example a file a newer app version cached before a downgrade.
+      deps.logError("The data cache is not usable", result.kind);
+      return;
+    }
+    // A download that already finished is newer than the cache.
+    if (state.data === null) set({ data: result.file, checkedAt: entry.savedAt });
   }
 
   async function download() {
@@ -84,7 +90,8 @@ export function createDataSync(deps: SyncDeps) {
     const result = classify(json);
     if (result.kind !== "valid") {
       if (result.kind === "invalid") deps.logError("The data file is invalid", result.issues);
-      set({ status: "ok", checkedAt: at, problem: result.kind });
+      // checkedAt stays the time of the data in use, which this file does not replace.
+      set({ status: "ok", problem: result.kind });
       return;
     }
     set({ status: "ok", data: result.file, checkedAt: at, problem: null });
@@ -96,6 +103,14 @@ export function createDataSync(deps: SyncDeps) {
     }
   }
 
+  /** Downloads now; a refresh already running is shared instead of started twice. */
+  function refresh() {
+    inFlight ??= download().finally(() => {
+      inFlight = null;
+    });
+    return inFlight;
+  }
+
   return {
     getState: () => state,
     subscribe(listener: () => void) {
@@ -105,14 +120,8 @@ export function createDataSync(deps: SyncDeps) {
     /** Shows the cached copy first, then downloads. */
     async start() {
       await loadCache();
-      await this.refresh();
+      await refresh();
     },
-    /** Downloads now; a refresh already running is shared instead of started twice. */
-    refresh() {
-      inFlight ??= download().finally(() => {
-        inFlight = null;
-      });
-      return inFlight;
-    },
+    refresh,
   };
 }

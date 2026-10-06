@@ -23,7 +23,7 @@ export const ko: Messages = {
   },
   banner: {
     staleTitle: "데이터가 오래됐을 수 있습니다",
-    staleBody: "마지막 새로 고침에 실패했습니다.",
+    staleBody: "마지막 새로 고침에 실패했습니다. 인터넷 연결을 확인하고 다시 시도하세요.",
     unavailableTitle: "새 데이터를 받을 수 없습니다",
     updateBody: "앱을 업데이트하세요. 마지막으로 받은 데이터를 보여 줍니다.",
     invalidBody: "새 데이터 파일에 오류가 있습니다. 마지막으로 받은 데이터를 보여 줍니다.",

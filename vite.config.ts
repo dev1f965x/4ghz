@@ -14,7 +14,7 @@ function e2eDataFile(): Plugin {
       this.emitFile({
         type: "asset",
         fileName: "e2e-data/v1.json",
-        source: readFileSync("e2e/fixtures/data.json", "utf8"),
+        source: readFileSync(new URL("./e2e/fixtures/data.json", import.meta.url), "utf8"),
       });
     },
   };

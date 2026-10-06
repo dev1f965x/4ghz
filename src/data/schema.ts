@@ -2,12 +2,8 @@
 // the app strips keys it does not know, so additive changes stay compatible, and CI rejects them,
 // so a file with a typo cannot be published.
 // Imports carry the .ts extension so Node can load this file directly (scripts/data-schema.mjs).
-import { z } from "zod";
 import { type Region, type Time, toInstant } from "../time/clock.ts";
-
-// Zod compiles object parsers with new Function when it can, and probes for that ability. The
-// release CSP forbids eval, so the probe alone is a violation; jitless skips both.
-z.config({ jitless: true });
+import { z } from "./zod.ts";
 
 const regions: readonly Region[] = ["asia", "america", "europe", "tw_hk_mo"];
 

@@ -21,7 +21,7 @@ export const en = {
   },
   banner: {
     staleTitle: "Data may be out of date",
-    staleBody: "The last refresh failed.",
+    staleBody: "The last refresh failed. Check your internet connection and try again.",
     unavailableTitle: "New data isn’t available",
     updateBody: "Update the app. The last data received is shown.",
     invalidBody: "The new data file has errors. The last data received is shown.",

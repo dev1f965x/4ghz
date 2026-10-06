@@ -24,15 +24,16 @@ export function SyncStatus() {
 
   return (
     <div className="ml-auto flex items-center gap-2" data-sync-status={status}>
-      {/* Polite, so a refresh every 30 minutes does not interrupt a screen reader. */}
-      <span role="status" className="text-sm text-muted-foreground">
-        {text}
-      </span>
+      {/* Plain text, not a live region: automatic refreshes every 30 minutes would interrupt a
+          screen reader. Problems are announced by the banners. */}
+      <span className="text-sm text-muted-foreground">{text}</span>
+      {/* Never disabled: a disabled button drops keyboard focus, and refresh() already shares a
+          download in progress. */}
       <Button
         variant="outline"
         size="sm"
         onClick={() => void refreshData()}
-        disabled={status === "loading"}
+        aria-busy={status === "loading"}
         aria-keyshortcuts="F5"
       >
         <RefreshCwIcon aria-hidden data-icon="inline-start" />
