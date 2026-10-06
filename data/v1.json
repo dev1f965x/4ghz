@@ -1,0 +1,94 @@
+{
+  "$schema": "./v1.schema.json",
+  "schemaVersion": 1,
+  "updatedAt": "2026-10-05T23:50:00+09:00",
+  "games": {
+    "genshin": {
+      "schedule": [],
+      "codes": [],
+      "chores": [
+        {
+          "id": "commissions",
+          "name": { "ko": "일일 의뢰 4회", "en": "Daily commissions (4)" },
+          "cycle": "daily",
+          "enabledByDefault": true
+        },
+        {
+          "id": "resin",
+          "name": { "ko": "레진 소모", "en": "Spend resin" },
+          "cycle": "daily",
+          "enabledByDefault": true
+        },
+        {
+          "id": "teapot",
+          "name": { "ko": "주전자 정리", "en": "Serenitea Pot chores" },
+          "cycle": "daily",
+          "enabledByDefault": false
+        },
+        {
+          "id": "weekly-bosses",
+          "name": { "ko": "주간 보스 3회", "en": "Weekly bosses (3)" },
+          "cycle": "weekly",
+          "enabledByDefault": true
+        },
+        {
+          "id": "reputation",
+          "name": { "ko": "평판 임무", "en": "Reputation bounties" },
+          "cycle": "weekly",
+          "enabledByDefault": true
+        },
+        {
+          "id": "spiral-abyss",
+          "name": { "ko": "나선 비경", "en": "Spiral Abyss" },
+          "cycle": "periodic",
+          "enabledByDefault": true
+        },
+        {
+          "id": "imaginarium-theater",
+          "name": { "ko": "환상극", "en": "Imaginarium Theater" },
+          "cycle": "periodic",
+          "enabledByDefault": true
+        }
+      ],
+      "periods": []
+    },
+    "hsr": {
+      "schedule": [],
+      "codes": [],
+      "chores": [
+        {
+          "id": "daily-training",
+          "name": { "ko": "일일 훈련", "en": "Daily training" },
+          "cycle": "daily",
+          "enabledByDefault": true
+        },
+        {
+          "id": "trailblaze-power",
+          "name": { "ko": "개척력 소모", "en": "Spend Trailblaze Power" },
+          "cycle": "daily",
+          "enabledByDefault": true
+        }
+      ],
+      "periods": []
+    },
+    "zzz": {
+      "schedule": [],
+      "codes": [],
+      "chores": [
+        {
+          "id": "daily-engagement",
+          "name": { "ko": "일일 활약도", "en": "Daily engagement" },
+          "cycle": "daily",
+          "enabledByDefault": true
+        },
+        {
+          "id": "battery",
+          "name": { "ko": "배터리 소모", "en": "Spend battery charge" },
+          "cycle": "daily",
+          "enabledByDefault": true
+        }
+      ],
+      "periods": []
+    }
+  }
+}
