@@ -141,8 +141,12 @@ async function run(label) {
     await waitFor("The app's page", appProcess, async () => {
       const response = await fetch(`http://127.0.0.1:${debugPort}/json/list`);
       const targets = await response.json();
+      // An exact origin match; a prefix would also accept a host such as tauri.localhost.example.
       const page = targets.find(
-        (t) => t.type === "page" && t.url.startsWith("http://tauri.localhost"),
+        (t) =>
+          t.type === "page" &&
+          URL.canParse(t.url) &&
+          new URL(t.url).origin === "http://tauri.localhost",
       );
       if (!page) throw new Error(`no app page among ${targets.length} targets`);
     });
