@@ -25,15 +25,20 @@ export const localStateSchema = z.object({
    */
   redeemedCodes: z
     .object({ genshin: z.array(z.string()), hsr: z.array(z.string()), zzz: z.array(z.string()) })
-    .default({ genshin: [], hsr: [], zzz: [] }),
+    .default(() => noRedeemedCodes()),
 });
 
 export type LocalState = z.infer<typeof localStateSchema>;
+
+/** Upper-case codes per game; a fresh object each time, so states never share arrays. */
+function noRedeemedCodes(): { genshin: string[]; hsr: string[]; zzz: string[] } {
+  return { genshin: [], hsr: [], zzz: [] };
+}
 
 export function defaultLocalState(): LocalState {
   return {
     schemaVersion: LOCAL_STATE_VERSION,
     settings: { lastGame: "genshin", lastTab: "schedule", firstRunNoticeDismissed: false },
-    redeemedCodes: { genshin: [], hsr: [], zzz: [] },
+    redeemedCodes: noRedeemedCodes(),
   };
 }

@@ -29,6 +29,8 @@ describe("timeLeft", () => {
     [MIN + 1_000, { days: 0, hours: 0, minutes: 2 }],
     [60 * MIN, { days: 0, hours: 1, minutes: 0 }],
     [1440 * MIN, { days: 1, hours: 0, minutes: 0 }],
+    // Just under a day rounds up to a full day, so "less than a day" checks must use days.
+    [1440 * MIN - 1, { days: 1, hours: 0, minutes: 0 }],
     [14 * 86_400_000 + 18 * 3_600_000 + 18 * MIN, { days: 14, hours: 18, minutes: 18 }],
     // Already over: still one minute, since the entry leaves the list on the next update.
     [-10_000, { days: 0, hours: 0, minutes: 1 }],

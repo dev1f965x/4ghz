@@ -37,7 +37,7 @@ test.describe("the Codes tab", () => {
   });
 
   test("lists active codes newest first and hides expired ones", async ({ app }) => {
-    const codes = app.getByRole("listitem").locator("p.font-mono");
+    const codes = app.getByTestId("code");
     await expect(codes).toHaveText(["NEWCODE", "SOONCODE", "OLDCODE"]);
     await expect(row(app, "NEWCODE")).toContainText(/만료 시각 미정|Expiry unknown/);
     await expect(row(app, "SOONCODE")).toContainText(/3시간 0분 남음|3h 0m left/);
@@ -96,6 +96,31 @@ test.describe("the Codes tab", () => {
       await expectNoA11yViolations(app);
     });
   }
+});
+
+test.describe("with a code redeemed earlier", () => {
+  test.use({
+    localFiles: {
+      state: JSON.stringify({
+        ...JSON.parse(stateWithTab),
+        redeemedCodes: { genshin: ["MIXEDCASE"], hsr: [], zzz: [] },
+      }),
+    },
+    dataResponse: {
+      json: withCodes([
+        // The data now spells the code differently; the mark still applies.
+        code("MixedCase", NOW - 3_600_000),
+        // Just under a day left: no countdown, since it rounds up to a full day.
+        code("ALMOSTADAY", NOW - 7_200_000, NOW + 86_400_000 - 30_000),
+      ]),
+    },
+  });
+
+  test("restores the mark, dims the row, and stays accessible", async ({ app }) => {
+    await expect(app.getByRole("checkbox", { name: /MixedCase/ })).toBeChecked();
+    await expect(row(app, "ALMOSTADAY")).not.toContainText(/남음|left/);
+    await expectNoA11yViolations(app);
+  });
 });
 
 test.describe("with no active codes", () => {
