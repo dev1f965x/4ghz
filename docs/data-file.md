@@ -32,7 +32,7 @@ Each time says which clock it uses:
 | Code: `expires` | `instant` or `server` |
 | Period: `start`, `end` | `server` |
 
-Upcoming livestreams and updates can be added before they are announced, worked out from the usual cycle, with `"estimated": true`. The app labels them "예상" (estimated). When the official date is out, correct the time and remove the flag. Never add an estimate without the flag.
+Schedule entries (usually upcoming livestreams and updates) can be added before they are announced, worked out from the usual cycle, with `"estimated": true`. The Schedule tab labels them "예상" (estimated). When the official date is out, correct the time and remove the flag. Never add an estimate without the flag.
 
 Intervals include the start and exclude the end: a period from `2026-10-16T04:00` to `2026-11-16T04:00` is over at 04:00 on Nov 16, and the next period can start at exactly that time. An entry without `end` leaves the Schedule list 3 hours after it starts.
 
