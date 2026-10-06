@@ -14,6 +14,8 @@ pub fn run() {
                 let _ = window.set_focus();
             }
         }))
+        // Opens official announcement links in the default browser; the capability limits the URLs.
+        .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             storage::read_store,
             storage::write_store

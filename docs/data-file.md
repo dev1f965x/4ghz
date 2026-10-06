@@ -22,15 +22,16 @@ Each time says which clock it uses:
 | Kind | Format | Meaning | Use for |
 | --- | --- | --- | --- |
 | `instant` | `2026-11-04T06:00:00+08:00` | One moment everywhere. The offset is required. | Livestreams, updates, maintenance; events that end at a global maintenance |
-| `server` | `2026-11-04T04:00` | That clock time on each server, so it happens at different moments in Asia, Europe, and America. | Events, endgame modes, periods of periodic chores |
+| `server` | `2026-11-04T04:00` | That clock time on each server, so it happens at different moments in Asia, Europe, and America. | Events, periods of periodic chores |
 
 | Field | Allowed kinds |
 | --- | --- |
 | Livestream, update, maintenance: `start`, `end` | `instant` |
 | Event: `start`, `end` | `instant` or `server` |
-| Endgame: `start`, `end` | `server` |
 | Code: `expires` | `instant` or `server` |
 | Period: `start`, `end` | `server` |
+
+Endgame modes (Spiral Abyss and the like) are periodic chores. Enter each window once as a period of the chore: the Calendar uses it for the checklist, and the Schedule tab lists it as an endgame entry. There is no separate endgame schedule entry. A periodic chore should be an endgame mode, since the Schedule tab labels every period that way.
 
 Schedule entries (usually upcoming livestreams and updates) can be added before they are announced, worked out from the usual cycle, with `"estimated": true`. The Schedule tab labels them "예상" (estimated). When the official date is out, correct the time and remove the flag. Never add an estimate without the flag.
 
@@ -45,7 +46,7 @@ Intervals include the start and exclude the end: a period from `2026-10-16T04:00
 
 ## Links
 
-`url` is optional and must be a plain `https` link on an official site: `hoyoverse.com` or `hoyolab.com`, including their subdomains, with no port or user name.
+`url` is optional and must be a plain `https` link, with no port or user name, on one of these sites: `hoyoverse.com`, `www.hoyoverse.com`, `genshin.hoyoverse.com`, `hsr.hoyoverse.com`, `zenless.hoyoverse.com`, `hoyolab.com`, `www.hoyolab.com`. Adding a site means changing `src/data/official-hosts.ts` and the app's opener capability together; a test checks that they match.
 
 ## Compatibility
 

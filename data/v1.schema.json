@@ -174,40 +174,6 @@
               "start"
             ],
             "additionalProperties": false
-          },
-          {
-            "type": "object",
-            "properties": {
-              "id": {
-                "$ref": "#/$defs/__schema4"
-              },
-              "title": {
-                "$ref": "#/$defs/__schema5"
-              },
-              "url": {
-                "$ref": "#/$defs/__schema6"
-              },
-              "estimated": {
-                "$ref": "#/$defs/__schema7"
-              },
-              "type": {
-                "type": "string",
-                "const": "endgame"
-              },
-              "start": {
-                "$ref": "#/$defs/__schema12"
-              },
-              "end": {
-                "$ref": "#/$defs/__schema12"
-              }
-            },
-            "required": [
-              "id",
-              "title",
-              "type",
-              "start"
-            ],
-            "additionalProperties": false
           }
         ]
       }

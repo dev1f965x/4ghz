@@ -5,6 +5,7 @@ import { Banners } from "@/components/Banners";
 import { DataState } from "@/components/DataState";
 import { GameSelect } from "@/components/GameSelect";
 import { Mark } from "@/components/Mark";
+import { ScheduleTab } from "@/components/ScheduleTab";
 import { SettingsView } from "@/components/SettingsView";
 import { SyncStatus } from "@/components/SyncStatus";
 import { Button } from "@/components/ui/button";
@@ -112,8 +113,8 @@ export default function App() {
               </TabsList>
               {tabIds.map((id) => (
                 <TabsContent key={id} value={id}>
-                  {/* Each tab's content arrives with its story (GHZ-16 to GHZ-19). */}
-                  <DataState>{null}</DataState>
+                  {/* The other tabs' content arrives with their stories (GHZ-17 to GHZ-19). */}
+                  <DataState>{id === "schedule" ? <ScheduleTab game={game} /> : null}</DataState>
                 </TabsContent>
               ))}
             </Tabs>

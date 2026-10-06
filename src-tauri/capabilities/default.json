@@ -3,5 +3,20 @@
   "identifier": "default",
   "description": "Capability for the main window. Each feature adds only the permissions it needs.",
   "windows": ["main"],
-  "permissions": ["allow-read-store", "allow-write-store"]
+  "permissions": [
+    "allow-read-store",
+    "allow-write-store",
+    {
+      "identifier": "opener:allow-open-url",
+      "allow": [
+        { "url": "https://hoyoverse.com/*" },
+        { "url": "https://www.hoyoverse.com/*" },
+        { "url": "https://genshin.hoyoverse.com/*" },
+        { "url": "https://hsr.hoyoverse.com/*" },
+        { "url": "https://zenless.hoyoverse.com/*" },
+        { "url": "https://hoyolab.com/*" },
+        { "url": "https://www.hoyolab.com/*" }
+      ]
+    }
+  ]
 }

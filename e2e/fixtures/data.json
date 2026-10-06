@@ -9,8 +9,8 @@
           "id": "v7-1-main-event",
           "type": "event",
           "title": {
-            "ko": "이벤트: 달빛을 물어온 제비 (축월절)",
-            "en": "Event: Silverwing in Pursuit of the Moon (Moonchase Festival)"
+            "ko": "달빛을 물어온 제비 (축월절)",
+            "en": "Silverwing in Pursuit of the Moon (Moonchase Festival)"
           },
           "start": {
             "kind": "server",
@@ -26,8 +26,8 @@
           "id": "predictive-victory-dynamics",
           "type": "event",
           "title": {
-            "ko": "기간 한정 이벤트: 승부 예측의 달인",
-            "en": "Event: Predictive Victory Dynamics"
+            "ko": "승부 예측의 달인",
+            "en": "Predictive Victory Dynamics"
           },
           "start": {
             "kind": "server",
@@ -42,8 +42,8 @@
           "id": "carefree-snowball-fight",
           "type": "event",
           "title": {
-            "ko": "기간 한정 이벤트: 근심 없는 눈싸움",
-            "en": "Event: Carefree Snowball Fight"
+            "ko": "근심 없는 눈싸움",
+            "en": "Carefree Snowball Fight"
           },
           "start": {
             "kind": "server",
@@ -278,8 +278,8 @@
           "id": "v4-6-main-event",
           "type": "event",
           "title": {
-            "ko": "버전 4.6 이벤트: Love, Ghosts & Robots",
-            "en": "Version 4.6 event: Love, Ghosts & Robots"
+            "ko": "Love, Ghosts & Robots",
+            "en": "Love, Ghosts & Robots"
           },
           "start": {
             "kind": "instant",
@@ -294,8 +294,8 @@
           "id": "interastral-peace-gala",
           "type": "event",
           "title": {
-            "ko": "기간 한정 이벤트: Interastral Peace Gala",
-            "en": "Event: Interastral Peace Gala"
+            "ko": "Interastral Peace Gala",
+            "en": "Interastral Peace Gala"
           },
           "start": {
             "kind": "server",
@@ -518,8 +518,8 @@
           "id": "angels-support-operation",
           "type": "event",
           "title": {
-            "ko": "장기 이벤트: Angels Support Operation",
-            "en": "Event: Angels Support Operation"
+            "ko": "Angels Support Operation",
+            "en": "Angels Support Operation"
           },
           "start": {
             "kind": "instant",
@@ -535,8 +535,8 @@
           "id": "surprise-screening-plan",
           "type": "event",
           "title": {
-            "ko": "이벤트: 깜짝 상영 기획",
-            "en": "Event: Surprise Screening Plan"
+            "ko": "깜짝 상영 기획",
+            "en": "Surprise Screening Plan"
           },
           "start": {
             "kind": "server",
@@ -552,8 +552,8 @@
           "id": "pinball-hero",
           "type": "event",
           "title": {
-            "ko": "이벤트: 핀볼 히어로",
-            "en": "Event: Clink, Clank, Pinball Knight"
+            "ko": "핀볼 히어로",
+            "en": "Clink, Clank, Pinball Knight"
           },
           "start": {
             "kind": "server",
@@ -568,8 +568,8 @@
           "id": "orbie-diary",
           "type": "event",
           "title": {
-            "ko": "이벤트: 동글이 성장 일기",
-            "en": "Event: Diary of an Orbie Parent"
+            "ko": "동글이 성장 일기",
+            "en": "Diary of an Orbie Parent"
           },
           "start": {
             "kind": "server",
@@ -585,8 +585,8 @@
           "id": "hobbling-crow",
           "type": "event",
           "title": {
-            "ko": "이벤트: 절름발이 까마귀 탐정록",
-            "en": "Event: Chronicles of the Hobbling Crow"
+            "ko": "절름발이 까마귀 탐정록",
+            "en": "Chronicles of the Hobbling Crow"
           },
           "start": {
             "kind": "server",
