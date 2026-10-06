@@ -165,15 +165,22 @@ describe("advanceChores", () => {
 });
 
 describe("advanceNeedsSave", () => {
-  it("saves real changes and lastAdvancedAt only every 10 minutes", () => {
-    const state = started(NOW);
-    const tick = advanceChores(game, state, "asia", NOW + 30_000);
-    expect(advanceNeedsSave(state, tick)).toBe(false);
-    expect(advanceNeedsSave(state, advanceChores(game, state, "asia", NOW + 10 * 60_000))).toBe(
-      true,
-    );
-    const nextDay = advanceChores(game, state, "asia", gameDayStart("2026-10-07", "asia"));
-    expect(advanceNeedsSave(state, nextDay)).toBe(true);
+  it("saves real changes, and lastAdvancedAt 10 minutes after the last save", () => {
+    const saved = started(NOW);
+    // Ticks every 30 seconds, each applied in memory without saving.
+    let memory = saved;
+    const ticks: boolean[] = [];
+    for (let at = NOW + 30_000; at <= NOW + 10 * 60_000; at += 30_000) {
+      const next = advanceChores(game, memory, "asia", at);
+      ticks.push(advanceNeedsSave(memory, next, saved.lastAdvancedAt));
+      memory = next;
+    }
+    expect(ticks.slice(0, -1).every((t) => !t)).toBe(true);
+    expect(ticks.at(-1)).toBe(true);
+    const nextDay = advanceChores(game, saved, "asia", gameDayStart("2026-10-07", "asia") - 60_000);
+    expect(advanceNeedsSave(saved, nextDay, nextDay.lastAdvancedAt)).toBe(false);
+    const fixed = advanceChores(game, saved, "asia", gameDayStart("2026-10-07", "asia") + 3 * HOUR);
+    expect(advanceNeedsSave(saved, fixed, fixed.lastAdvancedAt)).toBe(true);
   });
 });
 

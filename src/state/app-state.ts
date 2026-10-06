@@ -50,13 +50,26 @@ export function setRedeemed(game: GameId, code: string, redeemed: boolean) {
   });
 }
 
+// lastAdvancedAt per game as last saved by an advance; null until the first advance.
+let savedAdvancedAt: Record<GameId, number> | null = null;
+
 /** Applies resets and missed days to every game (PRD FR28, FR29); writes only real changes. */
 export function advanceAllChores(data: DataFile, now: number) {
   const { state } = localStore.getSnapshot();
   const next = Object.fromEntries(
     gameIds.map((g) => [g, advanceChores(data.games[g], state.chores[g], REGION, now)]),
   ) as LocalState["chores"];
-  const save = gameIds.some((g) => advanceNeedsSave(state.chores[g], next[g]));
+  // Starts from the loaded file; every save of the chores below writes all games.
+  savedAdvancedAt ??= Object.fromEntries(
+    gameIds.map((g) => [g, state.chores[g].lastAdvancedAt]),
+  ) as Record<GameId, number>;
+  const saved = savedAdvancedAt;
+  const save = gameIds.some((g) => advanceNeedsSave(state.chores[g], next[g], saved[g]));
+  if (save)
+    savedAdvancedAt = Object.fromEntries(gameIds.map((g) => [g, next[g].lastAdvancedAt])) as Record<
+      GameId,
+      number
+    >;
   void localStore.update((s) => ({ ...s, chores: next }), { save });
 }
 

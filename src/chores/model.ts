@@ -200,9 +200,13 @@ export function advanceChores(
 // seconds. A change of that field alone is saved once it is this old.
 const ADVANCE_SAVE_GAP_MS = 10 * 60_000;
 
-/** True when an advance changed more than lastAdvancedAt, or moved it far enough to save. */
-export function advanceNeedsSave(before: GameChores, after: GameChores) {
-  if (Math.abs(after.lastAdvancedAt - before.lastAdvancedAt) >= ADVANCE_SAVE_GAP_MS) return true;
+/**
+ * True when an advance changed more than lastAdvancedAt, or moved it far from `savedAt`, the
+ * lastAdvancedAt last written to state.json. The in-memory value moves on every tick, so the
+ * gap is measured from the saved one.
+ */
+export function advanceNeedsSave(before: GameChores, after: GameChores, savedAt: number) {
+  if (Math.abs(after.lastAdvancedAt - savedAt) >= ADVANCE_SAVE_GAP_MS) return true;
   const rest = (s: GameChores) => JSON.stringify({ ...s, lastAdvancedAt: 0 });
   return rest(before) !== rest(after);
 }
