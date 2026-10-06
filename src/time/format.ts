@@ -27,3 +27,16 @@ export function timeLeft(
     minutes: total % 60,
   };
 }
+
+/** "10:42" today, "Oct 5, 21:10" on another day, in the local time zone. */
+export function formatUpdated(instant: number, now: number, locale: Locale, timeZone?: string) {
+  const day = (t: number) =>
+    new Intl.DateTimeFormat("en-CA", { dateStyle: "short", timeZone }).format(t);
+  if (day(instant) !== day(now)) return formatDateTime(instant, locale, timeZone);
+  return new Intl.DateTimeFormat(locale === "ko" ? "ko-KR" : "en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+    timeZone,
+  }).format(instant);
+}

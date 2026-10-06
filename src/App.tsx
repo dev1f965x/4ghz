@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { DataBanners } from "@/components/DataBanners";
+import { DataState } from "@/components/DataState";
+import { SyncStatus } from "@/components/SyncStatus";
 import {
   Select,
   SelectContent,
@@ -7,12 +10,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { refreshData } from "@/data/store";
 
 const games = ["genshin", "hsr", "zzz"] as const;
 type Game = (typeof games)[number];
+const tabs = ["schedule", "codes", "calendar"] as const;
 
-// Placeholder shell until the real screens are built: the game drop-down sets the window accent.
+// Shell until the app shell story (GHZ-15) lays out the real header and tabs.
 export default function App() {
   const { t } = useTranslation();
   const [game, setGame] = useState<Game>("genshin");
@@ -20,6 +25,17 @@ export default function App() {
   useEffect(() => {
     document.documentElement.dataset.game = game;
   }, [game]);
+
+  // F5 refreshes the data instead of reloading the window, which would lose unsaved state.
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "F5") return;
+      event.preventDefault();
+      void refreshData();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
 
   return (
     <main className="flex flex-col gap-4 p-4">
@@ -41,13 +57,23 @@ export default function App() {
             ))}
           </SelectContent>
         </Select>
+        <SyncStatus />
       </header>
+      <DataBanners />
       <Tabs defaultValue="schedule">
         <TabsList variant="line">
-          <TabsTrigger value="schedule">{t("tab.schedule")}</TabsTrigger>
-          <TabsTrigger value="codes">{t("tab.codes")}</TabsTrigger>
-          <TabsTrigger value="calendar">{t("tab.calendar")}</TabsTrigger>
+          {tabs.map((tab) => (
+            <TabsTrigger key={tab} value={tab}>
+              {t(`tab.${tab}`)}
+            </TabsTrigger>
+          ))}
         </TabsList>
+        {tabs.map((tab) => (
+          <TabsContent key={tab} value={tab}>
+            {/* Each tab's content arrives with its story (GHZ-16 to GHZ-19). */}
+            <DataState>{null}</DataState>
+          </TabsContent>
+        ))}
       </Tabs>
     </main>
   );

@@ -5,6 +5,10 @@
 import { z } from "zod";
 import { type Region, type Time, toInstant } from "../time/clock.ts";
 
+// Zod compiles object parsers with new Function when it can, and probes for that ability. The
+// release CSP forbids eval, so the probe alone is a violation; jitless skips both.
+z.config({ jitless: true });
+
 const regions: readonly Region[] = ["asia", "america", "europe", "tw_hk_mo"];
 
 // Links open only official game sites (PRD, Security).

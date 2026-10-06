@@ -9,7 +9,7 @@ const shared = [
 ];
 const rules = {
   "src/i18n/en.ts": [
-    /\b(?:seamless|effortless|successfully|simply|just|easily|powerful|robust|leverage|unlock|please|oops|uh-oh|above|below|on the right)\b/i,
+    /\b(?:seamless|effortless|successfully|simply|just(?! now)|easily|powerful|robust|leverage|unlock|please|oops|uh-oh|above|below|on the right)\b/i,
     ...shared,
   ],
   "src/i18n/ko.ts": [

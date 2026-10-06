@@ -3,16 +3,39 @@ import AxeBuilder from "@axe-core/playwright";
 import { test as base, expect, type Page } from "@playwright/test";
 
 /** The data file served in place of GitHub Pages. */
-const dataFile = readFileSync(new URL("./fixtures/data.json", import.meta.url), "utf8");
+export const dataFile: unknown = JSON.parse(
+  readFileSync(new URL("./fixtures/data.json", import.meta.url), "utf8"),
+);
+
+/** What GitHub Pages answers: a data file (any JSON), or no connection. */
+type DataResponse = { json: unknown } | "offline";
 
 type Options = {
   /** Contents of the app's local files before the page loads; none means a first run. */
   localFiles: Partial<Record<"state" | "data-cache", string>>;
+  /** The first answer for the data file; tests change later answers with `network.serve`. */
+  dataResponse: DataResponse;
 };
 
-export const test = base.extend<Options & { app: Page }>({
+type Fixtures = {
+  app: Page;
+  /** Changes what the data file request answers from now on. */
+  network: { serve: (response: DataResponse) => void; current: () => DataResponse };
+};
+
+export const test = base.extend<Options & Fixtures>({
   localFiles: [{}, { option: true }],
-  app: async ({ page, localFiles }, use) => {
+  dataResponse: [{ json: dataFile }, { option: true }],
+  network: async ({ dataResponse }, use) => {
+    let current = dataResponse;
+    await use({
+      serve: (response) => {
+        current = response;
+      },
+      current: () => current,
+    });
+  },
+  app: async ({ page, localFiles, network }, use) => {
     await page.addInitScript((files) => {
       // Read by src/e2e-mocks.ts when the app starts.
       (window as unknown as { __E2E_FILES__: typeof files }).__E2E_FILES__ = files;
@@ -23,7 +46,9 @@ export const test = base.extend<Options & { app: Page }>({
       const url = new URL(route.request().url());
       if (url.hostname === "localhost") return route.continue();
       if (url.href.startsWith("https://dev1f965x.github.io/4ghz/data/")) {
-        return route.fulfill({ contentType: "application/json", body: dataFile });
+        const response = network.current();
+        if (response === "offline") return route.abort("internetdisconnected");
+        return route.fulfill({ json: response.json });
       }
       unexpected.push(url.href);
       return route.abort();
