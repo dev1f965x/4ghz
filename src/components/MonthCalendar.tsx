@@ -186,7 +186,15 @@ export function MonthCalendar() {
                   readOnly={readOnly !== null}
                   focused={day.label === focused}
                   allLabel={t("calendar.all")}
-                  onFocus={() => setFocused(clamp(day.label))}
+                  onFocus={() => {
+                    const target = clamp(day.label);
+                    setFocused(target);
+                    // A click beyond the allowed months focuses the nearest allowed day, which
+                    // is in the same grid, so focus and the tab stop stay on one cell.
+                    if (target !== day.label) {
+                      grid.current?.querySelector<HTMLElement>(`[data-label="${target}"]`)?.focus();
+                    }
+                  }}
                   onKeyDown={(event) => onKeyDown(event, day)}
                 />
               ))}

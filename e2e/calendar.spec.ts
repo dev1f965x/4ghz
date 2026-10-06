@@ -110,10 +110,11 @@ test.describe("the month calendar", () => {
   test("a click on a day of the next month stays within the allowed months", async ({ app }) => {
     await cell(app, /^(11월 1일 일요일|Sunday, November 1)/).click();
     await expect(app.getByRole("heading", { name: /2026년 10월|October 2026/ })).toBeVisible();
-    await expect(cell(app, /^(10월 31일 토요일|Saturday, October 31)/)).toHaveAttribute(
-      "tabindex",
-      "0",
-    );
+    const last = cell(app, /^(10월 31일 토요일|Saturday, October 31)/);
+    await expect(last).toHaveAttribute("tabindex", "0");
+    await expect(last).toBeFocused();
+    await app.keyboard.press("ArrowLeft");
+    await expect(cell(app, /^(10월 30일 금요일|Friday, October 30)/)).toBeFocused();
   });
 
   test("puts the grid below the checklist at 720 x 560", async ({ app }) => {
