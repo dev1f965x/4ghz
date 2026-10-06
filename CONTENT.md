@@ -22,6 +22,7 @@ Use these words and no synonyms. A new product noun or verb is added here before
 | Games the user tracks | Playing (setting); your games | 플레이 중 (설정); 플레이하는 게임 | As in the wireframes: "It’s turned off in your games" / "플레이하는 게임에서 빠져 있습니다". The calendar legend uses the shorter "All played games done" / "하는 게임 모두 완료" for space; nowhere else |
 | Game server region | server | 서버 | Asia / 아시아 and America / 미국 as in the wireframes. Europe and TW, HK, MO take the names the games show; confirm them in game before they appear in the UI |
 | Dated item from the publisher | schedule (tab), event, livestream, maintenance | 일정, 이벤트, 방송, 점검 | |
+| Date not yet announced, worked out from the usual cycle | estimated | 예상 | A label next to the time, never a guess shown as fact |
 | Redeem code | code | 코드 | Not "coupon" or "쿠폰" |
 | Using a code in the game | redeem; state "Redeemed" | 사용; 상태 "사용함" | Not "claim" |
 | The official web page for codes | redemption page | 교환 페이지 | "Open redemption page" / "교환 페이지 열기" |

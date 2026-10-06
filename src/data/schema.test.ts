@@ -178,6 +178,18 @@ describe("data file schema", () => {
     expect(errors({ ...file(), retired: false })).toEqual([': Unrecognized key: "retired"']);
   });
 
+  it("accepts estimated entries and only the value true", () => {
+    const entry = (estimated: unknown) => ({
+      id: "a",
+      type: "livestream",
+      title: text("방송"),
+      start: instant("2026-10-24T20:00:00+08:00"),
+      estimated,
+    });
+    expect(errors(file({ schedule: [entry(true)] }))).toEqual([]);
+    expect(errors(file({ schedule: [entry(false)] }))).not.toEqual([]);
+  });
+
   it("accepts official links on subdomains", () => {
     const entry = {
       id: "a",

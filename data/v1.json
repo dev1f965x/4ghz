@@ -1,7 +1,7 @@
 {
   "$schema": "./v1.schema.json",
   "schemaVersion": 1,
-  "updatedAt": "2026-10-06T10:00:00+09:00",
+  "updatedAt": "2026-10-06T11:00:00+09:00",
   "games": {
     "genshin": {
       "schedule": [
@@ -53,6 +53,36 @@
             "kind": "server",
             "at": "2026-11-02T04:00"
           }
+        },
+        {
+          "id": "v7-2-livestream",
+          "type": "livestream",
+          "title": {
+            "ko": "버전 7.2 특별 방송",
+            "en": "Version 7.2 livestream"
+          },
+          "start": {
+            "kind": "instant",
+            "at": "2026-10-24T20:00:00+08:00"
+          },
+          "estimated": true
+        },
+        {
+          "id": "v7-2-update",
+          "type": "update",
+          "title": {
+            "ko": "버전 7.2 업데이트 점검",
+            "en": "Version 7.2 update maintenance"
+          },
+          "start": {
+            "kind": "instant",
+            "at": "2026-11-04T06:00:00+08:00"
+          },
+          "end": {
+            "kind": "instant",
+            "at": "2026-11-04T11:00:00+08:00"
+          },
+          "estimated": true
         }
       ],
       "codes": [
@@ -275,6 +305,23 @@
             "kind": "server",
             "at": "2026-11-11T04:00"
           }
+        },
+        {
+          "id": "v4-7-update",
+          "type": "update",
+          "title": {
+            "ko": "버전 4.7 업데이트 점검",
+            "en": "Version 4.7 update maintenance"
+          },
+          "start": {
+            "kind": "instant",
+            "at": "2026-11-11T06:00:00+08:00"
+          },
+          "end": {
+            "kind": "instant",
+            "at": "2026-11-11T11:00:00+08:00"
+          },
+          "estimated": true
         }
       ],
       "codes": [

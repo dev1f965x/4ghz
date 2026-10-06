@@ -59,7 +59,13 @@ function build(strict: boolean) {
   const id = z.string().regex(/^[a-z0-9][a-z0-9-]*$/, "Use lowercase letters, digits, and hyphens");
 
   // Allowed time kinds per entry type (Design Doc, "Allowed time kinds").
-  const entryBase = { id, title: text, url: link.optional() };
+  // estimated marks a date worked out from the usual cycle before an official announcement; the Schedule tab labels it (GHZ-16).
+  const entryBase = {
+    id,
+    title: text,
+    url: link.optional(),
+    estimated: z.literal(true).optional(),
+  };
   const scheduleEntry = z.discriminatedUnion("type", [
     object({
       ...entryBase,
