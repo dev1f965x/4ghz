@@ -13,7 +13,7 @@ const MAX_VISIBLE = 2;
  * The banners area: problems first, then notices, at most two at a time. The rest show as
  * soon as one above them is resolved or dismissed.
  */
-export function Banners({ onOpenSettings }: { onOpenSettings: () => void }) {
+export function Banners({ onOpenSettings }: { onOpenSettings?: () => void }) {
   const { t } = useTranslation();
   const { data, status, problem } = useDataSync();
   const { state, readOnly } = useLocalState();
@@ -71,7 +71,8 @@ export function Banners({ onOpenSettings }: { onOpenSettings: () => void }) {
       ),
     });
   }
-  if (!state.settings.firstRunNoticeDismissed) {
+  // Inside Settings the notice has nothing to point to, so it waits until the user leaves.
+  if (onOpenSettings && !state.settings.firstRunNoticeDismissed) {
     banners.push({
       key: "first-run",
       node: (
@@ -81,15 +82,7 @@ export function Banners({ onOpenSettings }: { onOpenSettings: () => void }) {
           body={t("firstRun.body")}
           actions={
             <>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  // Opening Settings answers the notice, so it does not come back.
-                  void updateSettings({ firstRunNoticeDismissed: true });
-                  onOpenSettings();
-                }}
-              >
+              <Button variant="outline" size="sm" onClick={onOpenSettings}>
                 {t("firstRun.open")}
               </Button>
               <Button
@@ -107,9 +100,10 @@ export function Banners({ onOpenSettings }: { onOpenSettings: () => void }) {
     });
   }
 
-  if (banners.length === 0) return null;
+  // One live region that is always present, so a banner that appears later is announced once,
+  // and the banners present at startup are not read out as interruptions.
   return (
-    <div className="flex flex-col gap-2">
+    <div role="status" className="flex flex-col gap-2 empty:hidden">
       {banners.slice(0, MAX_VISIBLE).map((b) => (
         <div key={b.key}>{b.node}</div>
       ))}

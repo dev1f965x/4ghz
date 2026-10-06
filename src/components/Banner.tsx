@@ -20,8 +20,7 @@ export function Banner({
   const warning = kind === "warning";
   return (
     <div
-      role="status"
-      className={`flex items-start gap-3 rounded-lg border border-l-4 bg-card px-3 py-2 ${
+      className={`flex items-start gap-3 rounded-lg border border-l-3 bg-card px-3 py-2 ${
         warning ? "border-l-warning" : "border-l-primary"
       }`}
     >

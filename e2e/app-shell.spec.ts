@@ -61,12 +61,15 @@ test("shows the first-run notice until it is dismissed", async ({ app }) => {
     .toBe(true);
 });
 
-test("opens Settings from the first-run notice", async ({ app }) => {
+test("opens Settings from the first-run notice, which stays until dismissed", async ({ app }) => {
   await app.getByRole("button", { name: /설정 열기|Open settings/ }).click();
   await expect(app.getByRole("heading", { name: /^(설정|Settings)$/ })).toBeFocused();
+  // Inside Settings the notice has nothing to point to.
   await expect(app.getByText(firstRunTitle)).toBeHidden();
+  await app.keyboard.press("Escape");
+  await expect(app.getByText(firstRunTitle)).toBeVisible();
+  expect((await readState(app))?.settings.firstRunNoticeDismissed ?? false).toBe(false);
 });
-
 test("Ctrl+, opens Settings, and Esc and Back return focus to the Settings button", async ({
   app,
 }) => {
@@ -102,7 +105,7 @@ test.describe("keyboard order", () => {
     }
     expect(order[0]).toBe("combobox");
     expect(order[1]).toMatch(/새로 고침|Refresh/);
-    expect(order[2]).toMatch(/설정|Settings/);
+    expect(order[2]).toMatch(/^(설정|Settings)$/);
     expect(order[3]).toBe("tab");
   });
 });

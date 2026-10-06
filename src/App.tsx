@@ -45,7 +45,13 @@ export default function App() {
         // Refreshes the data instead of reloading the window, which would lose unsaved state.
         event.preventDefault();
         void refreshData();
-      } else if (event.ctrlKey && event.key === ",") {
+      } else if (
+        event.key === "," &&
+        event.ctrlKey &&
+        !event.altKey &&
+        !event.shiftKey &&
+        !event.metaKey
+      ) {
         event.preventDefault();
         openSettings();
       } else if (event.key === "Escape" && view === "settings" && !event.defaultPrevented) {
@@ -59,8 +65,9 @@ export default function App() {
 
   const inSettings = view === "settings";
   return (
-    <div className="flex min-h-svh flex-col gap-3 p-4">
-      <header className="flex items-center gap-3">
+    <div className="flex min-h-svh flex-col">
+      {/* A panel with a hairline under it, as in the visual direction. */}
+      <header className="flex items-center gap-3 border-b bg-card px-4 py-2">
         <Mark />
         {inSettings ? (
           <Button variant="outline" onClick={closeSettings}>
@@ -71,44 +78,48 @@ export default function App() {
           <GameSelect game={game} onChange={(g) => void updateSettings({ lastGame: g })} />
         )}
         <SyncStatus />
+        {/* A toggle: pressed while Settings is open, with the accent tint of a pressed button. */}
         <Button
           ref={settingsButton}
           variant="outline"
           aria-pressed={inSettings}
-          aria-keyshortcuts="Control+Comma"
+          aria-keyshortcuts="Control+,"
+          className="aria-pressed:border-primary aria-pressed:bg-accent aria-pressed:text-accent-foreground"
           onClick={inSettings ? closeSettings : openSettings}
         >
           <SettingsIcon aria-hidden data-icon="inline-start" />
           {t("shell.settings")}
         </Button>
       </header>
-      <Banners onOpenSettings={openSettings} />
-      <main className="flex grow flex-col">
-        {inSettings ? (
-          <SettingsView />
-        ) : (
-          <Tabs
-            value={tab}
-            onValueChange={(value: TabId) => {
-              if (tabIds.includes(value)) void updateSettings({ lastTab: value });
-            }}
-          >
-            <TabsList variant="line">
+      <div className="flex grow flex-col gap-3 p-4">
+        <Banners onOpenSettings={inSettings ? undefined : openSettings} />
+        <main className="flex grow flex-col">
+          {inSettings ? (
+            <SettingsView />
+          ) : (
+            <Tabs
+              value={tab}
+              onValueChange={(value: TabId) => {
+                if (tabIds.includes(value)) void updateSettings({ lastTab: value });
+              }}
+            >
+              <TabsList variant="line">
+                {tabIds.map((id) => (
+                  <TabsTrigger key={id} value={id}>
+                    {t(`tab.${id}`)}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
               {tabIds.map((id) => (
-                <TabsTrigger key={id} value={id}>
-                  {t(`tab.${id}`)}
-                </TabsTrigger>
+                <TabsContent key={id} value={id}>
+                  {/* Each tab's content arrives with its story (GHZ-16 to GHZ-19). */}
+                  <DataState>{null}</DataState>
+                </TabsContent>
               ))}
-            </TabsList>
-            {tabIds.map((id) => (
-              <TabsContent key={id} value={id}>
-                {/* Each tab's content arrives with its story (GHZ-16 to GHZ-19). */}
-                <DataState>{null}</DataState>
-              </TabsContent>
-            ))}
-          </Tabs>
-        )}
-      </main>
+            </Tabs>
+          )}
+        </main>
+      </div>
     </div>
   );
 }
