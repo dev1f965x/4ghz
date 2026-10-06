@@ -87,14 +87,64 @@ function start(command, args) {
   return child;
 }
 
+async function debugPortOpen() {
+  try {
+    await fetch(`http://127.0.0.1:${debugPort}/json/version`);
+    return true;
+  } catch {
+    // A refused connection means nothing listens on the port, which is the answer.
+    return false;
+  }
+}
+
+/** Resolves when the process exits, or rejects after `ms` milliseconds. */
+function exited(child, ms) {
+  if (child.exitCode !== null || child.signalCode !== null) return Promise.resolve();
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error(`pid ${child.pid} did not exit`)), ms);
+    child.once("exit", () => {
+      clearTimeout(timer);
+      resolve();
+    });
+  });
+}
+
+/**
+ * Closes the window as a user would, so WebView2 shuts down normally, and waits until its
+ * debugging port is closed. WebView2 runs in separate processes that outlive the app briefly;
+ * a restart must not attach to them.
+ */
+async function close(appProcess) {
+  if (appProcess.pid === undefined || appProcess.exitCode !== null) return;
+  execFileSync("taskkill", ["/PID", String(appProcess.pid)], { stdio: "ignore" });
+  try {
+    await exited(appProcess, 10_000);
+  } catch {
+    // The window did not close in time; end the process instead.
+    appProcess.kill();
+    await exited(appProcess, 10_000);
+  }
+  for (let i = 0; i < 75 && (await debugPortOpen()); i++) await sleep(200);
+  if (await debugPortOpen())
+    throw new Error(`Port ${debugPort} is still open after the app closed`);
+}
+
 /** Starts the app, attaches to it, checks it, and closes it again. */
 async function run(label) {
+  if (await debugPortOpen()) {
+    throw new Error(`Port ${debugPort} is already in use; the test would attach to the wrong app`);
+  }
   const appProcess = start(app, []);
   let failure;
   try {
-    await waitFor("The app's debugging port", appProcess, async () => {
-      const response = await fetch(`http://127.0.0.1:${debugPort}/json/version`);
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    // Waits for this app's page, not just any listener on the port.
+    await waitFor("The app's page", appProcess, async () => {
+      const response = await fetch(`http://127.0.0.1:${debugPort}/json/list`);
+      const targets = await response.json();
+      const page = targets.find(
+        (t) => t.type === "page" && t.url.startsWith("http://tauri.localhost"),
+      );
+      if (!page) throw new Error(`no app page among ${targets.length} targets`);
     });
     const session = await webdriver("POST", "/session", {
       capabilities: {
@@ -126,7 +176,7 @@ async function run(label) {
         })();
       `,
     });
-    // Detaches without closing the app; the app is closed below like a user would.
+    // In attach mode this only detaches; close() below closes the app.
     await webdriver("DELETE", `/session/${session.sessionId}`);
     console.log(`${label}: ${JSON.stringify(result)}`);
     const problems = [];
@@ -140,9 +190,13 @@ async function run(label) {
   } catch (error) {
     failure = error;
   }
-  appProcess.kill();
-  // The single-instance plugin would hand a restart to a process that is still closing.
-  while (appProcess.exitCode === null && appProcess.signalCode === null) await sleep(100);
+  // A restart before this finishes would be handed to the closing process (single instance).
+  try {
+    await close(appProcess);
+  } catch (error) {
+    if (!failure) failure = error;
+    else console.error(`Closing the app also failed: ${error.message}`);
+  }
   if (failure) throw failure;
 }
 
