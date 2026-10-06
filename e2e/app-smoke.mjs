@@ -65,10 +65,13 @@ async function webdriver(method, path, body) {
   return json.value;
 }
 
-/** Polls `probe` every 200 ms for up to 15 seconds while `process` runs. */
+/**
+ * Polls `probe` every 200 ms for up to 30 seconds while `process` runs. A cold CI runner can
+ * take more than 15 seconds to start WebView2 and load the page.
+ */
 async function waitFor(what, process, probe) {
   let lastError;
-  for (let i = 0; i < 75 && process.exitCode === null; i++) {
+  for (let i = 0; i < 150 && process.exitCode === null; i++) {
     try {
       await probe();
       return;
@@ -148,7 +151,10 @@ async function run(label) {
           URL.canParse(t.url) &&
           new URL(t.url).origin === "http://tauri.localhost",
       );
-      if (!page) throw new Error(`no app page among ${targets.length} targets`);
+      if (!page) {
+        const seen = targets.map((t) => `${t.type} ${t.url}`).join(", ");
+        throw new Error(`no app page among ${targets.length} targets: ${seen}`);
+      }
     });
     const session = await webdriver("POST", "/session", {
       capabilities: {
