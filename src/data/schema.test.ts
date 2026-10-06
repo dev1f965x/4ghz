@@ -258,3 +258,14 @@ describe("published data files", () => {
     expect(errors(content)).toEqual([]);
   });
 });
+
+describe("e2e test data", () => {
+  // The frozen copy the end-to-end tests serve must stay valid as the schema changes.
+  const fixtures = Object.entries(
+    import.meta.glob<unknown>("/e2e/fixtures/*.json", { eager: true, import: "default" }),
+  );
+
+  it.each(fixtures)("%s passes the strict schema", (_, content) => {
+    expect(errors(content)).toEqual([]);
+  });
+});

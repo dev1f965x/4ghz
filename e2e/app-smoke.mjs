@@ -8,14 +8,25 @@ import { join, resolve } from "node:path";
 const app = resolve("src-tauri/target/release/4ghz.exe");
 if (!existsSync(app)) throw new Error(`${app} is missing; run pnpm app:build first`);
 
-/** msedgedriver must match the installed WebView2 runtime exactly. */
+/**
+ * msedgedriver must match the installed WebView2 runtime exactly. The runtime registers per
+ * machine or per user; an empty or 0.0.0.0 version means it is not installed there.
+ */
 function webView2Version() {
-  const key =
-    "HKLM\\SOFTWARE\\WOW6432Node\\Microsoft\\EdgeUpdate\\Clients\\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}";
-  const output = execFileSync("reg", ["query", key, "/v", "pv"], { encoding: "utf8" });
-  const match = output.match(/pv\s+REG_SZ\s+([\d.]+)/);
-  if (!match) throw new Error(`WebView2 version not found in ${key}`);
-  return match[1];
+  const client = "Microsoft\\EdgeUpdate\\Clients\\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}";
+  const keys = [`HKLM\\SOFTWARE\\WOW6432Node\\${client}`, `HKCU\\Software\\${client}`];
+  for (const key of keys) {
+    let output;
+    try {
+      output = execFileSync("reg", ["query", key, "/v", "pv"], { encoding: "utf8", stdio: "pipe" });
+    } catch {
+      // reg exits non-zero when the key is missing; try the next location.
+      continue;
+    }
+    const version = output.match(/pv\s+REG_SZ\s+([\d.]+)/)?.[1];
+    if (version && version !== "0.0.0.0") return version;
+  }
+  throw new Error(`WebView2 runtime version not found in ${keys.join(" or ")}`);
 }
 
 async function nativeDriver(version) {
@@ -28,8 +39,8 @@ async function nativeDriver(version) {
   if (!response.ok) throw new Error(`Downloading ${url} failed: HTTP ${response.status}`);
   const zip = join(dir, "edgedriver.zip");
   writeFileSync(zip, Buffer.from(await response.arrayBuffer()));
-  // tar ships with Windows 10 and later and reads zip files.
-  execFileSync("tar", ["-xf", zip, "-C", dir]);
+  // Windows' own tar reads zip files; a GNU tar earlier on PATH (Git Bash) cannot.
+  execFileSync(join(process.env.SystemRoot, "System32", "tar.exe"), ["-xf", zip, "-C", dir]);
   return exe;
 }
 
@@ -47,17 +58,21 @@ async function webdriver(method, path, body) {
   return json.value;
 }
 
-async function waitForDriver() {
-  for (let i = 0; i < 50; i++) {
+async function waitForDriver(driver) {
+  let lastError;
+  for (let i = 0; i < 50 && driver.exitCode === null; i++) {
     try {
       await webdriver("GET", "/status");
       return;
-    } catch {
-      // The driver is still starting; the loop gives up after 10 seconds.
+    } catch (error) {
+      // Refused connections are expected while the driver starts; the last one is reported.
+      lastError = error;
       await new Promise((r) => setTimeout(r, 200));
     }
   }
-  throw new Error("tauri-driver did not start");
+  throw new Error(`tauri-driver did not start (exit code ${driver.exitCode})`, {
+    cause: lastError,
+  });
 }
 
 /** Starts the app, checks it, and closes it again. */
@@ -66,6 +81,7 @@ async function run(label) {
     capabilities: { alwaysMatch: { "tauri:options": { application: app } } },
   });
   const id = session.sessionId;
+  let failure;
   try {
     const script = (source, args = []) =>
       webdriver("POST", `/session/${id}/execute/async`, { script: source, args });
@@ -96,17 +112,28 @@ async function run(label) {
       problems.push(`CSP violations: ${result.violations.join(", ")}`);
     if (result.styleElements > 0) problems.push("inline <style> elements, which the CSP blocks");
     if (problems.length > 0) throw new Error(`${label}: ${problems.join("; ")}`);
-  } finally {
-    await webdriver("DELETE", `/session/${id}`);
+  } catch (error) {
+    failure = error;
   }
+  // Closing the session closes the app; a failure here must not hide the check's own failure.
+  try {
+    await webdriver("DELETE", `/session/${id}`);
+  } catch (error) {
+    if (!failure) failure = error;
+    else console.error(`Closing the session also failed: ${error.message}`);
+  }
+  if (failure) throw failure;
 }
 
 const driverPath = await nativeDriver(webView2Version());
 const driver = spawn("tauri-driver", ["--port", String(port), "--native-driver", driverPath], {
   stdio: ["ignore", "inherit", "inherit"],
 });
+driver.on("error", (error) => {
+  console.error(`tauri-driver could not start: ${error.message}. Run mise install.`);
+});
 try {
-  await waitForDriver();
+  await waitForDriver(driver);
   await run("first start");
   await run("restart");
   console.log("App smoke test passed.");

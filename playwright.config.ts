@@ -8,14 +8,18 @@ const locales = [
   ["en", "en-US"],
 ] as const;
 
+// Its own port, so a running pnpm dev (port 1420, without mocks) is never reused by mistake.
+const port = 1421;
+
 export default defineConfig({
   testDir: "e2e",
   testMatch: "**/*.spec.ts",
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: 0,
-  reporter: process.env.CI ? [["list"], ["html", { open: "never" }]] : [["list"]],
-  use: { baseURL: "http://localhost:1420", channel: "msedge", trace: "retain-on-failure" },
+  // The HTML report keeps the screenshots; open it with pnpm exec playwright show-report.
+  reporter: [["list"], ["html", { open: "never" }]],
+  use: { baseURL: `http://localhost:${port}`, channel: "msedge", trace: "retain-on-failure" },
   projects: locales.flatMap(([name, locale]) =>
     themes.map((colorScheme) => ({
       name: `${name}-${colorScheme}`,
@@ -23,9 +27,10 @@ export default defineConfig({
     })),
   ),
   webServer: {
+    // A built bundle, not the dev server, so a cold start has no on-demand compiles to wait for.
     // e2e mode swaps Tauri IPC for mocks (src/e2e-mocks.ts); production builds never include them.
-    command: "pnpm exec vite --mode e2e",
-    url: "http://localhost:1420",
-    reuseExistingServer: !process.env.CI,
+    command: `pnpm exec vite build --mode e2e --outDir dist-e2e && pnpm exec vite preview --mode e2e --outDir dist-e2e --port ${port} --strictPort`,
+    url: `http://localhost:${port}`,
+    reuseExistingServer: false,
   },
 });
