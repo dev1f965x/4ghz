@@ -19,15 +19,17 @@ export function ExternalLinkButton({
     <span className="inline-flex flex-col items-end gap-1">
       <Button
         {...props}
-        onClick={() =>
-          openUrl(url).then(
+        onClick={() => {
+          // Cleared first, so a repeated failure is announced again.
+          setFailed(false);
+          void openUrl(url).then(
             () => setFailed(false),
             (error: unknown) => {
               logError(`Opening ${url} failed`, error);
               setFailed(true);
             },
-          )
-        }
+          );
+        }}
       >
         {children}
       </Button>

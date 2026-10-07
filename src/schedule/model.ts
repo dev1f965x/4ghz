@@ -18,8 +18,7 @@ export type ScheduleRow = {
   estimated: boolean;
 };
 
-// An entry without an end, such as a livestream, leaves the list this long after it starts
-//.
+// An entry without an end, such as a livestream, leaves the list this long after it starts.
 const NO_END_MS = 3 * 60 * 60 * 1000;
 
 const visibleUntil = (row: ScheduleRow) => row.end ?? row.start + NO_END_MS;

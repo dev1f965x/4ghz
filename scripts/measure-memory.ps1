@@ -1,4 +1,4 @@
-# Measures idle memory for the Design Doc D5 target (under 200 MB): starts the app, waits, and
+# Measures idle memory against the 200 MB target: starts the app, waits, and
 # sums the private working set (Task Manager's "Memory" column) of the app process and every
 # WebView2 process it started. Run against the test build so an installed copy's data is not used:
 #   pnpm app:build:e2e; pwsh -File scripts/measure-memory.ps1 -Minutes 10
@@ -27,6 +27,8 @@ try {
   $total = ($perf | Measure-Object WorkingSetPrivate -Sum).Sum / 1MB
   "{0} processes, {1:N1} MB private working set after {2} minutes" -f $perf.Count, $total, $Minutes
 } finally {
-  # Closing the window as a user would lets WebView2 shut down cleanly.
+  # Closing the window as a user would lets WebView2 shut down cleanly; if the app does not
+  # close in time, it is ended with its WebView2 processes so none are left running.
   taskkill /PID $process.Id | Out-Null
+  if (-not $process.WaitForExit(10000)) { taskkill /PID $process.Id /T /F | Out-Null }
 }

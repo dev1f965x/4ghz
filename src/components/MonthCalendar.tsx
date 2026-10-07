@@ -118,7 +118,8 @@ export function MonthCalendar() {
     const parts = [formatLabelLong(day.label, locale)];
     if (day.status !== "past") parts.push(t(`calendar.dayStatus.${day.status}`));
     const games =
-      day.status === "upcoming"
+      // Upcoming days and days before tracking have nothing to report, as on screen.
+      day.status === "upcoming" || !day.tracked
         ? []
         : gameIds.map((g) => `${t(`game.${g}`)} ${markText(day.games[g], day.status)}`);
     if (day.all) games.push(t("calendar.allDone"));
@@ -213,7 +214,12 @@ export function MonthCalendar() {
         </tbody>
       </table>
 
-      <Legend games={gameIds.filter((g) => prefs[g].plays)} />
+      {/* Games played, plus any game whose marks show in this month, such as one turned off. */}
+      <Legend
+        games={gameIds.filter(
+          (g) => prefs[g].plays || weeks.some((w) => w.some((d) => d.games[g] === "done")),
+        )}
+      />
       {readOnly !== null && (
         <p className="text-sm text-muted-foreground">{t("calendar.readOnly")}</p>
       )}

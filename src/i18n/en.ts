@@ -39,7 +39,7 @@ export const en = {
     title: "Check your server and games",
     body: "Each game has its own server. The default is Asia.",
     open: "Open settings",
-    dismiss: "Dismiss the server notice",
+    dismiss: "Dismiss the server and games notice",
   },
   readOnly: {
     title: "Records can’t be read",

@@ -32,7 +32,7 @@ export const ko: Messages = {
   },
   update: {
     title: "새 버전이 나왔습니다",
-    body: "릴리스 페이지에서 4ghz {{version}}을 받으세요.",
+    body: "릴리스 페이지에서 4ghz {{version}} 버전을 받으세요.",
     open: "릴리스 열기",
     dismiss: "새 버전 알림 닫기",
   },
@@ -40,7 +40,7 @@ export const ko: Messages = {
     title: "서버와 게임을 확인하세요",
     body: "서버는 게임마다 따로 고릅니다. 기본값은 아시아입니다.",
     open: "설정 열기",
-    dismiss: "서버 알림 닫기",
+    dismiss: "서버 확인 알림 닫기",
   },
   readOnly: {
     title: "기록을 읽을 수 없습니다",

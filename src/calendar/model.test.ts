@@ -181,3 +181,20 @@ describe("days before tracking", () => {
     expect(calendarDay(input, "2026-10-06", "2026-10").tracked).toBe(true);
   });
 });
+
+describe("days before tracking with mixed settings", () => {
+  it("ignores games not played and takes the earliest start among the rest", () => {
+    const chores = fresh(NOW);
+    // HSR has records from September but is turned off now; ZZZ is on America.
+    chores.hsr = { ...chores.hsr, days: { "2026-09-20": { result: "done", fixedAt: NOW } } };
+    const prefs = {
+      ...PREFS,
+      hsr: { ...ASIA, plays: false },
+      zzz: { ...ASIA, region: "america" as const },
+    };
+    const input = { chores, games, prefs, now: NOW };
+    expect(calendarDay(input, "2026-09-20", "2026-09").tracked).toBe(false);
+    // Tracking began Oct 6 on every server, labelled Oct 6 in Asia and Oct 5 in America.
+    expect(calendarDay(input, "2026-10-05", "2026-10").tracked).toBe(true);
+  });
+});

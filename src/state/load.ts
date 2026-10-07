@@ -1,6 +1,5 @@
 // Reads, validates, and saves state.json. A file that fails validation or comes from a newer app
-// is left untouched and the app runs read-only for the session, so no history is lost silently
-//.
+// is left untouched and the app runs read-only for the session, so no history is lost silently.
 import {
   defaultLocalState,
   LOCAL_STATE_VERSION,

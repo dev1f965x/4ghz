@@ -54,7 +54,9 @@ test("saves the chosen game and tab", async ({ app }) => {
 test("shows the first-run notice until it is dismissed", async ({ app }) => {
   await expect(app.getByText(firstRunTitle)).toBeVisible();
   await expectNoA11yViolations(app);
-  await app.getByRole("button", { name: /서버 알림 닫기|Dismiss the server notice/ }).click();
+  await app
+    .getByRole("button", { name: /서버 확인 알림 닫기|Dismiss the server and games notice/ })
+    .click();
   await expect(app.getByText(firstRunTitle)).toBeHidden();
   await expect
     .poll(async () => (await readState(app))?.settings.firstRunNoticeDismissed)

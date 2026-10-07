@@ -151,6 +151,30 @@ test.describe("changing the server with history", () => {
   });
 });
 
+test.describe("with the first-run notice showing", () => {
+  test.use({
+    localFiles: {
+      state: JSON.stringify({
+        schemaVersion: 1,
+        settings: { ...settings, firstRunNoticeDismissed: false },
+      }),
+    },
+  });
+
+  test("a server change dismisses it, since that is what it asks for", async ({ app }) => {
+    await expect(
+      app.getByText(/서버와 게임을 확인하세요|Check your server and games/),
+    ).toBeVisible();
+    await settingsButton(app).click();
+    await chooseServer(app, /^(유럽|Europe)$/);
+    await app.getByRole("button", { name: /서버 바꾸기|Change server/ }).click();
+    await back(app).click();
+    await expect(app.getByText(/서버와 게임을 확인하세요|Check your server and games/)).toHaveCount(
+      0,
+    );
+  });
+});
+
 test.describe("language", () => {
   test.use({ localFiles: { state: onCalendar } });
 

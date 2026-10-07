@@ -229,7 +229,7 @@ async function run(label, { check }) {
     await webdriver("DELETE", `/session/${session.sessionId}`);
     const { firstDataAt, pageStartAt, ...shown } = result;
     // Reported, not asserted: a cold CI runner varies too much for a hard limit. The 1 second
-    // target is measured on a PC instead.
+    // target applies to the restart, which starts from cached data, and is measured on a PC.
     const toData =
       firstDataAt === null
         ? "none"

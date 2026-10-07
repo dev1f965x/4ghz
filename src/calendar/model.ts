@@ -82,7 +82,12 @@ export function calendarToday(prefs: Record<GameId, GamePrefs>, now: number): st
   return labels.reduce((a, b) => (a > b ? a : b));
 }
 
-export function calendarDay(input: CalendarInput, label: string, month: string): CalendarDay {
+export function calendarDay(
+  input: CalendarInput,
+  label: string,
+  month: string,
+  firstTracked = firstTrackedLabel(input),
+): CalendarDay {
   const today = calendarToday(input.prefs, input.now);
   const live = mapGames((g) => unfixed(input, g, label));
   const games = mapGames(
@@ -101,18 +106,26 @@ export function calendarDay(input: CalendarInput, label: string, month: string):
       return mark === "none" ? undefined : { result: mark, fixedAt: 0 };
     }),
   );
-  const tracked = label >= firstTrackedLabel(input);
+  const tracked = label >= firstTracked;
   return { label, inMonth: monthOf(label) === month, status, games, all, tracked };
 }
 
 export function calendarMonth(input: CalendarInput, month: string): CalendarDay[][] {
-  return monthLabels(month).map((week) => week.map((label) => calendarDay(input, label, month)));
+  // Computed once per month; it scans every record.
+  const firstTracked = firstTrackedLabel(input);
+  return monthLabels(month).map((week) =>
+    week.map((label) => calendarDay(input, label, month, firstTracked)),
+  );
 }
 
-/** The first day any game counted: its earliest record or the start of tracking. */
+/**
+ * The first day a played game counted: its earliest record or the start of tracking. Games not
+ * played do not move it, so days they never counted stay blank.
+ */
 function firstTrackedLabel(input: CalendarInput): string {
   let first = "9999-12-31";
   for (const g of gameIds) {
+    if (!input.prefs[g].plays) continue;
     const state = input.chores[g];
     if (state.countFrom !== null) {
       const start = gameDayLabel(state.countFrom, input.prefs[g].region);
