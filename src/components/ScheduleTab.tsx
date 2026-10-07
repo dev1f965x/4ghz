@@ -1,7 +1,7 @@
 import { ArrowUpRightIcon } from "lucide-react";
 import { useId } from "react";
 import { useTranslation } from "react-i18next";
-import { card, hoverCard } from "@/components/card";
+import { hoverCard } from "@/components/card";
 import { EmptyState } from "@/components/EmptyState";
 import { OpenFailed, useOpenUrl } from "@/components/ExternalLinkButton";
 import { useDataSync } from "@/data/store";
@@ -127,7 +127,7 @@ function Row({
       {/* Space kept on every card so times line up; the arrow marks cards that open. */}
       <span aria-hidden className="w-4 shrink-0 text-muted-foreground">
         {url && (
-          <ArrowUpRightIcon className="size-4 opacity-50 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100" />
+          <ArrowUpRightIcon className="size-4 opacity-75 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100" />
         )}
       </span>
     </>
@@ -135,7 +135,7 @@ function Row({
   // At large Windows text sizes the countdown wraps below the title instead of squeezing it.
   const layout = "flex w-full flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3 text-left";
   if (!url) {
-    return <li className={`${card} ${layout}`}>{content}</li>;
+    return <li className={`${hoverCard} ${layout}`}>{content}</li>;
   }
   return (
     <li className="flex flex-col items-start gap-1">

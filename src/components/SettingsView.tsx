@@ -45,6 +45,10 @@ import { formatDateTime, formatLabelDate } from "@/time/format";
 
 type Section = GameId | "language" | "display" | "data" | "about";
 
+/** The selected section is filled, outlined, and bold; contrast themes highlight it instead (index.css). */
+const trigger =
+  "justify-start px-3 py-1.5 data-active:border-input data-active:bg-muted data-active:font-semibold dark:data-active:bg-muted";
+
 /** Settings: each game, the language, the local data, and About. */
 export function SettingsView({ game }: { game: GameId }) {
   const { t } = useTranslation();
@@ -61,46 +65,30 @@ export function SettingsView({ game }: { game: GameId }) {
         orientation="vertical"
         value={section}
         onValueChange={(value: Section) => setSection(value)}
-        className="flex flex-col gap-4 md:flex-row md:gap-6"
+        className="flex flex-col gap-4 md:flex-row md:gap-8"
       >
-        {/* The selected section is filled, outlined, and bold; contrast themes highlight it
-            instead (index.css). */}
         <TabsList
           aria-label={t("settings.sections")}
-          className="h-auto shrink-0 items-stretch border-b bg-transparent p-0 pb-3 md:w-52 md:border-r md:border-b-0 md:pr-4 md:pb-0"
+          className="h-auto shrink-0 items-stretch bg-transparent p-0 md:w-52"
         >
           {gameIds.map((g) => (
-            <TabsTrigger
-              key={g}
-              value={g}
-              className="justify-start gap-2 px-3 py-1.5 data-active:border-input data-active:bg-muted data-active:font-semibold dark:data-active:bg-muted"
-            >
+            <TabsTrigger key={g} value={g} className={`gap-2 ${trigger}`}>
               <GameDot game={g} />
               {t(`game.${g}`)}
             </TabsTrigger>
           ))}
-          <TabsTrigger
-            value="language"
-            className="justify-start px-3 py-1.5 data-active:border-input data-active:bg-muted data-active:font-semibold dark:data-active:bg-muted"
-          >
+          {/* Separates the per-game sections from those for the whole app. */}
+          <div aria-hidden className="mx-3 my-2 border-t" />
+          <TabsTrigger value="language" className={trigger}>
             {t("settings.language")}
           </TabsTrigger>
-          <TabsTrigger
-            value="display"
-            className="justify-start px-3 py-1.5 data-active:border-input data-active:bg-muted data-active:font-semibold dark:data-active:bg-muted"
-          >
+          <TabsTrigger value="display" className={trigger}>
             {t("settings.display")}
           </TabsTrigger>
-          <TabsTrigger
-            value="data"
-            className="justify-start px-3 py-1.5 data-active:border-input data-active:bg-muted data-active:font-semibold dark:data-active:bg-muted"
-          >
+          <TabsTrigger value="data" className={trigger}>
             {t("settings.data")}
           </TabsTrigger>
-          <TabsTrigger
-            value="about"
-            className="justify-start px-3 py-1.5 data-active:border-input data-active:bg-muted data-active:font-semibold dark:data-active:bg-muted"
-          >
+          <TabsTrigger value="about" className={trigger}>
             {t("about.title")}
           </TabsTrigger>
         </TabsList>
