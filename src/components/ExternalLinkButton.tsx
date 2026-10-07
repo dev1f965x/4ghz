@@ -5,39 +5,48 @@ import { Button } from "@/components/ui/button";
 import { logError } from "@/log";
 
 /**
- * A button that opens `url` in the default browser. If the browser cannot be opened, for example
- * without a default browser, it says so next to itself instead of failing silently.
+ * Opens a URL in the default browser and remembers whether that failed, for example without a
+ * default browser, so the caller can say so instead of failing silently.
  */
+export function useOpenUrl() {
+  const [failed, setFailed] = useState(false);
+  const open = (url: string) => {
+    // Cleared first, so a repeated failure is announced again.
+    setFailed(false);
+    void openUrl(url).then(
+      () => setFailed(false),
+      (error: unknown) => {
+        logError(`Opening ${url} failed`, error);
+        setFailed(true);
+      },
+    );
+  };
+  return { open, failed };
+}
+
+/** The message shown next to whatever failed to open a link. */
+export function OpenFailed() {
+  const { t } = useTranslation();
+  return (
+    <span role="alert" className="text-sm">
+      {t("links.openFailed")}
+    </span>
+  );
+}
+
+/** A button that opens `url` in the default browser, with the failure message beside it. */
 export function ExternalLinkButton({
   url,
   children,
   ...props
 }: { url: string } & Omit<ComponentProps<typeof Button>, "onClick">) {
-  const { t } = useTranslation();
-  const [failed, setFailed] = useState(false);
+  const { open, failed } = useOpenUrl();
   return (
     <span className="inline-flex flex-col items-end gap-1">
-      <Button
-        {...props}
-        onClick={() => {
-          // Cleared first, so a repeated failure is announced again.
-          setFailed(false);
-          void openUrl(url).then(
-            () => setFailed(false),
-            (error: unknown) => {
-              logError(`Opening ${url} failed`, error);
-              setFailed(true);
-            },
-          );
-        }}
-      >
+      <Button {...props} onClick={() => open(url)}>
         {children}
       </Button>
-      {failed && (
-        <span role="alert" className="text-sm">
-          {t("links.openFailed")}
-        </span>
-      )}
+      {failed && <OpenFailed />}
     </span>
   );
 }

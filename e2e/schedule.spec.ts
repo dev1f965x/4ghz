@@ -9,7 +9,9 @@ test("lists ongoing and upcoming entries with countdowns", async ({ app }) => {
   const ongoing = app.getByRole("region", { name: /^(진행 중|Ongoing)$/ });
   const upcoming = app.getByRole("region", { name: /^(예정|Upcoming)$/ });
   const mainEvent = ongoing.getByRole("listitem").filter({ hasText: mainEventName });
-  await expect(mainEvent).toContainText(/(남은 시간|Time left)(5일|5d) 18:1\d:\d\d/);
+  await expect(mainEvent).toContainText(
+    /(남은 시간|Time left)(5일 18시간 1\d분 \d\d초|5d 18h 1\dm \d\ds)/,
+  );
   // Endgame periods come from the periodic chores.
   await expect(
     ongoing.getByRole("listitem").filter({ hasText: /나선 비경|Spiral Abyss/ }),
@@ -25,12 +27,12 @@ test("counts down every second while the tab is open", async ({ app }) => {
   const mainEvent = app.getByRole("listitem").filter({ hasText: mainEventName });
   // Paused 10 seconds in, so each step is exact.
   await app.clock.pauseAt(NOW + 10_000);
-  await expect(mainEvent).toContainText(/(5일|5d) 18:17:50/);
+  await expect(mainEvent).toContainText(/5일 18시간 17분 50초|5d 18h 17m 50s/);
   await app.clock.runFor(1000);
-  await expect(mainEvent).toContainText(/(5일|5d) 18:17:49/);
+  await expect(mainEvent).toContainText(/5일 18시간 17분 49초|5d 18h 17m 49s/);
   // fastForward jumps an hour at once instead of running 3,600 one-second ticks.
   await app.clock.fastForward(60 * 60_000);
-  await expect(mainEvent).toContainText(/(5일|5d) 17:17:49/);
+  await expect(mainEvent).toContainText(/5일 17시간 17분 49초|5d 17h 17m 49s/);
 });
 
 test.describe("with seconds turned off in Settings", () => {
@@ -66,9 +68,10 @@ for (const size of [
 }
 
 test("opens an announcement in the default browser", async ({ app }) => {
-  await app
-    .getByRole("button", { name: /공지 열기: .*달빛|Open announcement: .*Silverwing/ })
-    .click();
+  // The whole card is the button; its name is the card's text and the action.
+  const card = app.getByRole("button", { name: /달빛.*공지 열기|Silverwing.*Open announcement/ });
+  await card.hover();
+  await card.click();
   await expect
     .poll(() =>
       app.evaluate(() => (window as unknown as { __E2E_OPENED__?: string[] }).__E2E_OPENED__),

@@ -33,7 +33,7 @@ Use these words and no synonyms. A new product noun or verb is added here before
 | When a cycle starts again | reset | 초기화 | |
 | Result kept for a past day | record; "No record" | 기록; "기록 없음" | |
 | Day not yet recorded during the grace period | pending | 확정 대기 | |
-| Day on which every played game is done | "All played games done" (legend; the cell is filled) | "하는 게임 모두 완료" (범례; 칸을 채워 표시) | |
+| Day on which every played game is done | "All done" (legend; the cell is filled) | "모두 완료" (범례; 칸을 채워 표시) | Short, since the legend sits in one line |
 | Schedules and codes from GitHub | data | 데이터 | Records and settings are not called "data", except in "data folder" |
 | Records and settings on this PC | records and settings | 기록과 설정 | |
 | Folder that holds them | data folder | 데이터 폴더 | The Windows app data folder: "Open data folder" / "데이터 폴더 열기" |

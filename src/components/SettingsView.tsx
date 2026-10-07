@@ -61,13 +61,13 @@ export function SettingsView({ game }: { game: GameId }) {
         orientation="vertical"
         value={section}
         onValueChange={(value: Section) => setSection(value)}
-        className="flex flex-col gap-4 md:flex-row"
+        className="flex flex-col gap-4 md:flex-row md:gap-6"
       >
         {/* The selected section is filled, outlined, and bold; contrast themes highlight it
             instead (index.css). */}
         <TabsList
           aria-label={t("settings.sections")}
-          className="h-auto items-stretch bg-transparent p-0 md:w-48"
+          className="h-auto shrink-0 items-stretch border-b bg-transparent p-0 pb-3 md:w-52 md:border-r md:border-b-0 md:pr-4 md:pb-0"
         >
           {gameIds.map((g) => (
             <TabsTrigger

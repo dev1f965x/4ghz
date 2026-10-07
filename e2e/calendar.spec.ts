@@ -37,7 +37,7 @@ test.describe("the month calendar", () => {
     await expect(today).toHaveAttribute("aria-current", "date");
     await expect(today).toHaveAttribute("tabindex", "0");
     await expect(cell(app, /^(10월 5일 월요일|Monday, October 5):/)).toHaveAccessibleName(
-      /원신 완료, 붕괴: 스타레일 완료, 젠레스 존 제로 기록 없음, 하는 게임 모두 완료|Genshin Impact done, Honkai: Star Rail done, Zenless Zone Zero no record, all played games done/,
+      /원신 완료, 붕괴: 스타레일 완료, 젠레스 존 제로 기록 없음, 모두 완료|Genshin Impact done, Honkai: Star Rail done, Zenless Zone Zero no record, all done/,
     );
     await expect(
       cell(app, /^(10월 7일 수요일|Wednesday, October 7), (다가올 날|upcoming)$/),
@@ -155,7 +155,7 @@ test.describe("without a data file", () => {
       app.getByText(/데이터를 불러오지 못했습니다|Data couldn’t be loaded/),
     ).toBeVisible();
     await expect(cell(app, /^(10월 5일 월요일|Monday, October 5):/)).toHaveAccessibleName(
-      /하는 게임 모두 완료|all played games done/,
+      /모두 완료|all done/,
     );
   });
 });
@@ -192,7 +192,7 @@ test.describe("with a game turned off that has older records", () => {
   test("reads the marks that still show before tracking began", async ({ app }) => {
     await app.getByRole("button", { name: /이전 달|Previous month/ }).click();
     await expect(cell(app, /^(9월 20일 일요일|Sunday, September 20)/)).toHaveAccessibleName(
-      /^(9월 20일 일요일: 붕괴: 스타레일 완료, 하는 게임 모두 완료|Sunday, September 20: Honkai: Star Rail done, all played games done)$/,
+      /^(9월 20일 일요일: 붕괴: 스타레일 완료, 모두 완료|Sunday, September 20: Honkai: Star Rail done, all done)$/,
     );
     // The legend keeps the game while its marks show, though it is turned off.
     await expect(
