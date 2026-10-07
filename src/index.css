@@ -110,10 +110,11 @@
   display: none;
 }
 
-/* Windows contrast themes drop fills and draw every tab's transparent border, so the selected
-   tab takes the system highlight, as a selected menu item does (DESIGN.md, Themes). */
+/* Windows contrast themes drop fills, so the selected tab and today's date in the calendar take
+   the system highlight, as a selected menu item does (DESIGN.md, Themes). */
 @media (forced-colors: active) {
-  [data-slot="tabs-trigger"][data-active] {
+  [data-slot="tabs-trigger"][data-active],
+  [data-today] {
     forced-color-adjust: none;
     background: Highlight;
     color: HighlightText;

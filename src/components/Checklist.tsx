@@ -6,6 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useDataSync } from "@/data/store";
 import { useAnnouncer } from "@/hooks/useAnnouncer";
 import { useNow } from "@/hooks/useNow";
+import { formatDuration, formatSeconds } from "@/i18n/duration";
 import type { Locale } from "@/i18n/locale";
 import { localText } from "@/schedule/model";
 import { checkCycleChore, checkDailyChore, gamePrefs, useLocalState } from "@/state/app-state";
@@ -15,7 +16,6 @@ import {
   formatDateTimeWithWeekday,
   formatLabelDate,
   formatTime,
-  isTomorrow,
 } from "@/time/format";
 
 type Group = "previous" | "daily" | "weekly" | "periodic";
@@ -28,7 +28,8 @@ export function Checklist({ game, onOpenSettings }: { game: GameId; onOpenSettin
   const { state, readOnly } = useLocalState();
   // Re-rendered exactly at the next reset or grace end, so a click rarely meets a closed cycle.
   const [boundary, setBoundary] = useState<number | null>(null);
-  const now = useNow(30_000, boundary);
+  const seconds = state.settings.countdownSeconds;
+  const now = useNow(seconds ? 1000 : 30_000, boundary);
   const list =
     data === null
       ? null
@@ -85,9 +86,8 @@ export function Checklist({ game, onOpenSettings }: { game: GameId; onOpenSettin
       done: ro ? "—" : items.filter((i) => i.checked).length,
       total: items.length,
     });
-  const dailyReset = isTomorrow(list.daily.resetsAt, now)
-    ? t("chores.resetsTomorrow", { time: formatTime(list.daily.resetsAt, locale) })
-    : t("chores.resetsAt", { when: formatDateTime(list.daily.resetsAt, locale) });
+  // Countdowns read like the Schedule tab's; the exact time is the tooltip.
+  const until = (instant: number) => (seconds ? formatSeconds : formatDuration)(t, now, instant);
   const counted = list.periodic.items.filter((i) => i.key !== null);
 
   return (
@@ -101,9 +101,10 @@ export function Checklist({ game, onOpenSettings }: { game: GameId; onOpenSettin
         <GroupBox
           id="previous"
           title={t("chores.previousDay", { date: formatLabelDate(list.previous.label, locale) })}
-          meta={t("chores.editableUntil", {
+          caption={t("chores.editableUntil", {
             time: formatTime(list.previous.editableUntil, locale),
           })}
+          progress={progress(list.previous.items)}
         >
           {list.previous.items.map((item) => (
             <Row
@@ -121,9 +122,13 @@ export function Checklist({ game, onOpenSettings }: { game: GameId; onOpenSettin
         <GroupBox
           id="daily"
           title={t("chores.daily")}
-          meta={
-            list.daily.resumesAt === null ? `${progress(list.daily.items)} · ${dailyReset}` : null
+          caption={
+            list.daily.resumesAt === null
+              ? t("chores.resetsIn", { time: until(list.daily.resetsAt) })
+              : null
           }
+          captionTitle={t("chores.resetsAt", { when: formatDateTime(list.daily.resetsAt, locale) })}
+          progress={list.daily.resumesAt === null ? progress(list.daily.items) : null}
         >
           {list.daily.resumesAt !== null ? (
             <li>
@@ -149,9 +154,11 @@ export function Checklist({ game, onOpenSettings }: { game: GameId; onOpenSettin
         <GroupBox
           id="weekly"
           title={t("chores.weekly")}
-          meta={`${progress(list.weekly.items)} · ${t("chores.resetsAt", {
+          caption={t("chores.resetsIn", { time: until(list.weekly.resetsAt) })}
+          captionTitle={t("chores.resetsAt", {
             when: formatDateTimeWithWeekday(list.weekly.resetsAt, locale),
-          })}`}
+          })}
+          progress={progress(list.weekly.items)}
         >
           {list.weekly.items.map((item) => (
             <Row
@@ -170,7 +177,7 @@ export function Checklist({ game, onOpenSettings }: { game: GameId; onOpenSettin
           id="periodic"
           title={t("chores.periodic")}
           // Chores without a current period are not counted; with none, no count.
-          meta={counted.length > 0 ? progress(counted) : null}
+          progress={counted.length > 0 ? progress(counted) : null}
         >
           {list.periodic.items.map((item) => (
             <Row
@@ -181,6 +188,11 @@ export function Checklist({ game, onOpenSettings }: { game: GameId; onOpenSettin
               end={
                 item.endsAt === null
                   ? t("chores.noPeriod")
+                  : t("chores.endsIn", { time: until(item.endsAt) })
+              }
+              endTitle={
+                item.endsAt === null
+                  ? undefined
                   : t("chores.endsAt", { when: formatDateTime(item.endsAt, locale) })
               }
               onChange={(checked) => change("periodic", item, checked, item.key)}
@@ -195,12 +207,16 @@ export function Checklist({ game, onOpenSettings }: { game: GameId; onOpenSettin
 function GroupBox({
   id,
   title,
-  meta,
+  caption = null,
+  captionTitle,
+  progress,
   children,
 }: {
   id: Group;
   title: string;
-  meta: string | null;
+  caption?: string | null;
+  captionTitle?: string;
+  progress: string | null;
   children: ReactNode;
 }) {
   const headingId = useId();
@@ -208,15 +224,28 @@ function GroupBox({
     <section
       aria-labelledby={headingId}
       data-group={id}
-      className="rounded-lg border bg-card px-3 py-2"
+      className="rounded-lg border bg-card px-4 py-3"
     >
-      <div className="flex items-baseline justify-between gap-3 border-b pb-1.5">
-        <h3 id={headingId} className="font-bold">
-          {title}
-        </h3>
-        {meta && <span className="text-sm text-muted-foreground tabular-nums">{meta}</span>}
+      <div className="flex items-start justify-between gap-3 pb-2">
+        <div>
+          <h3 id={headingId} className="font-semibold">
+            {title}
+          </h3>
+          {caption && (
+            <p title={captionTitle} className="text-xs text-muted-foreground tabular-nums">
+              {caption}
+              {/* The tooltip is for the pointer; screen readers get the exact time here. */}
+              {captionTitle && <span className="sr-only"> ({captionTitle})</span>}
+            </p>
+          )}
+        </div>
+        {progress && (
+          <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-xs font-medium tabular-nums">
+            {progress}
+          </span>
+        )}
       </div>
-      <ul className="flex flex-col">{children}</ul>
+      <ul className="flex flex-col divide-y">{children}</ul>
     </section>
   );
 }
@@ -226,19 +255,23 @@ function Row({
   checked,
   disabled,
   end,
+  endTitle,
   onChange,
 }: {
   label: string;
   checked: boolean;
   disabled: boolean;
   end?: string;
+  endTitle?: string;
   onChange: (checked: boolean) => void;
 }) {
   const endId = useId();
   return (
-    <li className="flex items-center gap-2 border-b py-1.5 last:border-b-0">
+    <li className="flex items-center gap-2 py-2">
       {/* Base UI's documented pattern: the label wraps the checkbox, so clicking the text toggles it. */}
-      <label className={`flex grow items-center gap-2 ${disabled ? "text-muted-foreground" : ""}`}>
+      <label
+        className={`flex grow items-center gap-2.5 ${disabled ? "text-muted-foreground" : ""}`}
+      >
         <Checkbox
           checked={checked}
           disabled={disabled}
@@ -249,8 +282,13 @@ function Row({
         {label}
       </label>
       {end && (
-        <span id={endId} className="shrink-0 text-sm text-muted-foreground">
+        <span
+          id={endId}
+          title={endTitle}
+          className="shrink-0 text-xs text-muted-foreground tabular-nums"
+        >
           {end}
+          {endTitle && <span className="sr-only"> ({endTitle})</span>}
         </span>
       )}
     </li>

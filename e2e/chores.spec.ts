@@ -33,18 +33,28 @@ test.describe("the chore checklist", () => {
 
   test("groups enabled chores with progress and resets", async ({ app }) => {
     const daily = group(app, /^(일간|Daily)$/);
-    await expect(daily).toContainText(/0 \/ 2 · (내일 05:00 초기화|Resets tomorrow at 05:00)/);
+    // At 10:42 in Korea the daily reset at 05:00 is 18 hours 18 minutes away.
+    await expect(daily).toContainText(/초기화까지 18시간 1\d분|Resets in 18h 1\dm/);
+    await expect(daily).toContainText("0 / 2");
+    // The exact time stays available on hover.
+    await expect(daily.getByText(/초기화까지|Resets in/)).toHaveAttribute(
+      "title",
+      /10월 7일 05:00 초기화|Resets Oct 7, 05:00/,
+    );
     await expect(daily.getByRole("checkbox")).toHaveCount(2);
     // Turned off by default in the data file.
     await expect(box(app, /주전자|Serenitea/)).toHaveCount(0);
-    await expect(group(app, /^(주간|Weekly)$/)).toContainText(
-      /0 \/ 2 · (10월 12일 \(월\) 05:00 초기화|Resets Mon, Oct 12, 05:00)/,
+    const weekly = group(app, /^(주간|Weekly)$/);
+    await expect(weekly).toContainText(/초기화까지 5일 18시간|Resets in 5d 18h/);
+    await expect(weekly.getByText(/초기화까지|Resets in/)).toHaveAttribute(
+      "title",
+      /10월 12일 \(월\) 05:00 초기화|Resets Mon, Oct 12, 05:00/,
     );
     const periodic = group(app, /^(기간|Periodic)$/);
     await expect(periodic).toContainText("0 / 3");
     await expect(
       periodic.getByRole("listitem").filter({ hasText: /나선 비경|Spiral Abyss/ }),
-    ).toContainText(/10월 16일 05:00 종료|Ends Oct 16, 05:00/);
+    ).toContainText(/종료까지 9일 18시간|Ends in 9d 18h/);
   });
 
   test("checks chores, saves them, and announces each change", async ({ app }) => {

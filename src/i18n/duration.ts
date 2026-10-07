@@ -10,13 +10,23 @@ export function formatDuration(t: TFunction, from: number, to: number) {
 }
 
 /**
- * "9일 18:42:07" or "18:42:07" until `to`, for countdowns that tick every second. Seconds are
- * rounded down, so it reads 00:00:00 at the instant itself.
+ * "5일 18시간 07분 05초" until `to`, for countdowns that tick every second. Units below the
+ * largest keep two digits so the text keeps its width; seconds round down, so it reads 0초 at the
+ * instant itself.
  */
-export function formatClock(t: TFunction, from: number, to: number) {
+export function formatSeconds(t: TFunction, from: number, to: number) {
   const total = Math.max(0, Math.floor((to - from) / 1000));
-  const days = Math.floor(total / 86_400);
-  const pad = (n: number) => String(n).padStart(2, "0");
-  const clock = `${pad(Math.floor((total % 86_400) / 3600))}:${pad(Math.floor((total % 3600) / 60))}:${pad(total % 60)}`;
-  return days > 0 ? t("duration.daysClock", { d: days, clock }) : clock;
+  const values = [
+    ["day", Math.floor(total / 86_400)],
+    ["hour", Math.floor((total % 86_400) / 3600)],
+    ["minute", Math.floor((total % 3600) / 60)],
+    ["second", total % 60],
+  ] as const;
+  const first = values.findIndex(([, n], i) => n > 0 || i === values.length - 1);
+  return values
+    .slice(first)
+    .map(([unit, n], i) =>
+      t(`duration.unit.${unit}`, { n: i === 0 ? String(n) : String(n).padStart(2, "0") }),
+    )
+    .join(" ");
 }

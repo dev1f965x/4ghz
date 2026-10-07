@@ -251,9 +251,9 @@ const dotColors: Record<GameId, string> = {
 const dot = "size-1.5 rounded-full border-3";
 
 /**
- * Each state has a cue besides color: all done fills the cell, today rings the date, pending
- * rings it with a dashed line, and each game's dot keeps a fixed position. A transparent
- * border shows only in contrast themes, where it outlines the filled cell.
+ * A day shows one thing at a time: the all-done fill, or the dots of the games done. Today is a
+ * filled circle, and a day still being finalized a dashed ring. Each has a cue besides color;
+ * a transparent border, which only contrast themes draw, outlines the fill and the circle there.
  */
 function DayCell({
   day,
@@ -268,13 +268,13 @@ function DayCell({
   onFocus: () => void;
   onKeyDown: (event: KeyboardEvent) => void;
 }) {
-  let date = "border-2 border-transparent forced-colors:border-0";
-  if (day.status === "today") date = "border-2 border-primary font-bold";
-  else if (day.status === "pending") date = "border-2 border-dashed border-muted-foreground";
+  let date = "border border-transparent forced-colors:border-0";
+  if (day.status === "today")
+    date = "border border-transparent bg-primary font-semibold text-primary-foreground";
+  else if (day.status === "pending") date = "border border-dashed border-muted-foreground";
   const box = day.all
-    ? "border-transparent bg-accent text-accent-foreground"
+    ? "border-transparent bg-accent font-semibold text-accent-foreground"
     : "border-transparent forced-colors:border-0";
-  // An all-done cell keeps its own text color; other muted days use the muted one.
   const muted =
     !day.all && (!day.inMonth || day.status === "upcoming") ? "text-muted-foreground" : "";
   return (
@@ -286,23 +286,29 @@ function DayCell({
       data-label={day.label}
       onFocus={onFocus}
       onKeyDown={onKeyDown}
-      className="rounded-md p-0.5 text-center align-top"
+      className="rounded-lg p-0.5 text-center align-top"
     >
       <div
         aria-hidden
-        className={`mx-auto flex max-w-12 flex-col items-center gap-0.5 rounded-md border py-1 ${box} ${muted}`}
+        className={`mx-auto flex h-11 max-w-11 flex-col items-center justify-center gap-0.5 rounded-lg border ${box} ${muted}`}
       >
-        <span className={`inline-flex size-7 items-center justify-center rounded-full ${date}`}>
+        <span
+          data-today={day.status === "today" || undefined}
+          className={`inline-flex size-7 items-center justify-center rounded-full ${date}`}
+        >
           {Number(day.label.slice(8))}
         </span>
-        <span className="flex gap-1">
-          {gameIds.map((g) => (
-            <span
-              key={g}
-              className={day.games[g] === "done" ? `${dot} ${dotColors[g]}` : "size-1.5"}
-            />
-          ))}
-        </span>
+        {!day.all && (
+          <span className="flex h-1.5 gap-0.5">
+            {/* Each game keeps its slot, so position, not color alone, says which game it is. */}
+            {gameIds.map((g) => (
+              <span
+                key={g}
+                className={day.games[g] === "done" ? `${dot} ${dotColors[g]}` : "size-1.5"}
+              />
+            ))}
+          </span>
+        )}
       </div>
     </td>
   );
@@ -311,26 +317,25 @@ function DayCell({
 function Legend({ games }: { games: GameId[] }) {
   const { t } = useTranslation();
   return (
-    <ul className="flex flex-wrap items-center gap-x-3 gap-y-1 border-t pt-2 text-xs text-muted-foreground">
-      <li className="text-foreground">{t("calendar.legend.dailyDone")}</li>
+    <ul className="flex flex-wrap items-center gap-x-4 gap-y-1 border-t pt-3 text-xs text-muted-foreground">
       {games.map((g) => (
-        <li key={g} className="inline-flex items-center gap-1">
+        <li key={g} className="inline-flex items-center gap-1.5">
           <span aria-hidden className={`${dot} ${dotColors[g]}`} />
           {t(`game.${g}`)}
         </li>
       ))}
-      <li className="inline-flex items-center gap-1">
-        <span aria-hidden className="size-3 rounded-sm border border-transparent bg-accent" />
+      <li className="inline-flex items-center gap-1.5">
+        <span aria-hidden className="size-3.5 rounded border border-transparent bg-accent" />
         {t("calendar.legend.all")}
       </li>
-      <li className="inline-flex items-center gap-1">
-        <span aria-hidden className="size-3 rounded-full border-2 border-primary" />
+      <li className="inline-flex items-center gap-1.5">
+        <span aria-hidden className="size-3.5 rounded-full border border-transparent bg-primary" />
         {t("calendar.legend.today")}
       </li>
-      <li className="inline-flex items-center gap-1">
+      <li className="inline-flex items-center gap-1.5">
         <span
           aria-hidden
-          className="size-3 rounded-full border-2 border-dashed border-muted-foreground"
+          className="size-3.5 rounded-full border border-dashed border-muted-foreground"
         />
         {t("calendar.legend.pending")}
       </li>

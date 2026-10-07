@@ -61,16 +61,6 @@ export function formatLabelDate(label: string, locale: Locale) {
   }).format(Date.parse(`${label}T00:00:00Z`));
 }
 
-/** True when `instant` falls on the local day after `now`'s. */
-export function isTomorrow(instant: number, now: number, timeZone?: string) {
-  const date = (t: number) =>
-    new Intl.DateTimeFormat("en-CA", { dateStyle: "short", timeZone }).format(t);
-  // Calendar arithmetic on the date label, so daylight saving changes cannot shift the day.
-  const next = new Date(`${date(now)}T00:00:00Z`);
-  next.setUTCDate(next.getUTCDate() + 1);
-  return date(instant) === next.toISOString().slice(0, 10);
-}
-
 /** "Mon, Oct 12, 05:00" / "10월 12일 (월) 05:00": weekly resets name the day of the week. */
 export function formatDateTimeWithWeekday(instant: number, locale: Locale, timeZone?: string) {
   return new Intl.DateTimeFormat(locale === "ko" ? "ko-KR" : "en-US", {

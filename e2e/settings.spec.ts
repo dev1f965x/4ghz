@@ -96,7 +96,7 @@ test.describe("Settings for a game", () => {
     await back(app).click();
     // America resets at 18:00 Korea time.
     await expect(app.getByRole("region", { name: /^(일간|Daily)$/ })).toContainText(
-      /오늘 18:00 초기화|10월 6일 18:00 초기화|Resets Oct 6, 18:00/,
+      /초기화까지 7시간 1\d분|Resets in 7h 1\dm/,
     );
   });
 
