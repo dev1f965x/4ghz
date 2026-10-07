@@ -12,11 +12,8 @@ import type { Locale } from "@/i18n/locale";
 import { localText } from "@/schedule/model";
 import { isRedeemed, setRedeemed, useLocalState } from "@/state/app-state";
 import type { GameId } from "@/state/schema";
-import type { Region } from "@/time/clock";
 import { formatDateTime, timeLeft } from "@/time/format";
 
-// The server is chosen in Settings (GHZ-20); until then every game uses the default, Asia.
-const region: Region = "asia";
 // How long a button reads "Copied" or "Couldn't copy" before it returns to "Copy".
 const RESULT_MS = 2000;
 
@@ -33,7 +30,7 @@ export function CodesTab({ game }: { game: GameId }) {
     requestAnimationFrame(() => setAnnouncement(text));
   }, []);
   if (data === null) return null;
-  const codes = activeCodes(data.games[game], region, now);
+  const codes = activeCodes(data.games[game], state.settings.games[game].region, now);
 
   return (
     <div className="flex flex-col gap-2">

@@ -8,8 +8,8 @@ import { formatUpdated } from "@/time/format";
 
 const JUST_NOW_MS = 60_000;
 
-/** The header's sync unit: when data was last updated, and a Refresh button (also F5). */
-export function SyncStatus() {
+/** When the data was last updated, as the header and Settings show it. */
+export function useSyncText() {
   const { t, i18n } = useTranslation();
   const { status, checkedAt } = useDataSync();
   const now = useNow(30_000);
@@ -21,6 +21,14 @@ export function SyncStatus() {
   else if (status === "failed") text = t("sync.failedAt", { time });
   else if (checkedAt !== null && now - checkedAt < JUST_NOW_MS) text = t("sync.justNow");
   else text = t("sync.updatedAt", { time });
+  return text;
+}
+
+/** The header's sync unit: when data was last updated, and a Refresh button (also F5). */
+export function SyncStatus() {
+  const { t } = useTranslation();
+  const { status } = useDataSync();
+  const text = useSyncText();
 
   return (
     <div className="ml-auto flex items-center gap-2" data-sync-status={status}>

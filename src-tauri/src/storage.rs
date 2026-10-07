@@ -7,6 +7,7 @@ use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
 use tauri::{AppHandle, Manager, Runtime};
+use tauri_plugin_opener::OpenerExt;
 
 #[derive(Debug, Clone, Copy, Deserialize)]
 #[serde(rename_all = "kebab-case")]
@@ -35,6 +36,8 @@ pub enum StorageError {
     Read(String),
     #[error("writing failed: {0}")]
     Write(String),
+    #[error("opening the folder failed: {0}")]
+    Open(String),
 }
 
 fn data_folder<R: Runtime>(app: &AppHandle<R>) -> Result<PathBuf, StorageError> {
@@ -85,6 +88,24 @@ pub fn write_store<R: Runtime>(
     contents: String,
 ) -> Result<(), StorageError> {
     write_file_atomic(&data_folder(&app)?.join(file.file_name()), &contents)
+}
+
+/// The folder's name under %LOCALAPPDATA%, shown in Settings instead of the full path, which
+/// would include the Windows user name.
+#[tauri::command]
+pub fn data_folder_name<R: Runtime>(app: AppHandle<R>) -> String {
+    app.config().identifier.clone()
+}
+
+/// Opens the local data folder in File Explorer. The folder is created first, so the link works
+/// before anything was saved.
+#[tauri::command]
+pub fn open_data_folder<R: Runtime>(app: AppHandle<R>) -> Result<(), StorageError> {
+    let folder = data_folder(&app)?;
+    fs::create_dir_all(&folder).map_err(|e| StorageError::Write(e.to_string()))?;
+    app.opener()
+        .open_path(folder.to_string_lossy(), None::<&str>)
+        .map_err(|e| StorageError::Open(e.to_string()))
 }
 
 #[cfg(test)]

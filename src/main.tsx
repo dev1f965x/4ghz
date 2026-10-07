@@ -4,7 +4,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import { startDataSync } from "./data/store";
 import { initI18n } from "./i18n";
-import { loadLocalState } from "./state/app-state";
+import { getLocalState, loadLocalState } from "./state/app-state";
 import "./index.css";
 
 if (import.meta.env.MODE === "e2e") {
@@ -13,8 +13,9 @@ if (import.meta.env.MODE === "e2e") {
   installE2eMocks();
 }
 
-// No language has been chosen in settings yet, so the Windows display language applies.
-await Promise.all([initI18n(undefined), loadLocalState()]);
+// The stored language, if the user chose one, applies from the first render.
+await loadLocalState();
+await initI18n(getLocalState().settings.locale);
 startDataSync();
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(

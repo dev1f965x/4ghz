@@ -11,3 +11,13 @@ export function readStore(file: StoreFile): Promise<string | null> {
 export function writeStore(file: StoreFile, contents: string): Promise<void> {
   return invoke<void>("write_store", { file, contents });
 }
+
+/** The data folder's name under %LOCALAPPDATA%: the app identifier. */
+export function dataFolderName(): Promise<string> {
+  return invoke<string>("data_folder_name");
+}
+
+/** Opens the data folder in File Explorer. */
+export function openDataFolder(): Promise<void> {
+  return invoke<void>("open_data_folder");
+}

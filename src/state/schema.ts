@@ -3,6 +3,8 @@
 // any added or changed field bumps schemaVersion with a migration in load.ts, because an older
 // app would strip unknown keys and lose them on its next save.
 import { z } from "@/data/zod";
+import { locales } from "@/i18n/locale";
+import { regions } from "@/time/clock";
 import { emptyGameDays } from "@/time/days";
 
 export const gameIds = ["genshin", "hsr", "zzz"] as const;
@@ -31,6 +33,14 @@ const gameChores = z.object({
   cycleEndedAt: z.record(z.string(), z.number()).default(() => ({})),
 });
 
+const gameSettings = z.object({ plays: z.boolean(), region: z.enum(regions) });
+const overrides = z.record(z.string(), z.boolean());
+
+function defaultGameSettings() {
+  const asia = () => ({ plays: true, region: "asia" as const });
+  return { genshin: asia(), hsr: asia(), zzz: asia() };
+}
+
 export const localStateSchema = z.object({
   schemaVersion: z.literal(LOCAL_STATE_VERSION),
   settings: z.object({
@@ -38,6 +48,17 @@ export const localStateSchema = z.object({
     lastTab: z.enum(tabIds),
     /** The first-run notice to check the server and games (PRD Q9). */
     firstRunNoticeDismissed: z.boolean(),
+    /** Only an explicit choice is stored; without one the Windows language applies (PRD FR4). */
+    // An unknown value, such as a language a later version adds, falls back to Windows.
+    locale: z.enum(locales).optional().catch(undefined),
+    /** Whether the user plays each game and on which server (PRD Q1, Q2). */
+    games: z
+      .object({ genshin: gameSettings, hsr: gameSettings, zzz: gameSettings })
+      .default(() => defaultGameSettings()),
+    /** Chores turned on or off by the user, by id; others follow enabledByDefault. */
+    choreOverrides: z
+      .object({ genshin: overrides, hsr: overrides, zzz: overrides })
+      .default(() => ({ genshin: {}, hsr: {}, zzz: {} })),
   }),
   /**
    * Codes the user marked as redeemed, by game (PRD Q4). Pre-release fields added after the
@@ -71,7 +92,13 @@ function noRedeemedCodes(): { genshin: string[]; hsr: string[]; zzz: string[] } 
 export function defaultLocalState(): LocalState {
   return {
     schemaVersion: LOCAL_STATE_VERSION,
-    settings: { lastGame: "genshin", lastTab: "schedule", firstRunNoticeDismissed: false },
+    settings: {
+      lastGame: "genshin",
+      lastTab: "schedule",
+      firstRunNoticeDismissed: false,
+      games: defaultGameSettings(),
+      choreOverrides: { genshin: {}, hsr: {}, zzz: {} },
+    },
     redeemedCodes: noRedeemedCodes(),
     chores: noChores(),
   };

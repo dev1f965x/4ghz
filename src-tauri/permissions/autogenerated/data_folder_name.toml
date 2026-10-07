@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-data-folder-name"
+description = "Enables the data_folder_name command without any pre-configured scope."
+commands.allow = ["data_folder_name"]
+
+[[permission]]
+identifier = "deny-data-folder-name"
+description = "Denies the data_folder_name command without any pre-configured scope."
+commands.deny = ["data_folder_name"]

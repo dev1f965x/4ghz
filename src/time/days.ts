@@ -274,3 +274,16 @@ export function unfixedDayResult(
   if (label > gameDayLabel(ctx.now, ctx.region)) return undefined;
   return evaluateDay(state, ctx, label);
 }
+
+/**
+ * Fixes the previous day while it is still in its grace period, under the current settings.
+ * Used before turning a game off, so a day the user finished is not lost to the new setting.
+ */
+export function fixGraceDay(state: GameDays, ctx: Context): GameDays {
+  const next = advance(state, ctx);
+  if (next.countFrom === null) return next;
+  const previous = addDays(gameDayLabel(ctx.now, ctx.region), -1);
+  const open = next.lastFixedLabel === null || previous > next.lastFixedLabel;
+  const counts = gameDayStart(previous, ctx.region) >= next.countFrom;
+  return open && counts ? fixDay(next, ctx, previous) : next;
+}

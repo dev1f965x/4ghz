@@ -1,10 +1,19 @@
 import { describe, expect, it } from "vitest";
-import { advanceChores, checkDaily, type GameData } from "@/chores/model";
+import { advanceChores, checkDaily, type GameData, type GamePrefs } from "@/chores/model";
 import { emptyGameChores, type GameChores, type GameId } from "@/state/schema";
 import { gameDayStart } from "@/time/clock";
-import { addMonths, calendarDay, calendarMonth, firstMonth, monthLabels } from "./model";
+import {
+  addMonths,
+  calendarDay,
+  calendarMonth,
+  calendarToday,
+  firstMonth,
+  monthLabels,
+} from "./model";
 
 const HOUR = 3_600_000;
+const ASIA: GamePrefs = { plays: true, region: "asia", overrides: {} };
+const PREFS = { genshin: ASIA, hsr: ASIA, zzz: ASIA };
 const game: GameData = {
   schedule: [],
   codes: [],
@@ -23,11 +32,11 @@ const fresh = (at: number) =>
   Object.fromEntries(
     (["genshin", "hsr", "zzz"] as const).map((g) => [
       g,
-      advanceChores(games[g], emptyGameChores(), "asia", at),
+      advanceChores(games[g], emptyGameChores(), ASIA, at),
     ]),
   ) as Record<GameId, GameChores>;
 const check = (state: GameChores, data: GameData, at: number, label: string) => {
-  const next = checkDaily(data, state, "asia", at, label, "resin", true);
+  const next = checkDaily(data, state, ASIA, at, label, "resin", true);
   if (next === null) throw new Error(`${label} is closed`);
   return next;
 };
@@ -52,7 +61,7 @@ describe("calendarDay", () => {
   it("marks today live, upcoming days empty, and leaves days before tracking unrecorded", () => {
     const chores = fresh(NOW);
     chores.genshin = check(chores.genshin, game, NOW, "2026-10-06");
-    const input = { chores, games, region: "asia" as const, now: NOW };
+    const input = { chores, games, prefs: PREFS, now: NOW };
     expect(calendarDay(input, "2026-10-06", "2026-10")).toMatchObject({
       status: "today",
       games: { genshin: "done", hsr: "not-done", zzz: "untracked" },
@@ -73,7 +82,7 @@ describe("calendarDay", () => {
     let chores = fresh(NOW);
     chores.genshin = check(chores.genshin, game, NOW, "2026-10-06");
     chores.hsr = check(chores.hsr, game, NOW, "2026-10-06");
-    const input = { chores, games, region: "asia" as const, now: NOW };
+    const input = { chores, games, prefs: PREFS, now: NOW };
     expect(calendarDay(input, "2026-10-06", "2026-10").all).toBe(true);
 
     // After the grace period the day is fixed and keeps its result.
@@ -81,7 +90,7 @@ describe("calendarDay", () => {
     chores = Object.fromEntries(
       Object.entries(chores).map(([g, s]) => [
         g,
-        advanceChores(games[g as GameId], s, "asia", later),
+        advanceChores(games[g as GameId], s, ASIA, later),
       ]),
     ) as Record<GameId, GameChores>;
     expect(calendarDay({ ...input, chores, now: later }, "2026-10-06", "2026-10")).toMatchObject({
@@ -94,7 +103,7 @@ describe("calendarDay", () => {
   it("shows the previous day as pending during the grace period", () => {
     const inGrace = gameDayStart("2026-10-07", "asia") + HOUR;
     const chores = fresh(NOW);
-    const input = { chores, games, region: "asia" as const, now: inGrace };
+    const input = { chores, games, prefs: PREFS, now: inGrace };
     const day = calendarDay(
       {
         ...input,
@@ -112,13 +121,13 @@ describe("calendarDay", () => {
       ...chores.genshin,
       days: { "2026-10-01": { result: "done", fixedAt: NOW } },
     };
-    const input = { chores, games: null, region: "asia" as const, now: NOW };
+    const input = { chores, games: null, prefs: PREFS, now: NOW };
     expect(calendarDay(input, "2026-10-01", "2026-10").games.genshin).toBe("done");
     expect(calendarDay(input, "2026-10-06", "2026-10").games.genshin).toBe("none");
   });
 
   it("flags the days outside the month", () => {
-    const input = { chores: fresh(NOW), games, region: "asia" as const, now: NOW };
+    const input = { chores: fresh(NOW), games, prefs: PREFS, now: NOW };
     const weeks = calendarMonth(input, "2026-10");
     expect(weeks[0].map((d) => d.inMonth)).toEqual([false, false, false, true, true, true, true]);
   });
@@ -139,7 +148,7 @@ describe("days not fixed yet", () => {
     chores.genshin = check(chores.genshin, game, NOW, "2026-10-06");
     // Just after the grace period ends, before App's next tick records the day.
     const gap = gameDayStart("2026-10-07", "asia") + 2 * HOUR + 1000;
-    const day = calendarDay({ chores, games, region: "asia", now: gap }, "2026-10-06", "2026-10");
+    const day = calendarDay({ chores, games, prefs: PREFS, now: gap }, "2026-10-06", "2026-10");
     expect(day).toMatchObject({ status: "pending", games: { genshin: "done" } });
   });
 
@@ -149,7 +158,18 @@ describe("days not fixed yet", () => {
       ...game,
       chores: game.chores.map((c) => ({ ...c, enabledByDefault: false })),
     };
-    const input = { chores, games: { ...games, genshin: off }, region: "asia" as const, now: NOW };
+    const input = { chores, games: { ...games, genshin: off }, prefs: PREFS, now: NOW };
     expect(calendarDay(input, "2026-10-06", "2026-10").games.genshin).toBe("untracked");
+  });
+});
+
+describe("calendarToday", () => {
+  it("is the latest current day among the games played", () => {
+    // 10:42 in Korea is still Oct 5 on the America server.
+    const america = { ...ASIA, region: "america" as const };
+    expect(calendarToday({ genshin: america, hsr: america, zzz: america }, NOW)).toBe("2026-10-05");
+    expect(calendarToday({ genshin: america, hsr: ASIA, zzz: america }, NOW)).toBe("2026-10-06");
+    const off = { ...ASIA, plays: false };
+    expect(calendarToday({ genshin: america, hsr: off, zzz: america }, NOW)).toBe("2026-10-05");
   });
 });

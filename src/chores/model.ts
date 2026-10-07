@@ -14,7 +14,15 @@ import {
   weekEnd,
   weekLabel,
 } from "@/time/clock";
-import { advance, type Context, editableDays, GRACE_MS, setDailyCheck } from "@/time/days";
+import {
+  advance,
+  type Context,
+  changeRegion,
+  editableDays,
+  fixGraceDay,
+  GRACE_MS,
+  setDailyCheck,
+} from "@/time/days";
 
 export type GameData = DataFile["games"]["genshin"];
 type Chore = GameData["chores"][number];
@@ -36,36 +44,48 @@ export type Checklist = {
   periodic: { items: (ChoreItem & { key: string | null; endsAt: number | null })[] };
 };
 
-const enabled = (chores: readonly Chore[], cycle: Chore["cycle"]) =>
-  chores.filter((c) => c.cycle === cycle && c.enabledByDefault);
+/** The user's settings for one game (PRD FR3, Q1, Q2). */
+export type GamePrefs = {
+  plays: boolean;
+  region: Region;
+  /** Chores turned on or off by the user; others follow enabledByDefault. */
+  overrides: Record<string, boolean>;
+};
 
-/** The context the time model needs; settings for playing and region arrive with GHZ-20. */
-export function choreContext(game: GameData, region: Region, now: number): Context {
+export const choreEnabled = (chore: Chore, prefs: GamePrefs) =>
+  prefs.overrides[chore.id] ?? chore.enabledByDefault;
+
+const enabled = (chores: readonly Chore[], cycle: Chore["cycle"], prefs: GamePrefs) =>
+  chores.filter((c) => c.cycle === cycle && choreEnabled(c, prefs));
+
+/** The context the time model needs, from the game's data and the user's settings. */
+export function choreContext(game: GameData, prefs: GamePrefs, now: number): Context {
   return {
     now,
-    region,
-    plays: true,
+    region: prefs.region,
+    plays: prefs.plays,
     dailyChores: game.chores
       .filter((c) => c.cycle === "daily")
-      .map((c) => ({ id: c.id, enabled: c.enabledByDefault })),
+      .map((c) => ({ id: c.id, enabled: choreEnabled(c, prefs) })),
   };
 }
 
 export function checklist(
   game: GameData,
   state: GameChores,
-  region: Region,
+  prefs: GamePrefs,
   now: number,
 ): Checklist {
+  const { region } = prefs;
   const today = gameDayLabel(now, region);
-  const editable = editableDays(state, choreContext(game, region, now));
+  const editable = editableDays(state, choreContext(game, prefs, now));
   const item = (checks: Record<string, number> | undefined) => (c: Chore) => ({
     id: c.id,
     name: c.name,
     checked: checks?.[c.id] !== undefined,
   });
 
-  const daily = enabled(game.chores, "daily");
+  const daily = enabled(game.chores, "daily", prefs);
   const previousLabel = addDays(today, -1);
   const previous = editable.includes(previousLabel)
     ? {
@@ -76,7 +96,7 @@ export function checklist(
     : null;
 
   const week = `weekly:${weekLabel(now, region)}`;
-  const periodic = enabled(game.chores, "periodic").map((c) => {
+  const periodic = enabled(game.chores, "periodic", prefs).map((c) => {
     const period = currentPeriod(
       game.periods.filter((p) => p.choreId === c.id),
       now,
@@ -100,7 +120,7 @@ export function checklist(
     },
     weekly: {
       key: week,
-      items: enabled(game.chores, "weekly").map(item(state.cycleChecks[week])),
+      items: enabled(game.chores, "weekly", prefs).map(item(state.cycleChecks[week])),
       resetsAt: weekEnd(weekLabel(now, region), region),
     },
     periodic: { items: periodic },
@@ -114,20 +134,28 @@ export function checklist(
 export function checkDaily(
   game: GameData,
   state: GameChores,
-  region: Region,
+  prefs: GamePrefs,
   now: number,
   label: string,
   choreId: string,
   checked: boolean,
 ): GameChores | null {
-  if (!editableDays(state, choreContext(game, region, now)).includes(label)) return null;
-  const next = setDailyCheck(state, choreContext(game, region, now), label, choreId, checked);
+  const ctx = choreContext(game, prefs, now);
+  // The day closed, the game was turned off, or the chore was turned off after the list was drawn.
+  if (!ctx.plays || !editableDays(state, ctx).includes(label)) return null;
+  if (!ctx.dailyChores.some((c) => c.id === choreId && c.enabled)) return null;
+  const next = setDailyCheck(state, ctx, label, choreId, checked);
   return { ...state, ...next };
 }
 
-/** The key of the cycle open now for a weekly or periodic chore, or null without one. */
-function currentCycleKey(game: GameData, choreId: string, region: Region, now: number) {
+/**
+ * The key of the cycle open now for a weekly or periodic chore, or null without one, or when
+ * the chore is turned off or the game is not played.
+ */
+function currentCycleKey(game: GameData, choreId: string, prefs: GamePrefs, now: number) {
+  const { region } = prefs;
   const chore = game.chores.find((c) => c.id === choreId);
+  if (!prefs.plays || !chore || !choreEnabled(chore, prefs)) return null;
   if (chore?.cycle === "weekly") return `weekly:${weekLabel(now, region)}`;
   if (chore?.cycle !== "periodic") return null;
   const period = currentPeriod(
@@ -145,13 +173,13 @@ function currentCycleKey(game: GameData, choreId: string, region: Region, now: n
 export function checkCycle(
   game: GameData,
   state: GameChores,
-  region: Region,
+  prefs: GamePrefs,
   now: number,
   key: string,
   choreId: string,
   checked: boolean,
 ): GameChores | null {
-  if (currentCycleKey(game, choreId, region, now) !== key) return null;
+  if (currentCycleKey(game, choreId, prefs, now) !== key) return null;
   const current = { ...(state.cycleChecks[key] ?? {}) };
   if (checked) current[choreId] = now;
   else delete current[choreId];
@@ -171,10 +199,11 @@ const CYCLE_RETENTION_MS = 7 * DAY;
 export function advanceChores(
   game: GameData,
   state: GameChores,
-  region: Region,
+  prefs: GamePrefs,
   now: number,
 ): GameChores {
-  const advanced = advance(state, choreContext(game, region, now));
+  const { region } = prefs;
+  const advanced = advance(state, choreContext(game, prefs, now));
   const periodEnds = new Map(game.periods.map((p) => [`period:${p.id}`, toInstant(p.end, region)]));
   const cycleChecks: GameChores["cycleChecks"] = {};
   const cycleEndedAt: GameChores["cycleEndedAt"] = {};
@@ -221,4 +250,50 @@ export function nextChange(list: Checklist, now: number): number | null {
     ...list.periodic.items.map((i) => i.endsAt),
   ].filter((t): t is number => typeof t === "number" && t > now);
   return instants.length === 0 ? null : Math.min(...instants);
+}
+
+export type RegionChange = {
+  /** The state after the change, with weekly and periodic checks carried over by key. */
+  next: GameChores;
+  /**
+   * What happens to today's daily record under the old server: "kept" fixes it with its checks,
+   * "dropped" discards a day without checks, "none" when nothing moves, such as between
+   * servers with the same reset or before tracking has a record.
+   */
+  today: { label: string; outcome: "kept" | "dropped" | "none" };
+  /** When daily chores are recorded again; at or before `now` when they continue at once. */
+  resumesAt: number;
+};
+
+/** Moves a game to another server (PRD Q1); also used to preview the confirmation. */
+export function changeGameRegion(
+  game: GameData,
+  state: GameChores,
+  prefs: GamePrefs,
+  newRegion: Region,
+  now: number,
+): RegionChange {
+  const ctx = choreContext(game, prefs, now);
+  const label = gameDayLabel(now, prefs.region);
+  // Today matters only when it is a counted day still open under the old server; after an
+  // earlier change the same day, or before tracking began, nothing is kept or dropped.
+  const counted = prefs.plays && editableDays(advance(state, ctx), ctx).includes(label);
+  const days = changeRegion(state, ctx, newRegion);
+  const next = { ...state, ...days };
+  const resumesAt = next.countFrom ?? now;
+  let outcome: RegionChange["today"]["outcome"] = "none";
+  if (counted && resumesAt > now) {
+    outcome = next.days[label] === undefined ? "dropped" : "kept";
+  }
+  return { next, today: { label, outcome }, resumesAt };
+}
+
+/** Records the previous day if it is still in its grace period; used before turning a game off. */
+export function fixGraceDayForGame(
+  game: GameData,
+  state: GameChores,
+  prefs: GamePrefs,
+  now: number,
+): GameChores {
+  return { ...state, ...fixGraceDay(state, choreContext(game, prefs, now)) };
 }

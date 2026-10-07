@@ -1,10 +1,10 @@
 // The month grid (PRD FR31 to FR36): each game day's per-game result and the highlight. Fixed
 // days come from the stored records; today and a previous day in its grace period are computed
 // from the current checks, so their marks follow the checklist. Pure, on top of the time model.
-import { choreContext, type GameData } from "@/chores/model";
+import { choreContext, type GameData, type GamePrefs } from "@/chores/model";
 import type { GameChores, GameId } from "@/state/schema";
 import { gameIds } from "@/state/schema";
-import { addDays, gameDayLabel, type Region } from "@/time/clock";
+import { addDays, gameDayLabel } from "@/time/clock";
 import { type DayResult, isAllDone, unfixedDayResult } from "@/time/days";
 
 /** A game's state on one day; "none" is no record: not played, or before tracking began. */
@@ -25,7 +25,8 @@ export type CalendarInput = {
   chores: Record<GameId, GameChores>;
   /** Game data for the live results of open days; without it, open days show no marks. */
   games: Record<GameId, GameData> | null;
-  region: Region;
+  /** Each game's settings; games may be on servers with different day labels. */
+  prefs: Record<GameId, GamePrefs>;
   now: number;
 };
 
@@ -60,11 +61,27 @@ export function monthLabels(month: string): string[][] {
 function unfixed(input: CalendarInput, game: GameId, label: string) {
   const data = input.games?.[game];
   if (!data) return undefined;
-  return unfixedDayResult(input.chores[game], choreContext(data, input.region, input.now), label);
+  return unfixedDayResult(
+    input.chores[game],
+    choreContext(data, input.prefs[game], input.now),
+    label,
+  );
+}
+
+/**
+ * The grid's today: the latest current game day among the games the user plays, so no game's
+ * open day shows as upcoming. With no game played, the latest day across all games.
+ */
+export function calendarToday(prefs: Record<GameId, GamePrefs>, now: number): string {
+  const played = gameIds.filter((g) => prefs[g].plays);
+  const labels = (played.length > 0 ? played : gameIds).map((g) =>
+    gameDayLabel(now, prefs[g].region),
+  );
+  return labels.reduce((a, b) => (a > b ? a : b));
 }
 
 export function calendarDay(input: CalendarInput, label: string, month: string): CalendarDay {
-  const today = gameDayLabel(input.now, input.region);
+  const today = calendarToday(input.prefs, input.now);
   const live = Object.fromEntries(gameIds.map((g) => [g, unfixed(input, g, label)])) as Record<
     GameId,
     DayResult | undefined

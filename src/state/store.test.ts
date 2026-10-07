@@ -30,6 +30,15 @@ describe("parseLocalState", () => {
     });
   });
 
+  it("fills in the settings added with Settings, and ignores an unknown language", () => {
+    const { games: _g, choreOverrides: _c, ...settings } = defaultLocalState().settings;
+    const older = { ...defaultLocalState(), settings: { ...settings, locale: "ja" } };
+    expect(parseLocalState(JSON.stringify(older))).toEqual({
+      kind: "ready",
+      state: defaultLocalState(),
+    });
+  });
+
   it.each([
     ["damaged", "{not json", "invalid"],
     ["not an object", "null", "invalid"],
