@@ -128,6 +128,15 @@ test.describe("the month calendar", () => {
     await expect(first).toBeFocused();
   });
 
+  test("mutes only the days of other months", async ({ app }) => {
+    const color = (label: string) =>
+      app.locator(`td[data-label="${label}"] > div`).evaluate((e) => getComputedStyle(e).color);
+    // A past and a coming day of the shown month read the same; September 28 is muted.
+    const past = await color("2026-10-02");
+    expect(await color("2026-10-20")).toBe(past);
+    expect(await color("2026-09-28")).not.toBe(past);
+  });
+
   test("puts the grid below the checklist at 720 x 560", async ({ app }) => {
     await app.setViewportSize({ width: 720, height: 560 });
     const checklist = await app.getByRole("region", { name: /^(일간|Daily)$/ }).boundingBox();

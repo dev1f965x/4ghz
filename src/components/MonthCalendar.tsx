@@ -275,8 +275,8 @@ function DayCell({
   const box = day.all
     ? "border-transparent bg-accent font-semibold text-accent-foreground"
     : "border-transparent forced-colors:border-0";
-  const muted =
-    !day.all && (!day.inMonth || day.status === "upcoming") ? "text-muted-foreground" : "";
+  // Only days of other months are muted; every day of the shown month reads the same.
+  const muted = !day.all && !day.inMonth ? "text-muted-foreground" : "";
   return (
     // In a grid table the cell is a gridcell; it holds focus itself, as the grid has no actions.
     <td
