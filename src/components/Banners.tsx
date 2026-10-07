@@ -1,10 +1,13 @@
+import { openUrl } from "@tauri-apps/plugin-opener";
 import { XIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { OpenFolderButton } from "@/components/SettingsView";
 import { Button } from "@/components/ui/button";
 import { refreshData, useDataSync } from "@/data/store";
+import { logError } from "@/log";
 import { updateSettings, useLocalState } from "@/state/app-state";
+import { useAvailableUpdate } from "@/update/store";
 import { Banner } from "./Banner";
 
 // More banners than this push the tabs out of view at the minimum window size.
@@ -18,6 +21,7 @@ export function Banners({ onOpenSettings }: { onOpenSettings?: () => void }) {
   const { t } = useTranslation();
   const { data, status, problem } = useDataSync();
   const { state, readOnly, saveFailed } = useLocalState();
+  const update = useAvailableUpdate();
   const banners: { key: string; node: ReactNode }[] = [];
 
   if (saveFailed) {
@@ -99,6 +103,43 @@ export function Banners({ onOpenSettings }: { onOpenSettings?: () => void }) {
                 size="icon-sm"
                 aria-label={t("firstRun.dismiss")}
                 onClick={() => void updateSettings({ firstRunNoticeDismissed: true })}
+              >
+                <XIcon aria-hidden />
+              </Button>
+            </>
+          }
+        />
+      ),
+    });
+  }
+  // After the first-run notice: setting up the app comes first, and this notice waits until
+  // it is dismissed.
+  if (update !== null && update.version !== state.settings.dismissedUpdateVersion) {
+    banners.push({
+      key: "update-available",
+      node: (
+        <Banner
+          kind="notice"
+          title={t("update.title")}
+          body={t("update.body", { version: update.version })}
+          actions={
+            <>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  openUrl(update.url).catch((error: unknown) =>
+                    logError("Opening the release page failed", error),
+                  )
+                }
+              >
+                {t("update.open")}
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                aria-label={t("update.dismiss")}
+                onClick={() => void updateSettings({ dismissedUpdateVersion: update.version })}
               >
                 <XIcon aria-hidden />
               </Button>

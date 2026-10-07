@@ -51,6 +51,8 @@ export const localStateSchema = z.object({
     /** Only an explicit choice is stored; without one the Windows language applies (PRD FR4). */
     // An unknown value, such as a language a later version adds, falls back to Windows.
     locale: z.enum(locales).optional().catch(undefined),
+    /** The release whose update notice the user dismissed (PRD Q8). */
+    dismissedUpdateVersion: z.string().optional(),
     /** Whether the user plays each game and on which server (PRD Q1, Q2). */
     games: z
       .object({ genshin: gameSettings, hsr: gameSettings, zzz: gameSettings })

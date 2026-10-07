@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { choreEnabled, type RegionChange } from "@/chores/model";
+import { About } from "@/components/About";
 import { GameMark } from "@/components/GameMark";
 import { useSyncText } from "@/components/SyncStatus";
 import {
@@ -26,6 +27,7 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { refreshData, useDataSync } from "@/data/store";
 import { detectLocale, type Locale } from "@/i18n/locale";
+import { logError } from "@/log";
 import { localText } from "@/schedule/model";
 import {
   gamePrefs,
@@ -41,9 +43,9 @@ import { dataFolderName, openDataFolder } from "@/storage";
 import { type Region, regions } from "@/time/clock";
 import { formatDateTime, formatLabelDate } from "@/time/format";
 
-type Section = GameId | "language" | "data";
+type Section = GameId | "language" | "data" | "about";
 
-/** Settings (PRD FR3, FR4, Q1, Q2): each game, the language, and the local data. */
+/** Settings (PRD FR3, FR4, FR6, Q1, Q2): each game, the language, the local data, and About. */
 export function SettingsView({ game }: { game: GameId }) {
   const { t } = useTranslation();
   const heading = useRef<HTMLHeadingElement>(null);
@@ -74,6 +76,9 @@ export function SettingsView({ game }: { game: GameId }) {
           <TabsTrigger value="data" className="justify-start">
             {t("settings.data")}
           </TabsTrigger>
+          <TabsTrigger value="about" className="justify-start">
+            {t("about.title")}
+          </TabsTrigger>
         </TabsList>
         <div className="min-w-0 grow">
           {gameIds.map((g) => (
@@ -86,6 +91,9 @@ export function SettingsView({ game }: { game: GameId }) {
           </TabsContent>
           <TabsContent value="data">
             <DataSettings />
+          </TabsContent>
+          <TabsContent value="about">
+            <About />
           </TabsContent>
         </div>
       </Tabs>
@@ -287,7 +295,7 @@ function DataSettings() {
   useEffect(() => {
     dataFolderName().then(setFolder, (error: unknown) =>
       // The path is then left out; opening the folder still works.
-      console.error("Reading the data folder name failed", error),
+      logError("Reading the data folder name failed", error),
     );
   }, []);
   return (
@@ -330,7 +338,7 @@ export function OpenFolderButton() {
           openDataFolder().then(
             () => setFailed(false),
             (error: unknown) => {
-              console.error("Opening the data folder failed", error);
+              logError("Opening the data folder failed", error);
               setFailed(true);
             },
           )

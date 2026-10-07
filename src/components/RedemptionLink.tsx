@@ -2,6 +2,7 @@ import { openUrl } from "@tauri-apps/plugin-opener";
 import { useTranslation } from "react-i18next";
 import { redemptionUrl } from "@/codes/model";
 import { Button } from "@/components/ui/button";
+import { logError } from "@/log";
 import type { GameId } from "@/state/schema";
 
 /** Opens the selected game's official redemption page in the default browser (PRD FR21). */
@@ -15,7 +16,7 @@ export function RedemptionLink({ game }: { game: GameId }) {
       onClick={() =>
         openUrl(url).catch((error: unknown) => {
           // The capability or a missing default browser refused it; nothing else to show yet.
-          console.error(`Opening ${url} failed`, error);
+          logError(`Opening ${url} failed`, error);
         })
       }
     >

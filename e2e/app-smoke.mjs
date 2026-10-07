@@ -200,8 +200,15 @@ async function run(label, { check }) {
             // Saving goes through IPC to disk; give it time before the window closes.
             await wait(1000);
           }
+          // Generated at app build time; the About screen shows it.
+          // A missing file comes back as index.html with status 200, so the type is checked too.
+          const notices = await fetch("/third-party-notices.txt").then(
+            (r) => r.ok && (r.headers.get("content-type") ?? "").startsWith("text/plain"),
+            () => false,
+          );
           done({
             game: document.documentElement.dataset.game ?? null,
+            notices,
             sync: sync() ?? null,
             chore: chore()?.getAttribute("aria-checked") ?? null,
             tabs: tabs.map((t) => t.textContent),
@@ -223,6 +230,7 @@ async function run(label, { check }) {
       problems.push(`CSP violations: ${result.violations.join(", ")}`);
     }
     if (result.styleElements > 0) problems.push("inline <style> elements, which the CSP blocks");
+    if (!result.notices) problems.push("third-party-notices.txt is missing from the build");
     if (result.chore !== "true")
       problems.push(`the first daily chore is not checked (${result.chore})`);
     if (problems.length > 0) throw new Error(`${label}: ${problems.join("; ")}`);

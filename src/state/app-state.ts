@@ -1,4 +1,5 @@
 // The app's single local store, wired to state.json, and its React binding.
+
 import { useSyncExternalStore } from "react";
 import {
   advanceChores,
@@ -10,6 +11,7 @@ import {
   type GamePrefs,
 } from "@/chores/model";
 import type { DataFile } from "@/data/classify";
+import { logError } from "@/log";
 import { readStore, writeStore } from "@/storage";
 import type { Region } from "@/time/clock";
 import { type GameId, gameIds, type LocalState } from "./schema";
@@ -18,8 +20,7 @@ import { createLocalStore } from "./store";
 const localStore = createLocalStore({
   read: () => readStore("state"),
   write: (contents) => writeStore("state", contents),
-  // No log file exists yet; the console reaches the WebView2 developer tools.
-  logError: (message, error) => console.error(message, error),
+  logError,
 });
 
 /** Loads state.json; called once before the first render so the last game and tab show at once. */

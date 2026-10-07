@@ -20,8 +20,13 @@ function e2eDataFile(): Plugin {
   };
 }
 
+const { version } = JSON.parse(readFileSync(new URL("./package.json", import.meta.url), "utf8"));
+
 export default defineConfig({
   plugins: [react(), tailwindcss(), e2eDataFile()],
+  // The version the About screen shows and the update check compares; tauri.conf.json reads
+  // the same package.json, so the two cannot differ.
+  define: { __APP_VERSION__: JSON.stringify(version) },
   resolve: { alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) } },
   // Unit tests live next to the code; e2e/ holds Playwright tests, which Vitest must not run.
   test: { include: ["src/**/*.test.{ts,tsx}"] },

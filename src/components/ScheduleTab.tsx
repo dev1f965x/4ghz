@@ -6,6 +6,7 @@ import { useDataSync } from "@/data/store";
 import { useNow } from "@/hooks/useNow";
 import { formatDuration } from "@/i18n/duration";
 import type { Locale } from "@/i18n/locale";
+import { logError } from "@/log";
 import { localText, type ScheduleRow, scheduleRows } from "@/schedule/model";
 import { useLocalState } from "@/state/app-state";
 import type { GameId } from "@/state/schema";
@@ -85,7 +86,7 @@ function Row({ row, now, ongoing }: { row: ScheduleRow; now: number; ongoing: bo
     if (!url) return;
     openUrl(url).catch((error: unknown) => {
       // The capability or a missing default browser refused it; nothing else to show yet.
-      console.error(`Opening ${url} failed`, error);
+      logError(`Opening ${url} failed`, error);
     });
   };
 

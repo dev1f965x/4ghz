@@ -12,6 +12,29 @@ export const en = {
     settings: "Settings",
     back: "Back",
   },
+  about: {
+    title: "About",
+    version: "4ghz {{version}}",
+    unofficial:
+      "4ghz is an unofficial app, not affiliated with or endorsed by the publishers or owners of these games.",
+    trademarks:
+      "Genshin Impact, Honkai: Star Rail, and Zenless Zone Zero are trademarks of their respective owners.",
+    privacyTitle: "Privacy",
+    privacy:
+      "4ghz collects no personal data. Records, settings, and error logs stay on this PC. It downloads the data file and release information from GitHub, which receives your IP address.",
+    license: "MIT License",
+    notices: "Third-party notices",
+    feedback: "Send feedback",
+    close: "Close",
+    loading: "Loading",
+    loadFailed: "This text couldn’t be loaded.",
+  },
+  update: {
+    title: "A new version is available",
+    body: "4ghz {{version}} can be downloaded from its release page.",
+    open: "Open release",
+    dismiss: "Dismiss the new version notice",
+  },
   firstRun: {
     title: "Check your server and games",
     body: "The default server is Asia.",

@@ -5,6 +5,7 @@ import App from "./App";
 import { startDataSync } from "./data/store";
 import { initI18n } from "./i18n";
 import { getLocalState, loadLocalState } from "./state/app-state";
+import { startUpdateCheck } from "./update/store";
 import "./index.css";
 
 if (import.meta.env.MODE === "e2e") {
@@ -17,6 +18,7 @@ if (import.meta.env.MODE === "e2e") {
 await loadLocalState();
 await initI18n(getLocalState().settings.locale);
 startDataSync();
+startUpdateCheck();
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>

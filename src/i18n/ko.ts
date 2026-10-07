@@ -13,6 +13,27 @@ export const ko: Messages = {
     settings: "설정",
     back: "돌아가기",
   },
+  about: {
+    title: "정보",
+    version: "4ghz {{version}}",
+    unofficial: "4ghz는 이 게임들의 퍼블리셔나 권리자와 제휴하거나 승인받지 않은 비공식 앱입니다.",
+    trademarks: "원신, 붕괴: 스타레일, 젠레스 존 제로는 각 권리자의 상표입니다.",
+    privacyTitle: "개인정보",
+    privacy:
+      "4ghz는 개인정보를 모으지 않습니다. 기록, 설정, 오류 로그는 이 PC에만 저장됩니다. 데이터 파일과 새 버전 정보를 GitHub에서 받으며, 이때 GitHub은 IP 주소를 받습니다.",
+    license: "MIT 라이선스",
+    notices: "서드파티 고지",
+    feedback: "의견 보내기",
+    close: "닫기",
+    loading: "불러오는 중",
+    loadFailed: "내용을 불러오지 못했습니다.",
+  },
+  update: {
+    title: "새 버전이 나왔습니다",
+    body: "릴리스 페이지에서 4ghz {{version}} 버전을 받을 수 있습니다.",
+    open: "릴리스 열기",
+    dismiss: "새 버전 알림 닫기",
+  },
   firstRun: {
     title: "서버와 게임을 확인하세요",
     body: "기본 서버는 아시아입니다.",
