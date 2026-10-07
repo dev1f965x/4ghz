@@ -109,3 +109,13 @@
 .base-ui-disable-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+/* Windows contrast themes drop fills and draw every tab's transparent border, so the selected
+   tab takes the system highlight, as a selected menu item does (DESIGN.md, Themes). */
+@media (forced-colors: active) {
+  [data-slot="tabs-trigger"][data-active] {
+    forced-color-adjust: none;
+    background: Highlight;
+    color: HighlightText;
+  }
+}

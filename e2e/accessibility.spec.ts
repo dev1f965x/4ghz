@@ -49,6 +49,17 @@ test.describe("in a Windows contrast theme", () => {
   }
 });
 
+test.describe("selected tabs in a contrast theme", () => {
+  test.use({ localFiles: { state }, forcedColors: "active" });
+
+  test("stand out from the others", async ({ app }) => {
+    await app.getByRole("button", { name: /^(설정|Settings)$/ }).click();
+    const background = (name: RegExp) =>
+      app.getByRole("tab", { name }).evaluate((e) => getComputedStyle(e).backgroundColor);
+    expect(await background(/원신|Genshin Impact/)).not.toBe(await background(/^(언어|Language)$/));
+  });
+});
+
 test.describe("at 225% text size", () => {
   test.use({ localFiles: { state } });
 

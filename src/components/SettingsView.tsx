@@ -63,8 +63,8 @@ export function SettingsView({ game }: { game: GameId }) {
         onValueChange={(value: Section) => setSection(value)}
         className="flex flex-col gap-4 md:flex-row"
       >
-        {/* The selected section is filled, outlined, and bold, so contrast themes, which drop the
-            fill, still show it. */}
+        {/* The selected section is filled, outlined, and bold; contrast themes highlight it
+            instead (index.css). */}
         <TabsList
           aria-label={t("settings.sections")}
           className="h-auto items-stretch bg-transparent p-0 md:w-48"
