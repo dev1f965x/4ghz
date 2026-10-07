@@ -2,7 +2,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { choreEnabled, type RegionChange } from "@/chores/model";
 import { About } from "@/components/About";
-import { GameMark } from "@/components/GameMark";
+import { GameDot } from "@/components/GameDot";
 import { useSyncText } from "@/components/SyncStatus";
 import {
   AlertDialog,
@@ -43,7 +43,7 @@ import { dataFolderName, openDataFolder } from "@/storage";
 import { type Region, regions } from "@/time/clock";
 import { formatDateTime, formatLabelDate } from "@/time/format";
 
-type Section = GameId | "language" | "data" | "about";
+type Section = GameId | "language" | "display" | "data" | "about";
 
 /** Settings: each game, the language, the local data, and About. */
 export function SettingsView({ game }: { game: GameId }) {
@@ -63,20 +63,44 @@ export function SettingsView({ game }: { game: GameId }) {
         onValueChange={(value: Section) => setSection(value)}
         className="flex flex-col gap-4 md:flex-row"
       >
-        <TabsList variant="line" aria-label={t("settings.sections")} className="md:w-48">
+        {/* The selected section is filled, outlined, and bold; contrast themes highlight it
+            instead (index.css). */}
+        <TabsList
+          aria-label={t("settings.sections")}
+          className="h-auto items-stretch bg-transparent p-0 md:w-48"
+        >
           {gameIds.map((g) => (
-            <TabsTrigger key={g} value={g} className="justify-start gap-2">
-              <GameMark game={g} />
+            <TabsTrigger
+              key={g}
+              value={g}
+              className="justify-start gap-2 px-3 py-1.5 data-active:border-input data-active:bg-muted data-active:font-semibold dark:data-active:bg-muted"
+            >
+              <GameDot game={g} />
               {t(`game.${g}`)}
             </TabsTrigger>
           ))}
-          <TabsTrigger value="language" className="justify-start">
+          <TabsTrigger
+            value="language"
+            className="justify-start px-3 py-1.5 data-active:border-input data-active:bg-muted data-active:font-semibold dark:data-active:bg-muted"
+          >
             {t("settings.language")}
           </TabsTrigger>
-          <TabsTrigger value="data" className="justify-start">
+          <TabsTrigger
+            value="display"
+            className="justify-start px-3 py-1.5 data-active:border-input data-active:bg-muted data-active:font-semibold dark:data-active:bg-muted"
+          >
+            {t("settings.display")}
+          </TabsTrigger>
+          <TabsTrigger
+            value="data"
+            className="justify-start px-3 py-1.5 data-active:border-input data-active:bg-muted data-active:font-semibold dark:data-active:bg-muted"
+          >
             {t("settings.data")}
           </TabsTrigger>
-          <TabsTrigger value="about" className="justify-start">
+          <TabsTrigger
+            value="about"
+            className="justify-start px-3 py-1.5 data-active:border-input data-active:bg-muted data-active:font-semibold dark:data-active:bg-muted"
+          >
             {t("about.title")}
           </TabsTrigger>
         </TabsList>
@@ -88,6 +112,9 @@ export function SettingsView({ game }: { game: GameId }) {
           ))}
           <TabsContent value="language">
             <LanguageSettings />
+          </TabsContent>
+          <TabsContent value="display">
+            <DisplaySettings />
           </TabsContent>
           <TabsContent value="data">
             <DataSettings />
@@ -282,6 +309,22 @@ function LanguageSettings() {
           </label>
         ))}
       </RadioGroup>
+    </div>
+  );
+}
+
+function DisplaySettings() {
+  const { t } = useTranslation();
+  const { state } = useLocalState();
+  return (
+    <div className="flex flex-col gap-1">
+      <h2 className="mb-2 text-base font-bold">{t("settings.display")}</h2>
+      <SwitchField
+        label={t("settings.countdownSeconds")}
+        hint={t("settings.countdownSecondsHint")}
+        checked={state.settings.countdownSeconds}
+        onChange={(countdownSeconds) => void updateSettings({ countdownSeconds })}
+      />
     </div>
   );
 }

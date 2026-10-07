@@ -80,6 +80,16 @@
   body {
     @apply bg-background text-foreground;
   }
+  /* Thin scrollbars in the theme colors; contrast themes keep the system scrollbar. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--input) transparent;
+  }
+  @media (forced-colors: active) {
+    * {
+      scrollbar-color: auto;
+    }
+  }
   /* Focus is a 2 px accent outline in every theme. */
   :focus-visible {
     outline: var(--focus-ring) solid var(--ring);
@@ -100,12 +110,12 @@
   display: none;
 }
 
-/* Windows contrast themes: system colors win, so each game's letter tile becomes a CanvasText
-   tile with a Canvas letter (DESIGN.md, Themes). */
+/* Windows contrast themes drop fills and draw every tab's transparent border, so the selected
+   tab takes the system highlight, as a selected menu item does (DESIGN.md, Themes). */
 @media (forced-colors: active) {
-  .game-mark {
+  [data-slot="tabs-trigger"][data-active] {
     forced-color-adjust: none;
-    background: CanvasText;
-    color: Canvas;
+    background: Highlight;
+    color: HighlightText;
   }
 }

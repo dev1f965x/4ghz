@@ -1,5 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
-  <!-- 4ghz app icon: the square-wave mark (Visual Direction V2) on the dark surface color. -->
+  <!-- 4GHz app icon: three bars stepping down like a signal indicator, one per game, in the
+       dark-theme game colors on the dark surface. -->
   <rect width="1024" height="1024" rx="224" fill="#151a20"/>
-  <path d="M192 704V320h160v384h160V320h160v384h160V320" fill="none" stroke="#e7ebef" stroke-width="72" stroke-linejoin="miter" stroke-linecap="square"/>
+  <rect x="200" y="232" width="168" height="560" rx="40" fill="#3fc5d6"/>
+  <rect x="428" y="392" width="168" height="400" rx="40" fill="#a98bf5"/>
+  <rect x="656" y="552" width="168" height="240" rx="40" fill="#f59e42"/>
 </svg>

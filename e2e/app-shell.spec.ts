@@ -91,15 +91,16 @@ test("Ctrl+, opens Settings, and Esc and Back return focus to the Settings butto
 test.describe("keyboard order", () => {
   test.use({ localFiles: { state: savedState({}) } });
 
-  test("follows the wireframe: game, Refresh, Settings, then the tabs", async ({ app }) => {
+  test("goes game, Refresh, Settings, the window buttons, then the tabs", async ({ app }) => {
     await app.locator("body").click({ position: { x: 1, y: 1 } });
     const order: (string | null)[] = [];
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 7; i++) {
       await app.keyboard.press("Tab");
       order.push(
         await app.evaluate(
           () =>
             document.activeElement?.getAttribute("role") ??
+            document.activeElement?.getAttribute("aria-label") ??
             document.activeElement?.textContent?.trim() ??
             null,
         ),
@@ -108,7 +109,10 @@ test.describe("keyboard order", () => {
     expect(order[0]).toBe("combobox");
     expect(order[1]).toMatch(/새로 고침|Refresh/);
     expect(order[2]).toMatch(/^(설정|Settings)$/);
-    expect(order[3]).toBe("tab");
+    expect(order[3]).toMatch(/^(최소화|Minimize)$/);
+    expect(order[4]).toMatch(/^(최대화|Maximize)$/);
+    expect(order[5]).toMatch(/^(닫기|Close)$/);
+    expect(order[6]).toBe("tab");
   });
 });
 
@@ -139,5 +143,22 @@ test.describe("damaged records", () => {
     );
     expect(text).toBe("{damaged");
     await expectNoA11yViolations(app);
+  });
+});
+
+test.describe("title bar", () => {
+  test.use({ localFiles: { state: savedState({}) } });
+
+  test("has named window buttons that reach the window", async ({ app }) => {
+    for (const name of [/^(최소화|Minimize)$/, /^(최대화|Maximize)$/, /^(닫기|Close)$/]) {
+      await app.getByRole("button", { name }).click();
+    }
+    await expect
+      .poll(() =>
+        app.evaluate(() => (window as unknown as { __E2E_WINDOW__?: string[] }).__E2E_WINDOW__),
+      )
+      .toEqual(["minimize", "toggle_maximize", "close"]);
+    // The bar itself drags the window.
+    await expect(app.locator("header[data-tauri-drag-region]")).toBeAttached();
   });
 });

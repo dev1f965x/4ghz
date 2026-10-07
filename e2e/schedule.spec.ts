@@ -1,14 +1,15 @@
-import { dataFile, expect, expectNoA11yViolations, test } from "./fixtures";
+import { dataFile, expect, expectNoA11yViolations, NOW, test } from "./fixtures";
 
 // At NOW (Oct 6, 10:42 in Korea) the fixture's Genshin Impact main event ends Oct 12 at 04:00
-// server time, which is 20:00 UTC on Oct 11: 5 days 18 hours 18 minutes away.
+// server time, which is 20:00 UTC on Oct 11: 5 days 18 hours 18 minutes away. The label and the
+// time are separate lines, so the text runs them together.
 const mainEventName = /달빛을 물어온 제비|Silverwing/;
 
 test("lists ongoing and upcoming entries with countdowns", async ({ app }) => {
   const ongoing = app.getByRole("region", { name: /^(진행 중|Ongoing)$/ });
   const upcoming = app.getByRole("region", { name: /^(예정|Upcoming)$/ });
   const mainEvent = ongoing.getByRole("listitem").filter({ hasText: mainEventName });
-  await expect(mainEvent).toContainText(/남은 시간 5일 18시간|5d 18h left/);
+  await expect(mainEvent).toContainText(/(남은 시간|Time left)(5일|5d) 18:1\d:\d\d/);
   // Endgame periods come from the periodic chores.
   await expect(
     ongoing.getByRole("listitem").filter({ hasText: /나선 비경|Spiral Abyss/ }),
@@ -20,11 +21,37 @@ test("lists ongoing and upcoming entries with countdowns", async ({ app }) => {
   await expect(livestream).toContainText(/예상|Estimated/);
 });
 
-test("updates countdowns while the tab is open", async ({ app }) => {
+test("counts down every second while the tab is open", async ({ app }) => {
   const mainEvent = app.getByRole("listitem").filter({ hasText: mainEventName });
-  await expect(mainEvent).toContainText(/5일 18시간|5d 18h/);
-  await app.clock.runFor(60 * 60_000);
-  await expect(mainEvent).toContainText(/5일 17시간|5d 17h/);
+  // Paused 10 seconds in, so each step is exact.
+  await app.clock.pauseAt(NOW + 10_000);
+  await expect(mainEvent).toContainText(/(5일|5d) 18:17:50/);
+  await app.clock.runFor(1000);
+  await expect(mainEvent).toContainText(/(5일|5d) 18:17:49/);
+  // fastForward jumps an hour at once instead of running 3,600 one-second ticks.
+  await app.clock.fastForward(60 * 60_000);
+  await expect(mainEvent).toContainText(/(5일|5d) 17:17:49/);
+});
+
+test.describe("with seconds turned off in Settings", () => {
+  test.use({
+    localFiles: {
+      state: JSON.stringify({
+        schemaVersion: 1,
+        settings: {
+          lastGame: "genshin",
+          lastTab: "schedule",
+          firstRunNoticeDismissed: true,
+          countdownSeconds: false,
+        },
+      }),
+    },
+  });
+
+  test("shows minutes", async ({ app }) => {
+    const mainEvent = app.getByRole("listitem").filter({ hasText: mainEventName });
+    await expect(mainEvent).toContainText(/5일 18시간|5d 18h/);
+  });
 });
 
 for (const size of [

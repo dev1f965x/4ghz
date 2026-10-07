@@ -31,20 +31,33 @@ export function SyncStatus() {
   const text = useSyncText();
 
   return (
-    <div className="ml-auto flex items-center gap-2" data-sync-status={status}>
+    // Part of the title bar, so its empty space and text drag the window too.
+    <div
+      data-tauri-drag-region
+      className="ml-auto flex items-center gap-2"
+      data-sync-status={status}
+    >
       {/* Plain text, not a live region: automatic refreshes every 30 minutes would interrupt a
           screen reader. Problems are announced by the banners. */}
-      <span className="text-sm whitespace-nowrap text-muted-foreground">{text}</span>
+      {/* Narrow windows give the title bar room by leaving it to Settings > Data and screen readers. */}
+      <span
+        data-tauri-drag-region
+        className="text-sm whitespace-nowrap text-muted-foreground max-md:sr-only"
+      >
+        {text}
+      </span>
       {/* Never disabled: a disabled button drops keyboard focus, and refresh() already shares a
           download in progress. */}
       <Button
-        variant="outline"
+        variant="ghost"
+        size="sm"
         onClick={() => void refreshData()}
         aria-busy={status === "loading"}
         aria-keyshortcuts="F5"
+        title={`${t("sync.refresh")} (F5)`}
       >
         <RefreshCwIcon aria-hidden data-icon="inline-start" />
-        {t("sync.refresh")}
+        <span className="max-md:sr-only">{t("sync.refresh")}</span>
       </Button>
     </div>
   );
