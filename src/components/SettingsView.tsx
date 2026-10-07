@@ -141,7 +141,7 @@ function GameSettings({ game }: { game: GameId }) {
         checked={prefs.plays}
         onChange={(plays) => void setPlays(data, game, plays, Date.now())}
       />
-      <div className="flex items-center justify-between gap-3 border-b py-2">
+      <div className="flex items-center justify-between gap-3 py-2">
         <div className="flex flex-col">
           <span id={serverId}>{t("settings.server")}</span>
           <span id={serverHintId} className="text-sm text-muted-foreground">
@@ -172,14 +172,20 @@ function GameSettings({ game }: { game: GameId }) {
       </div>
 
       {chores === null ? (
-        <p className="py-2 text-sm text-muted-foreground">{t("settings.choresNeedData")}</p>
+        <p className="mt-3 border-t pt-4 text-sm text-muted-foreground">
+          {t("settings.choresNeedData")}
+        </p>
       ) : (
         (["daily", "weekly", "periodic"] as const).map((cycle) => {
           const list = chores.filter((c) => c.cycle === cycle);
           if (list.length === 0) return null;
           return (
-            <section key={cycle} aria-label={t(`settings.chores.${cycle}`)} className="mt-3">
-              <h3 className="font-bold">{t(`settings.chores.${cycle}`)}</h3>
+            <section
+              key={cycle}
+              aria-label={t(`settings.chores.${cycle}`)}
+              className="mt-3 border-t pt-4"
+            >
+              <h3 className="mb-1 font-bold">{t(`settings.chores.${cycle}`)}</h3>
               {list.map((chore) => (
                 <SwitchField
                   key={chore.id}
@@ -330,7 +336,7 @@ function DataSettings() {
   return (
     <div className="flex flex-col gap-1">
       <h2 className="mb-2 text-base font-bold">{t("settings.data")}</h2>
-      <div className="flex items-center justify-between gap-3 border-b py-2">
+      <div className="flex items-center justify-between gap-3 py-2">
         <div className="flex flex-col">
           <span>{t("settings.schedulesAndCodes")}</span>
           <span className="text-sm text-muted-foreground">{syncText}</span>
@@ -339,7 +345,7 @@ function DataSettings() {
           {t("sync.refresh")}
         </Button>
       </div>
-      <div className="flex items-center justify-between gap-3 border-b py-2">
+      <div className="flex items-center justify-between gap-3 py-2">
         <div className="flex min-w-0 flex-col">
           <span>{t("settings.location")}</span>
           {folder && (
@@ -399,7 +405,7 @@ function SwitchField({
 }) {
   const hintId = useId();
   return (
-    <div className="border-b py-2">
+    <div className="py-2">
       <label className="flex items-center justify-between gap-3">
         {label}
         <Switch
