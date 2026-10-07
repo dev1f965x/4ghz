@@ -14,6 +14,7 @@ import { SettingsView } from "@/components/SettingsView";
 import { SyncStatus } from "@/components/SyncStatus";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { WindowControls } from "@/components/WindowControls";
 import { refreshData, useDataSync } from "@/data/store";
 import { useNow } from "@/hooks/useNow";
 import { advanceAllChores, updateSettings, useLocalState } from "@/state/app-state";
@@ -88,31 +89,42 @@ export default function App() {
 
   const inSettings = view === "settings";
   return (
-    <div className="flex min-h-svh flex-col">
-      <header className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b bg-card px-4 py-2">
-        <Mark />
-        {inSettings ? (
-          <Button variant="outline" onClick={closeSettings}>
-            <ArrowLeftIcon aria-hidden data-icon="inline-start" />
-            {t("shell.back")}
-          </Button>
-        ) : (
-          <GameSelect game={game} onChange={(g) => void updateSettings({ lastGame: g })} />
-        )}
-        <SyncStatus />
-        <Button
-          ref={settingsButton}
-          variant="outline"
-          aria-pressed={inSettings}
-          aria-keyshortcuts="Control+,"
-          className="aria-pressed:border-primary aria-pressed:bg-accent aria-pressed:text-accent-foreground"
-          onClick={inSettings ? closeSettings : openSettings}
+    // The header is the title bar, so it stays put and only the content below it scrolls.
+    <div className="flex h-svh flex-col overflow-hidden">
+      {/* data-tauri-drag-region on the bar and its empty areas lets the window be dragged and
+          double-clicked to maximize; the controls inside stay clickable. */}
+      <header data-tauri-drag-region className="flex shrink-0 border-b bg-card">
+        <div
+          data-tauri-drag-region
+          className="flex min-h-12 grow flex-wrap items-center gap-x-3 gap-y-2 py-2 pl-4"
         >
-          <SettingsIcon aria-hidden data-icon="inline-start" />
-          {t("shell.settings")}
-        </Button>
+          <Mark />
+          {inSettings ? (
+            <Button variant="outline" size="sm" onClick={closeSettings}>
+              <ArrowLeftIcon aria-hidden data-icon="inline-start" />
+              {t("shell.back")}
+            </Button>
+          ) : (
+            <GameSelect game={game} onChange={(g) => void updateSettings({ lastGame: g })} />
+          )}
+          <SyncStatus />
+          <Button
+            ref={settingsButton}
+            variant="ghost"
+            size="sm"
+            aria-pressed={inSettings}
+            aria-keyshortcuts="Control+,"
+            className="aria-pressed:bg-accent aria-pressed:text-accent-foreground"
+            onClick={inSettings ? closeSettings : openSettings}
+          >
+            <SettingsIcon aria-hidden data-icon="inline-start" />
+            {/* Icon only in narrow windows; the text stays as the accessible name. */}
+            <span className="max-md:sr-only">{t("shell.settings")}</span>
+          </Button>
+        </div>
+        <WindowControls />
       </header>
-      <div className="flex grow flex-col gap-3 p-4">
+      <div data-scroll-root className="flex grow flex-col gap-3 overflow-y-auto p-4">
         <Banners onOpenSettings={inSettings ? undefined : openSettings} />
         <main className="flex grow flex-col">
           {inSettings ? (

@@ -53,6 +53,8 @@ export const localStateSchema = z.object({
     locale: z.enum(locales).optional().catch(undefined),
     /** The release whose update notice the user dismissed. */
     dismissedUpdateVersion: z.string().optional(),
+    /** Countdowns tick every second; off shows minutes, for users who find the ticking distracting. */
+    countdownSeconds: z.boolean().default(true),
     /** Whether the user plays each game and on which server. */
     games: z
       .object({ genshin: gameSettings, hsr: gameSettings, zzz: gameSettings })
@@ -100,6 +102,7 @@ export function defaultLocalState(): LocalState {
       firstRunNoticeDismissed: false,
       games: defaultGameSettings(),
       choreOverrides: { genshin: {}, hsr: {}, zzz: {} },
+      countdownSeconds: true,
     },
     redeemedCodes: noRedeemedCodes(),
     chores: noChores(),

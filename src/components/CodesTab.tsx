@@ -38,7 +38,7 @@ export function CodesTab({ game }: { game: GameId }) {
       ) : (
         <>
           <h2 className="font-bold">{t("codes.title")}</h2>
-          <ul className="flex flex-col gap-2">
+          <ul className="divide-y overflow-hidden rounded-lg border bg-card">
             {codes.map((code) => (
               <Row
                 key={code.code}
@@ -118,7 +118,7 @@ function Row({
   return (
     <li
       // Wraps at large Windows text sizes, keeping the code readable instead of squeezing it.
-      className={`flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg border px-3 py-2 ${redeemed ? "bg-background" : "bg-card"}`}
+      className={`flex flex-wrap items-center gap-x-4 gap-y-1 px-3 py-2.5 ${redeemed ? "bg-background" : "bg-card"}`}
     >
       <div className="min-w-48 flex-1">
         <p

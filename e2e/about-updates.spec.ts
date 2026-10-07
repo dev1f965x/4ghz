@@ -23,7 +23,7 @@ test.describe("with a newer release", () => {
 
   test("shows a notice that opens the release and stays dismissed", async ({ app }) => {
     await expect(updateNotice(app)).toBeVisible();
-    await expect(app.getByText(/4ghz 0\.2\.0/)).toBeVisible();
+    await expect(app.getByText(/4GHz 0\.2\.0/)).toBeVisible();
     await app.getByRole("button", { name: /릴리스 열기|Open release/ }).click();
     await expect
       .poll(() => opened(app))
@@ -88,7 +88,7 @@ test.describe("About", () => {
     );
     await app.getByRole("button", { name: /^(설정|Settings)$/ }).click();
     await app.getByRole("tab", { name: /^(정보|About)$/ }).click();
-    await expect(app.getByRole("heading", { name: `4ghz ${version}` })).toBeVisible();
+    await expect(app.getByRole("heading", { name: `4GHz ${version}` })).toBeVisible();
     await expect(app.getByText(/비공식 앱|unofficial app/)).toBeVisible();
     await expect(
       app.getByText(/각 권리자의 상표|trademarks of their respective owners/),

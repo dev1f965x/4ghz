@@ -5,23 +5,23 @@ export const en = {
     genshin: "Genshin Impact",
     hsr: "Honkai: Star Rail",
     zzz: "Zenless Zone Zero",
-    letter: { genshin: "G", hsr: "H", zzz: "Z" },
   },
   shell: {
     settings: "Settings",
     back: "Back",
   },
   links: { openFailed: "The browser couldn’t be opened." },
+  window: { minimize: "Minimize", maximize: "Maximize", restore: "Restore", close: "Close" },
   about: {
     title: "About",
-    version: "4ghz {{version}}",
+    version: "4GHz {{version}}",
     unofficial:
-      "4ghz is an unofficial app, not affiliated with or endorsed by the publishers or owners of these games.",
+      "4GHz is an unofficial app, not affiliated with or endorsed by the publishers or owners of these games.",
     trademarks:
       "Genshin Impact, Honkai: Star Rail, and Zenless Zone Zero are trademarks of their respective owners.",
     privacyTitle: "Privacy",
     privacy:
-      "4ghz collects no personal data. Records, settings, and error logs stay on this PC. It downloads the data file and release information from GitHub, which receives your IP address.",
+      "4GHz collects no personal data. Records, settings, and error logs stay on this PC. It downloads the data file and release information from GitHub, which receives your IP address.",
     license: "MIT License",
     notices: "Third-party notices",
     feedback: "Send feedback",
@@ -31,7 +31,7 @@ export const en = {
   },
   update: {
     title: "A new version is available",
-    body: "Download 4ghz {{version}} from its release page.",
+    body: "Download 4GHz {{version}} from its release page.",
     open: "Open release",
     dismiss: "Dismiss the new version notice",
   },
@@ -70,8 +70,8 @@ export const en = {
   schedule: {
     ongoing: "Ongoing",
     upcoming: "Upcoming",
-    timeLeft: "{{time}} left",
-    startsIn: "Starts in {{time}}",
+    timeLeft: "Time left",
+    startsIn: "Starts in",
     openAnnouncement: "Open announcement",
     estimated: "Estimated",
     emptyTitle: "No upcoming schedule",
@@ -141,6 +141,9 @@ export const en = {
     choresNeedData: "Chores are available once the data has loaded.",
     language: "Language",
     languageSystem: "Use the Windows setting",
+    display: "Display",
+    countdownSeconds: "Show seconds in countdowns",
+    countdownSecondsHint: "When off, schedule countdowns show minutes.",
     data: "Data",
     schedulesAndCodes: "Schedules and codes",
     location: "Records and settings location",
@@ -163,7 +166,6 @@ export const en = {
     previous: "Previous month",
     next: "Next month",
     today: "Today",
-    all: "All",
     readOnly: "Daily results aren’t shown because records can’t be read.",
     state: {
       done: "done",
@@ -175,18 +177,17 @@ export const en = {
     dayStatus: { today: "today", pending: "pending", upcoming: "upcoming" },
     allDone: "all played games done",
     legend: {
-      done: "{{game}}: all daily chores done",
+      dailyDone: "All daily chores done:",
       all: "All played games done",
       today: "Today",
       pending: "Pending",
-      noRecord: "No record",
-      upcoming: "Upcoming day",
     },
   },
   duration: {
     days: "{{d}}d {{h}}h",
     hours: "{{h}}h {{m}}m",
     minutes: "{{m}}m",
+    daysClock: "{{d}}d {{clock}}",
   },
   load: {
     failedTitle: "Data couldn’t be loaded",

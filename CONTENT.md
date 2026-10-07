@@ -1,6 +1,6 @@
 # Content guide
 
-Rules for every word 4ghz shows: UI strings in `src/i18n/`, window and installer text, and the product description in the READMEs. Visual rules are in [DESIGN.md](DESIGN.md). The approved wireframes (Confluence, GHZ-3) show the strings in context.
+Rules for every word 4GHz shows: UI strings in `src/i18n/`, window and installer text, and the product description in the READMEs. Visual rules are in [DESIGN.md](DESIGN.md). The approved wireframes (Confluence, GHZ-3) show the strings in context.
 
 English follows the [Microsoft Writing Style Guide](https://learn.microsoft.com/en-us/style-guide/welcome/); where this file is silent, that guide decides. Korean follows the rules below and the standard spelling and spacing rules of the National Institute of Korean Language.
 
@@ -33,14 +33,14 @@ Use these words and no synonyms. A new product noun or verb is added here before
 | When a cycle starts again | reset | 초기화 | |
 | Result kept for a past day | record; "No record" | 기록; "기록 없음" | |
 | Day not yet recorded during the grace period | pending | 확정 대기 | |
-| Day on which every played game is done | All (cell label); "All played games done" (legend) | 전부 (칸 표시); "하는 게임 모두 완료" (범례) | 전부 is short enough for a calendar cell |
+| Day on which every played game is done | "All played games done" (legend; the cell is filled) | "하는 게임 모두 완료" (범례; 칸을 채워 표시) | |
 | Schedules and codes from GitHub | data | 데이터 | Records and settings are not called "data", except in "data folder" |
 | Records and settings on this PC | records and settings | 기록과 설정 | |
 | Folder that holds them | data folder | 데이터 폴더 | The Windows app data folder: "Open data folder" / "데이터 폴더 열기" |
 | Getting new data | refresh | 새로 고침 | |
 | A banner that informs, such as the first-run banner | notice | 알림 | Only for in-app banners, never Windows notifications. Problems are warnings |
 
-Product name: 4ghz, always lowercase Latin letters, in both languages.
+Product name: 4GHz, written as one word with a capital GHz, in both languages. Code, the package, and the app identifier keep lowercase `4ghz`.
 
 ## Patterns
 

@@ -1,16 +1,13 @@
-/** The 4ghz mark: a clock signal (square wave) next to the monospaced name (Visual Direction V2). */
+/** The 4GHz mark: the app icon's three bars, one per game, next to the name. */
 export function Mark() {
   return (
-    <span className="inline-flex items-center gap-1.5 font-mono font-bold tracking-wide whitespace-nowrap">
-      <svg aria-hidden viewBox="0 0 26 14" className="h-3.5 w-6.5 text-primary">
-        <path
-          d="M1 12V2h4v10h4V2h4v10h4V2h4v10h4"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-        />
+    <span className="inline-flex items-center gap-2 font-bold tracking-tight whitespace-nowrap">
+      <svg aria-hidden viewBox="0 0 16 14" className="h-3.5 w-4">
+        <rect x="0" y="0" width="4" height="14" rx="1" className="fill-genshin" />
+        <rect x="6" y="4" width="4" height="10" rx="1" className="fill-hsr" />
+        <rect x="12" y="8" width="4" height="6" rx="1" className="fill-zzz" />
       </svg>
-      4ghz
+      4GHz
     </span>
   );
 }
