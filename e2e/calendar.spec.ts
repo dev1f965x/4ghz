@@ -148,3 +148,43 @@ test.describe("without a data file", () => {
     );
   });
 });
+
+test.describe("with a game turned off that has older records", () => {
+  test.use({
+    localFiles: {
+      state: JSON.stringify({
+        schemaVersion: 1,
+        settings: {
+          lastGame: "genshin",
+          lastTab: "calendar",
+          firstRunNoticeDismissed: true,
+          games: {
+            genshin: { plays: true, region: "asia" },
+            hsr: { plays: false, region: "asia" },
+            zzz: { plays: true, region: "asia" },
+          },
+          choreOverrides: { genshin: {}, hsr: {}, zzz: {} },
+        },
+        chores: {
+          genshin: {
+            ...history({}),
+            countFrom: KST_0500("2026-10-01"),
+            lastFixedLabel: "2026-10-05",
+          },
+          hsr: history({ "2026-09-20": record("done") }),
+          zzz: { ...history({}), countFrom: KST_0500("2026-10-01"), lastFixedLabel: "2026-10-05" },
+        },
+      }),
+    },
+  });
+
+  test("reads the marks that still show before tracking began", async ({ app }) => {
+    await app.getByRole("button", { name: /이전 달|Previous month/ }).click();
+    await expect(cell(app, /^(9월 20일 일요일|Sunday, September 20)/)).toHaveAccessibleName(
+      /^(9월 20일 일요일: 붕괴: 스타레일 완료, 하는 게임 모두 완료|Sunday, September 20: Honkai: Star Rail done, all played games done)$/,
+    );
+    await expect(
+      app.getByText(/붕괴: 스타레일: 일간 숙제 모두 완료|Honkai: Star Rail: all daily chores done/),
+    ).toBeVisible();
+  });
+});

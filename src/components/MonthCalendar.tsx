@@ -117,11 +117,13 @@ export function MonthCalendar() {
   const dayName = (day: CalendarDay) => {
     const parts = [formatLabelLong(day.label, locale)];
     if (day.status !== "past") parts.push(t(`calendar.dayStatus.${day.status}`));
-    const games =
-      // Upcoming days and days before tracking have nothing to report, as on screen.
-      day.status === "upcoming" || !day.tracked
+    // Upcoming days report nothing. Before tracking, only stored results, such as those of a game
+    // turned off later, are read, as only those show on screen.
+    const reported =
+      day.status === "upcoming"
         ? []
-        : gameIds.map((g) => `${t(`game.${g}`)} ${markText(day.games[g], day.status)}`);
+        : gameIds.filter((g) => day.tracked || day.games[g] !== "none");
+    const games = reported.map((g) => `${t(`game.${g}`)} ${markText(day.games[g], day.status)}`);
     if (day.all) games.push(t("calendar.allDone"));
     return games.length > 0 ? `${parts.join(", ")}: ${games.join(", ")}` : parts.join(", ");
   };
