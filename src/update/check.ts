@@ -12,9 +12,12 @@ const releaseSchema = z.object({ tag_name: z.string() });
 
 type Version = [number, number, number];
 
-/** "v1.2.3" or "1.2.3" as numbers; null for anything else, such as a pre-release tag. */
+/**
+ * A release tag "v1.2.3" as numbers; null for anything else, such as a pre-release or a tag
+ * without "v", whose page the opener capability (releases/tag/v*) would not open.
+ */
 export function parseVersion(text: string): Version | null {
-  const match = /^v?(\d+)\.(\d+)\.(\d+)$/.exec(text.trim());
+  const match = /^v(\d+)\.(\d+)\.(\d+)$/.exec(text.trim());
   if (!match) return null;
   return [Number(match[1]), Number(match[2]), Number(match[3])];
 }
@@ -34,7 +37,8 @@ export async function findUpdate(
   currentVersion: string,
   fetchJson: (url: string) => Promise<unknown | null>,
 ): Promise<Release | null> {
-  const current = parseVersion(currentVersion);
+  // package.json carries the version without "v"; release tags carry it.
+  const current = parseVersion(`v${currentVersion}`);
   if (current === null) throw new Error(`The app version ${currentVersion} is not x.y.z`);
   const body = await fetchJson(LATEST_RELEASE_API);
   if (body === null) return null;

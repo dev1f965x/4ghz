@@ -4,9 +4,10 @@ import { fetchJson, findUpdate, isNewer, parseVersion } from "./check";
 const answer = (tag: unknown) => () => Promise.resolve({ tag_name: tag });
 
 describe("versions", () => {
-  it("parses plain releases with or without a v", () => {
+  it("parses v-prefixed release tags only", () => {
     expect(parseVersion("v1.2.3")).toEqual([1, 2, 3]);
-    expect(parseVersion("0.10.0")).toEqual([0, 10, 0]);
+    expect(parseVersion("v0.10.0")).toEqual([0, 10, 0]);
+    expect(parseVersion("0.10.0")).toBeNull();
     expect(parseVersion("v1.2.3-beta.1")).toBeNull();
     expect(parseVersion("latest")).toBeNull();
   });
