@@ -14,11 +14,13 @@ if (import.meta.env.MODE === "e2e") {
   installE2eMocks();
 }
 
+// The data cache does not depend on local state, so it is read while state.json loads; this
+// keeps cached data within the startup target (Design Doc D5).
+startDataSync();
+startUpdateCheck();
 // The stored language, if the user chose one, applies from the first render.
 await loadLocalState();
 await initI18n(getLocalState().settings.locale);
-startDataSync();
-startUpdateCheck();
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>

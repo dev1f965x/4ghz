@@ -126,9 +126,10 @@ function Row({
   // background keeps control borders at 3:1, which the muted fill would not (DESIGN.md).
   return (
     <li
-      className={`flex items-center gap-3 rounded-lg border px-3 py-2 ${redeemed ? "bg-background" : "bg-card"}`}
+      // Wraps at large Windows text sizes, keeping the code readable instead of squeezing it.
+      className={`flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg border px-3 py-2 ${redeemed ? "bg-background" : "bg-card"}`}
     >
-      <div className="grow">
+      <div className="min-w-48 flex-1">
         <p
           className={`font-mono text-lg tracking-wide ${redeemed ? "text-muted-foreground" : ""}`}
           data-testid="code"
@@ -139,7 +140,9 @@ function Row({
           {localText(row.rewards, i18n.language)} · {expiry}
         </p>
       </div>
-      <span className="min-w-24 shrink-0 text-right text-sm font-bold tabular-nums">{soon}</span>
+      <span className="ml-auto min-w-24 shrink-0 text-right text-sm font-bold tabular-nums">
+        {soon}
+      </span>
       {/* The name follows the visible text, so voice users can say what they see. */}
       <Button
         variant="outline"

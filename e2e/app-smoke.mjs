@@ -146,6 +146,7 @@ async function run(label, { check }) {
   if (await debugPortOpen()) {
     throw new Error(`Port ${debugPort} is already in use; the test would attach to the wrong app`);
   }
+  const startedAt = Date.now();
   const appProcess = start(app, []);
   let failure;
   try {
@@ -209,6 +210,12 @@ async function run(label, { check }) {
           done({
             game: document.documentElement.dataset.game ?? null,
             notices,
+            // Epoch milliseconds when data was first on screen (App.tsx), for the startup target.
+            pageStartAt: Math.round(performance.timeOrigin),
+            firstDataAt: (() => {
+              const mark = performance.getEntriesByName("first-data-render")[0];
+              return mark ? Math.round(performance.timeOrigin + mark.startTime) : null;
+            })(),
             sync: sync() ?? null,
             chore: chore()?.getAttribute("aria-checked") ?? null,
             tabs: tabs.map((t) => t.textContent),
@@ -220,7 +227,14 @@ async function run(label, { check }) {
     });
     // In attach mode this only detaches; close() below closes the app.
     await webdriver("DELETE", `/session/${session.sessionId}`);
-    console.log(`${label}: ${JSON.stringify(result)}`);
+    const { firstDataAt, pageStartAt, ...shown } = result;
+    // Reported, not asserted: a cold CI runner varies too much for a hard limit. The target
+    // (Design Doc D5) is measured on a PC and recorded with the verification results.
+    const toData =
+      firstDataAt === null
+        ? "none"
+        : `${firstDataAt - startedAt} ms (WebView2 start ${pageStartAt - startedAt} ms, app ${firstDataAt - pageStartAt} ms)`;
+    console.log(`${label}: ${JSON.stringify(shown)}; process start to data on screen: ${toData}`);
     const problems = [];
     if (result.game !== "genshin") problems.push("the app did not render");
     if (result.tabs.length !== 3) problems.push(`expected 3 tabs, found ${result.tabs.length}`);

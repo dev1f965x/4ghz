@@ -90,13 +90,14 @@ function Row({ row, now, ongoing }: { row: ScheduleRow; now: number; ongoing: bo
     });
   };
 
-  // Fixed widths for the type, countdown, and button columns keep titles aligned across rows.
+  // Fixed widths for the type, countdown, and button columns keep titles aligned across rows. At
+  // large Windows text sizes the countdown and button wrap below the title instead of squeezing it.
   return (
-    <li className="flex items-center gap-3 rounded-lg border bg-card px-3 py-2">
+    <li className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg border bg-card px-3 py-2">
       <span className="min-w-16 shrink-0 rounded-md border px-1.5 text-center text-xs text-muted-foreground">
         {t(`schedule.type.${row.type}`)}
       </span>
-      <div className="grow">
+      <div className="min-w-48 flex-1">
         <p className="font-bold">{title}</p>
         <p className="text-sm text-muted-foreground">
           {range}
@@ -107,7 +108,7 @@ function Row({ row, now, ongoing }: { row: ScheduleRow; now: number; ongoing: bo
           )}
         </p>
       </div>
-      <span className="min-w-32 shrink-0 text-right text-sm tabular-nums">{countdown}</span>
+      <span className="ml-auto min-w-32 shrink-0 text-right text-sm tabular-nums">{countdown}</span>
       <Button
         variant="outline"
         size="sm"
