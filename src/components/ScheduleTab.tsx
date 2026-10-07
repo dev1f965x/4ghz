@@ -87,6 +87,7 @@ function Row({
 }) {
   const { t, i18n } = useTranslation();
   const { open, failed } = useOpenUrl();
+  const ids = { title: useId(), meta: useId(), countdown: useId(), action: useId() };
   const locale = i18n.language as Locale;
   const title = localText(row.title, i18n.language);
   const range =
@@ -103,8 +104,10 @@ function Row({
   const content = (
     <>
       <span className="block min-w-48 flex-1">
-        <span className="block font-semibold">{title}</span>
-        <span className="block text-sm text-muted-foreground">
+        <span id={ids.title} className="block font-semibold">
+          {title}
+        </span>
+        <span id={ids.meta} className="block text-sm text-muted-foreground">
           {t(`schedule.type.${row.type}`)} · {range}
           {row.estimated && (
             <span className="ml-2 rounded-sm border border-dashed px-1 text-xs">
@@ -113,7 +116,7 @@ function Row({
           )}
         </span>
       </span>
-      <span className="ml-auto block min-w-40 shrink-0 text-right">
+      <span id={ids.countdown} className="ml-auto block min-w-40 shrink-0 text-right">
         {countdown && (
           <>
             <span className="block text-xs text-muted-foreground">{countdown.label}</span>
@@ -121,10 +124,10 @@ function Row({
           </>
         )}
       </span>
-      {/* Space kept on every card so times line up; the arrow shows on cards that open. */}
+      {/* Space kept on every card so times line up; the arrow marks cards that open. */}
       <span aria-hidden className="w-4 shrink-0 text-muted-foreground">
         {url && (
-          <ArrowUpRightIcon className="size-4 opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100" />
+          <ArrowUpRightIcon className="size-4 opacity-50 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100" />
         )}
       </span>
     </>
@@ -135,11 +138,20 @@ function Row({
     return <li className={`${card} ${layout}`}>{content}</li>;
   }
   return (
-    <li className="flex flex-col items-end gap-1">
-      {/* The whole card opens the announcement; its name is the card's text and the action. */}
-      <button type="button" className={`group ${hoverCard} ${layout}`} onClick={() => open(url)}>
+    <li className="flex flex-col items-start gap-1">
+      {/* The whole card opens the announcement. Its name is the title and the action; the dates
+          and the live countdown are its description, so the name does not change every second. */}
+      <button
+        type="button"
+        aria-labelledby={`${ids.title} ${ids.action}`}
+        aria-describedby={`${ids.meta} ${ids.countdown}`}
+        className={`group ${hoverCard} ${layout}`}
+        onClick={() => open(url)}
+      >
         {content}
-        <span className="sr-only">{t("schedule.openAnnouncement")}</span>
+        <span id={ids.action} className="sr-only">
+          {t("schedule.openAnnouncement")}
+        </span>
       </button>
       {failed && <OpenFailed />}
     </li>

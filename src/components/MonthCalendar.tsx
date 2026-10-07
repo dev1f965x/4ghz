@@ -292,15 +292,21 @@ function DayCell({
         aria-hidden
         className={`mx-auto flex h-11 max-w-11 flex-col items-center justify-center gap-0.5 rounded-lg border ${box} ${muted}`}
       >
-        <span className={`inline-flex size-7 items-center justify-center rounded-full ${date}`}>
+        <span
+          data-today={day.status === "today" || undefined}
+          className={`inline-flex size-7 items-center justify-center rounded-full ${date}`}
+        >
           {Number(day.label.slice(8))}
         </span>
         {!day.all && (
           <span className="flex h-1.5 gap-0.5">
-            {gameIds.map(
-              (g) =>
-                day.games[g] === "done" && <span key={g} className={`${dot} ${dotColors[g]}`} />,
-            )}
+            {/* Each game keeps its slot, so position, not color alone, says which game it is. */}
+            {gameIds.map((g) => (
+              <span
+                key={g}
+                className={day.games[g] === "done" ? `${dot} ${dotColors[g]}` : "size-1.5"}
+              />
+            ))}
           </span>
         )}
       </div>

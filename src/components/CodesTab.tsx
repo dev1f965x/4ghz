@@ -3,7 +3,7 @@ import { CheckIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { activeCodes, type CodeRow } from "@/codes/model";
-import { hoverCard } from "@/components/card";
+import { hoverable } from "@/components/card";
 import { EmptyState } from "@/components/EmptyState";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -119,8 +119,8 @@ function Row({
   return (
     <li
       // Wraps at large Windows text sizes, keeping the code readable instead of squeezing it.
-      className={`flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3 ${
-        redeemed ? hoverCard.replace("bg-card", "bg-background") : hoverCard
+      className={`flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg border px-4 py-3 ${hoverable} ${
+        redeemed ? "bg-background" : "bg-card"
       }`}
     >
       <div className="min-w-48 flex-1">

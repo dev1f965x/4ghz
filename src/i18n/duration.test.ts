@@ -14,6 +14,10 @@ describe("formatSeconds", () => {
     expect(at(3600)).toBe("1h 00m 00s");
     expect(at(65)).toBe("1m 05s");
     expect(at(9)).toBe("9s");
+    expect(at(59)).toBe("59s");
+    expect(at(60)).toBe("1m 00s");
+    expect(at(86_399)).toBe("23h 59m 59s");
+    expect(at(86_400)).toBe("1d 00h 00m 00s");
   });
 
   it("rounds a part second down and stops at zero", () => {

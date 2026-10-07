@@ -234,6 +234,8 @@ function GroupBox({
           {caption && (
             <p title={captionTitle} className="text-xs text-muted-foreground tabular-nums">
               {caption}
+              {/* The tooltip is for the pointer; screen readers get the exact time here. */}
+              {captionTitle && <span className="sr-only"> ({captionTitle})</span>}
             </p>
           )}
         </div>
@@ -286,6 +288,7 @@ function Row({
           className="shrink-0 text-xs text-muted-foreground tabular-nums"
         >
           {end}
+          {endTitle && <span className="sr-only"> ({endTitle})</span>}
         </span>
       )}
     </li>
