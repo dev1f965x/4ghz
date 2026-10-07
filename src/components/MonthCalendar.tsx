@@ -235,7 +235,8 @@ function shiftMonth(label: string, months: number) {
 // border and an hourglass, upcoming a dashed border, today an inverted date. Days of the next
 // or previous month are plain and muted, as in most calendars.
 function cellStyle(day: CalendarDay) {
-  if (!day.inMonth) return "border-transparent text-muted-foreground";
+  // In contrast themes a transparent border is drawn, so days of other months drop theirs.
+  if (!day.inMonth) return "border-transparent text-muted-foreground forced-colors:border-0";
   if (day.all) return "border-4 border-double border-foreground bg-muted";
   if (day.status === "pending") return "border-2 border-dotted border-foreground bg-card";
   if (day.status === "upcoming") return "border-dashed border-input text-muted-foreground";
@@ -280,7 +281,10 @@ function DayCell({
       <span
         aria-hidden
         className={`inline-flex min-w-5 justify-center rounded-full px-1 ${
-          day.status === "today" ? "bg-foreground font-bold text-background" : ""
+          // The transparent border shows in contrast themes, where the fill is removed.
+          day.status === "today"
+            ? "border-2 border-transparent bg-foreground font-bold text-background"
+            : ""
         }`}
       >
         {Number(day.label.slice(8))}
@@ -321,7 +325,10 @@ function Legend({ games }: { games: GameId[] }) {
         {t("calendar.legend.all")}
       </li>
       <li className="inline-flex items-center gap-1.5">
-        <span aria-hidden className="inline-block size-4 rounded-full bg-foreground" />
+        <span
+          aria-hidden
+          className="inline-block size-4 rounded-full border-2 border-transparent bg-foreground"
+        />
         {t("calendar.legend.today")}
       </li>
       <li className="inline-flex items-center gap-1.5">
