@@ -3,6 +3,7 @@
 // any added or changed field bumps schemaVersion with a migration in load.ts, because an older
 // app would strip unknown keys and lose them on its next save.
 import { z } from "@/data/zod";
+import { emptyGameDays } from "@/time/days";
 
 export const gameIds = ["genshin", "hsr", "zzz"] as const;
 export type GameId = (typeof gameIds)[number];
@@ -10,6 +11,25 @@ export const tabIds = ["schedule", "codes", "calendar"] as const;
 export type TabId = (typeof tabIds)[number];
 
 export const LOCAL_STATE_VERSION = 1;
+
+const checks = z.record(z.string(), z.record(z.string(), z.number()));
+// The fields of GameDays (src/time/days.ts), plus checks of weekly and periodic cycles keyed
+// "weekly:<Monday label>" or "period:<period id>", each choreId -> checkedAt.
+const gameChores = z.object({
+  initialized: z.boolean(),
+  firstSeen: z.record(z.string(), z.number()),
+  countFrom: z.number().nullable(),
+  lastFixedLabel: z.string().nullable(),
+  lastAdvancedAt: z.number(),
+  days: z.record(
+    z.string(),
+    z.object({ result: z.enum(["done", "not-done", "untracked"]), fixedAt: z.number() }),
+  ),
+  dailyChecks: checks,
+  cycleChecks: checks,
+  /** When the app first saw each checked cycle as ended; retention counts from here. */
+  cycleEndedAt: z.record(z.string(), z.number()).default(() => ({})),
+});
 
 export const localStateSchema = z.object({
   schemaVersion: z.literal(LOCAL_STATE_VERSION),
@@ -26,9 +46,22 @@ export const localStateSchema = z.object({
   redeemedCodes: z
     .object({ genshin: z.array(z.string()), hsr: z.array(z.string()), zzz: z.array(z.string()) })
     .default(() => noRedeemedCodes()),
+  /** Day history and checks per game (Design Doc, "Time and reset logic"). */
+  chores: z
+    .object({ genshin: gameChores, hsr: gameChores, zzz: gameChores })
+    .default(() => noChores()),
 });
 
 export type LocalState = z.infer<typeof localStateSchema>;
+export type GameChores = LocalState["chores"][GameId];
+
+function noChores(): LocalState["chores"] {
+  return { genshin: emptyGameChores(), hsr: emptyGameChores(), zzz: emptyGameChores() };
+}
+
+export function emptyGameChores(): GameChores {
+  return { ...emptyGameDays(), cycleChecks: {}, cycleEndedAt: {} };
+}
 
 /** Upper-case codes per game; a fresh object each time, so states never share arrays. */
 function noRedeemedCodes(): { genshin: string[]; hsr: string[]; zzz: string[] } {
@@ -40,5 +73,6 @@ export function defaultLocalState(): LocalState {
     schemaVersion: LOCAL_STATE_VERSION,
     settings: { lastGame: "genshin", lastTab: "schedule", firstRunNoticeDismissed: false },
     redeemedCodes: noRedeemedCodes(),
+    chores: noChores(),
   };
 }

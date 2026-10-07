@@ -16,8 +16,15 @@ const MAX_VISIBLE = 2;
 export function Banners({ onOpenSettings }: { onOpenSettings?: () => void }) {
   const { t } = useTranslation();
   const { data, status, problem } = useDataSync();
-  const { state, readOnly } = useLocalState();
+  const { state, readOnly, saveFailed } = useLocalState();
   const banners: { key: string; node: ReactNode }[] = [];
+
+  if (saveFailed) {
+    banners.push({
+      key: "save-failed",
+      node: <Banner kind="warning" title={t("saveFailed.title")} body={t("saveFailed.body")} />,
+    });
+  }
 
   if (readOnly !== null) {
     banners.push({

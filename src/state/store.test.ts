@@ -104,4 +104,19 @@ describe("local store", () => {
     expect(store.getSnapshot().state.settings.lastGame).toBe("hsr");
     expect(logError).toHaveBeenCalledWith("Saving state.json failed", expect.any(Error));
   });
+
+  it("reports a failed save until a later save succeeds", async () => {
+    let fail = true;
+    const store = createLocalStore({
+      read: () => Promise.resolve(null),
+      write: () => (fail ? Promise.reject(new Error("disk full")) : Promise.resolve()),
+      logError: () => {},
+    });
+    await store.load();
+    await store.update((s) => ({ ...s, settings: { ...s.settings, lastGame: "hsr" } }));
+    expect(store.getSnapshot().saveFailed).toBe(true);
+    fail = false;
+    await store.update((s) => ({ ...s, settings: { ...s.settings, lastGame: "zzz" } }));
+    expect(store.getSnapshot().saveFailed).toBe(false);
+  });
 });

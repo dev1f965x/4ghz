@@ -2,6 +2,7 @@ import { ArrowLeftIcon, SettingsIcon } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Banners } from "@/components/Banners";
+import { Checklist } from "@/components/Checklist";
 import { CodesTab } from "@/components/CodesTab";
 import { DataState } from "@/components/DataState";
 import { GameSelect } from "@/components/GameSelect";
@@ -12,8 +13,9 @@ import { SettingsView } from "@/components/SettingsView";
 import { SyncStatus } from "@/components/SyncStatus";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { refreshData } from "@/data/store";
-import { updateSettings, useLocalState } from "@/state/app-state";
+import { refreshData, useDataSync } from "@/data/store";
+import { useNow } from "@/hooks/useNow";
+import { advanceAllChores, updateSettings, useLocalState } from "@/state/app-state";
 import { type TabId, tabIds } from "@/state/schema";
 
 export default function App() {
@@ -28,6 +30,14 @@ export default function App() {
     document.documentElement.dataset.game = game;
   }, [game]);
 
+  // Resets and missed days apply on start, every 30 seconds, and when the window regains focus
+  // or becomes visible (PRD FR29). A clock change or a resume that triggers neither is picked up
+  // by the next 30-second tick.
+  const { data } = useDataSync();
+  const now = useNow(30_000);
+  useEffect(() => {
+    if (data !== null) advanceAllChores(data, now);
+  }, [data, now]);
   const openSettings = useCallback(() => setView("settings"), []);
   const closeSettings = useCallback(() => {
     returnFocus.current = true;
@@ -123,6 +133,7 @@ export default function App() {
                   <DataState>
                     {id === "schedule" && <ScheduleTab game={game} />}
                     {id === "codes" && <CodesTab game={game} />}
+                    {id === "calendar" && <Checklist game={game} onOpenSettings={openSettings} />}
                   </DataState>
                 </TabsContent>
               ))}

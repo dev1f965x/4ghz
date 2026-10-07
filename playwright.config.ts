@@ -19,7 +19,14 @@ export default defineConfig({
   retries: 0,
   // The HTML report keeps the screenshots; open it with pnpm exec playwright show-report.
   reporter: [["list"], ["html", { open: "never" }]],
-  use: { baseURL: `http://localhost:${port}`, channel: "msedge", trace: "retain-on-failure" },
+  use: {
+    baseURL: `http://localhost:${port}`,
+    channel: "msedge",
+    // Tests assert local times such as "05:00"; a fixed zone keeps them the same on a PC in Korea
+    // and on the UTC CI runner. Time zone handling itself is covered by unit tests.
+    timezoneId: "Asia/Seoul",
+    trace: "retain-on-failure",
+  },
   projects: locales.flatMap(([name, locale]) =>
     themes.map((colorScheme) => ({
       name: `${name}-${colorScheme}`,

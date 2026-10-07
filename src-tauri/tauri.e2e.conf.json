@@ -1,5 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
+  "identifier": "io.github.dev1f965x.4ghz.e2e",
   "build": { "beforeBuildCommand": "pnpm notices && pnpm build --mode app-e2e" },
   "app": {
     "windows": [
