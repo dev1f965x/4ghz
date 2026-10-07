@@ -54,7 +54,7 @@ export const localStateSchema = z.object({
     /** The release whose update notice the user dismissed. */
     dismissedUpdateVersion: z.string().optional(),
     /** Countdowns tick every second; off shows minutes, for users who find the ticking distracting. */
-    countdownSeconds: z.boolean().default(true),
+    countdownSeconds: z.boolean().default(true).catch(true),
     /** Whether the user plays each game and on which server. */
     games: z
       .object({ genshin: gameSettings, hsr: gameSettings, zzz: gameSettings })

@@ -109,9 +109,8 @@ test.describe("keyboard order", () => {
     expect(order[0]).toBe("combobox");
     expect(order[1]).toMatch(/새로 고침|Refresh/);
     expect(order[2]).toMatch(/^(설정|Settings)$/);
-    expect(order.slice(3, 6)).toEqual(
-      expect.arrayContaining([expect.stringMatching(/^(최소화|Minimize)$/)]),
-    );
+    expect(order[3]).toMatch(/^(최소화|Minimize)$/);
+    expect(order[4]).toMatch(/^(최대화|Maximize)$/);
     expect(order[5]).toMatch(/^(닫기|Close)$/);
     expect(order[6]).toBe("tab");
   });

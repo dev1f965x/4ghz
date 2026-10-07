@@ -102,6 +102,22 @@ test.describe("the month calendar", () => {
     await expect(next).toBeFocused();
     await app.keyboard.press("Enter");
     await expect(app.getByRole("heading", { name: /2027년 10월|October 2027/ })).toBeVisible();
+    // Keys stop at the last day too.
+    await cell(app, /^(10월 1일 금요일|Friday, October 1),/).click();
+    await app.keyboard.press("PageDown");
+    const last = cell(app, /^(10월 31일 일요일|Sunday, October 31)/);
+    await expect(last).toBeFocused();
+    await app.keyboard.press("ArrowRight");
+    await expect(last).toBeFocused();
+  });
+
+  test("goes back a year when nothing older is recorded", async ({ app }) => {
+    const previous = app.getByRole("button", { name: /이전 달|Previous month/ });
+    // The first record here is in September 2026, so a year back is the limit.
+    for (let i = 0; i < 12; i++) await previous.click();
+    await expect(app.getByRole("heading", { name: /2025년 10월|October 2025/ })).toBeVisible();
+    await expect(previous).toHaveAttribute("aria-disabled", "true");
+    await expect(previous).toBeFocused();
   });
 
   test("a click on a day of the next month opens that month", async ({ app }) => {
@@ -182,5 +198,28 @@ test.describe("with a game turned off that has older records", () => {
     await expect(
       app.getByRole("listitem").filter({ hasText: /^(붕괴: 스타레일|Honkai: Star Rail)$/ }),
     ).toBeVisible();
+  });
+});
+
+test.describe("with a record older than a year", () => {
+  test.use({
+    localFiles: {
+      state: JSON.stringify({
+        schemaVersion: 1,
+        settings: { lastGame: "genshin", lastTab: "calendar", firstRunNoticeDismissed: true },
+        chores: {
+          genshin: history({ "2025-01-15": record("done") }),
+          hsr: history({}),
+          zzz: history({}),
+        },
+      }),
+    },
+  });
+
+  test("goes back to that record", async ({ app }) => {
+    const previous = app.getByRole("button", { name: /이전 달|Previous month/ });
+    for (let i = 0; i < 21; i++) await previous.click();
+    await expect(app.getByRole("heading", { name: /2025년 1월|January 2025/ })).toBeVisible();
+    await expect(previous).toHaveAttribute("aria-disabled", "true");
   });
 });

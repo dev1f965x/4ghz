@@ -14,14 +14,30 @@ export function WindowControls() {
   const [maximized, setMaximized] = useState(false);
   useEffect(() => {
     const appWindow = getCurrentWindow();
-    const update = () =>
-      appWindow
-        .isMaximized()
-        .then(setMaximized, (error: unknown) => logError("Reading the window state failed", error));
-    void update();
+    // One read per frame while resizing, and only the latest answer counts, so a slow reply
+    // cannot leave the wrong Maximize or Restore name.
+    let frame = 0;
+    let latest = 0;
+    const read = () => {
+      const request = ++latest;
+      appWindow.isMaximized().then(
+        (value) => {
+          if (request === latest) setMaximized(value);
+        },
+        (error: unknown) => logError("Reading the window state failed", error),
+      );
+    };
+    const onResize = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(read);
+    };
+    read();
     // Snapping, double-clicking the title bar, and Win+Up all resize the window.
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
+    window.addEventListener("resize", onResize);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("resize", onResize);
+    };
   }, []);
   const run = (action: string, call: () => Promise<void>) => () =>
     call().catch((error: unknown) => logError(`${action} the window failed`, error));

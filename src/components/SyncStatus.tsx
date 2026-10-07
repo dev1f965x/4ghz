@@ -39,7 +39,11 @@ export function SyncStatus() {
     >
       {/* Plain text, not a live region: automatic refreshes every 30 minutes would interrupt a
           screen reader. Problems are announced by the banners. */}
-      <span data-tauri-drag-region className="text-sm whitespace-nowrap text-muted-foreground">
+      {/* Narrow windows give the title bar room by leaving it to Settings > Data and screen readers. */}
+      <span
+        data-tauri-drag-region
+        className="text-sm whitespace-nowrap text-muted-foreground max-md:sr-only"
+      >
         {text}
       </span>
       {/* Never disabled: a disabled button drops keyboard focus, and refresh() already shares a
@@ -50,6 +54,7 @@ export function SyncStatus() {
         onClick={() => void refreshData()}
         aria-busy={status === "loading"}
         aria-keyshortcuts="F5"
+        title={`${t("sync.refresh")} (F5)`}
       >
         <RefreshCwIcon aria-hidden data-icon="inline-start" />
         <span className="max-md:sr-only">{t("sync.refresh")}</span>

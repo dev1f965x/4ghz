@@ -61,8 +61,13 @@ test.describe("at 225% text size", () => {
       // so this matches the setting.
       await app.addStyleTag({ content: "html { font-size: 225%; }" });
       await screen.open(app);
-      const overflow = await app.evaluate(
-        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      // The page and the content area below the title bar, which scrolls on its own.
+      const overflow = await app.evaluate(() =>
+        Math.max(
+          ...[document.documentElement, document.querySelector("[data-scroll-root]")].map((e) =>
+            e ? e.scrollWidth - e.clientWidth : 0,
+          ),
+        ),
       );
       expect(overflow, "horizontal overflow in px").toBeLessThanOrEqual(0);
       await attach(app, testInfo, `text-225-${screen.name}`);

@@ -274,7 +274,9 @@ function DayCell({
   const box = day.all
     ? "border-transparent bg-accent text-accent-foreground"
     : "border-transparent forced-colors:border-0";
-  const muted = !day.inMonth || day.status === "upcoming" ? "text-muted-foreground" : "";
+  // An all-done cell keeps its own text color; other muted days use the muted one.
+  const muted =
+    !day.all && (!day.inMonth || day.status === "upcoming") ? "text-muted-foreground" : "";
   return (
     // In a grid table the cell is a gridcell; it holds focus itself, as the grid has no actions.
     <td

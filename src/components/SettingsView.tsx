@@ -63,7 +63,8 @@ export function SettingsView({ game }: { game: GameId }) {
         onValueChange={(value: Section) => setSection(value)}
         className="flex flex-col gap-4 md:flex-row"
       >
-        {/* A highlighted item, not the line under tabs, marks the section in a vertical list. */}
+        {/* The selected section is filled, outlined, and bold, so contrast themes, which drop the
+            fill, still show it. */}
         <TabsList
           aria-label={t("settings.sections")}
           className="h-auto items-stretch bg-transparent p-0 md:w-48"
@@ -72,7 +73,7 @@ export function SettingsView({ game }: { game: GameId }) {
             <TabsTrigger
               key={g}
               value={g}
-              className="justify-start gap-2 px-3 py-1.5 data-active:bg-muted dark:data-active:bg-muted"
+              className="justify-start gap-2 px-3 py-1.5 data-active:border-input data-active:bg-muted data-active:font-semibold dark:data-active:bg-muted"
             >
               <GameDot game={g} />
               {t(`game.${g}`)}
@@ -80,25 +81,25 @@ export function SettingsView({ game }: { game: GameId }) {
           ))}
           <TabsTrigger
             value="language"
-            className="justify-start px-3 py-1.5 data-active:bg-muted dark:data-active:bg-muted"
+            className="justify-start px-3 py-1.5 data-active:border-input data-active:bg-muted data-active:font-semibold dark:data-active:bg-muted"
           >
             {t("settings.language")}
           </TabsTrigger>
           <TabsTrigger
             value="display"
-            className="justify-start px-3 py-1.5 data-active:bg-muted dark:data-active:bg-muted"
+            className="justify-start px-3 py-1.5 data-active:border-input data-active:bg-muted data-active:font-semibold dark:data-active:bg-muted"
           >
             {t("settings.display")}
           </TabsTrigger>
           <TabsTrigger
             value="data"
-            className="justify-start px-3 py-1.5 data-active:bg-muted dark:data-active:bg-muted"
+            className="justify-start px-3 py-1.5 data-active:border-input data-active:bg-muted data-active:font-semibold dark:data-active:bg-muted"
           >
             {t("settings.data")}
           </TabsTrigger>
           <TabsTrigger
             value="about"
-            className="justify-start px-3 py-1.5 data-active:bg-muted dark:data-active:bg-muted"
+            className="justify-start px-3 py-1.5 data-active:border-input data-active:bg-muted data-active:font-semibold dark:data-active:bg-muted"
           >
             {t("about.title")}
           </TabsTrigger>

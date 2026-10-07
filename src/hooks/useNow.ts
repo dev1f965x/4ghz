@@ -10,11 +10,23 @@ export function useNow(intervalMs: number, nextChange: number | null = null) {
   const [now, setNow] = useState(Date.now);
   useEffect(() => {
     const update = () => setNow(Date.now());
-    const timer = setInterval(update, intervalMs);
+    // Each tick lands just after a whole interval, so a countdown showing seconds never skips or
+    // repeats one because of timer drift.
+    let timer: ReturnType<typeof setTimeout>;
+    const schedule = () => {
+      timer = setTimeout(
+        () => {
+          update();
+          schedule();
+        },
+        intervalMs - (Date.now() % intervalMs),
+      );
+    };
+    schedule();
     window.addEventListener("focus", update);
     document.addEventListener("visibilitychange", update);
     return () => {
-      clearInterval(timer);
+      clearTimeout(timer);
       window.removeEventListener("focus", update);
       document.removeEventListener("visibilitychange", update);
     };

@@ -114,6 +114,7 @@ export default function App() {
             size="sm"
             aria-pressed={inSettings}
             aria-keyshortcuts="Control+,"
+            title={`${t("shell.settings")} (Ctrl+,)`}
             className="aria-pressed:bg-accent aria-pressed:text-accent-foreground"
             onClick={inSettings ? closeSettings : openSettings}
           >
