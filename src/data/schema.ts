@@ -1,4 +1,4 @@
-// The data file schema, version 1 (Design Doc, "Data file"). One definition serves two modes:
+// The data file schema, version 1. One definition serves two modes:
 // the app strips keys it does not know, so additive changes stay compatible, and CI rejects them,
 // so a file with a typo cannot be published.
 // Imports carry the .ts extension so Node can load this file directly (scripts/data-schema.mjs).
@@ -6,7 +6,7 @@ import { regions, type Time, toInstant } from "../time/clock.ts";
 import { officialHosts } from "./official-hosts.ts";
 import { z } from "./zod.ts";
 
-// Links open only official game sites (PRD, Security); see official-hosts.ts.
+// Links open only official game sites; see official-hosts.ts.
 const isOfficialHost = (host: string) => officialHosts.some((h) => h === host);
 
 /** The instant on the Asia server, or null when the time is malformed or out of range. */
@@ -60,8 +60,9 @@ function build(strict: boolean) {
   });
   const id = z.string().regex(/^[a-z0-9][a-z0-9-]*$/, "Use lowercase letters, digits, and hyphens");
 
-  // Allowed time kinds per entry type (Design Doc, "Allowed time kinds").
-  // estimated marks a date worked out from the usual cycle before an official announcement; the Schedule tab labels it (GHZ-16).
+  // Allowed time kinds per entry type.
+  // estimated marks a date worked out from the usual cycle before an official announcement;
+  // the Schedule tab labels it.
   const entryBase = {
     id,
     title: text,
@@ -175,8 +176,7 @@ function build(strict: boolean) {
     updatedAt: isoInstant,
     games: object({ genshin: game, hsr: game, zzz: game }),
   });
-  // A major version that is no longer maintained is replaced by this stub (Design Doc,
-  // "Validation and compatibility").
+  // A major version that is no longer maintained is replaced by this stub.
   const retired = object({
     ...schemaRef,
     schemaVersion: z.literal(1),

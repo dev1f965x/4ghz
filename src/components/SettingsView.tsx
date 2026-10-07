@@ -45,7 +45,7 @@ import { formatDateTime, formatLabelDate } from "@/time/format";
 
 type Section = GameId | "language" | "data" | "about";
 
-/** Settings (PRD FR3, FR4, FR6, Q1, Q2): each game, the language, the local data, and About. */
+/** Settings: each game, the language, the local data, and About. */
 export function SettingsView({ game }: { game: GameId }) {
   const { t } = useTranslation();
   const heading = useRef<HTMLHeadingElement>(null);
@@ -129,11 +129,9 @@ function GameSettings({ game }: { game: GameId }) {
       <div className="flex items-center justify-between gap-3 border-b py-2">
         <div className="flex flex-col">
           <span id={serverId}>{t("settings.server")}</span>
-          {data === null && (
-            <span id={serverHintId} className="text-sm text-muted-foreground">
-              {t("settings.serverNeedsData")}
-            </span>
-          )}
+          <span id={serverHintId} className="text-sm text-muted-foreground">
+            {data === null ? t("settings.serverNeedsData") : t("settings.serverHint")}
+          </span>
         </div>
         <Select
           value={prefs.region}
@@ -143,7 +141,7 @@ function GameSettings({ game }: { game: GameId }) {
         >
           <SelectTrigger
             aria-labelledby={serverId}
-            aria-describedby={data === null ? serverHintId : undefined}
+            aria-describedby={serverHintId}
             className="min-w-44"
           >
             <SelectValue />
@@ -232,7 +230,7 @@ function samePreview(a: RegionChange, b: RegionChange) {
   );
 }
 
-/** The confirmation names what happens to today and when recording resumes (PRD Q1). */
+/** The confirmation names what happens to today and when recording resumes. */
 function regionMessage(
   preview: RegionChange,
   t: ReturnType<typeof useTranslation>["t"],
@@ -371,7 +369,6 @@ function SwitchField({
   const hintId = useId();
   return (
     <div className="border-b py-2">
-      {/* The label wraps the switch, so clicking the text toggles it (Base UI's documented pattern). */}
       <label className="flex items-center justify-between gap-3">
         {label}
         <Switch

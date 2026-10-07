@@ -34,7 +34,7 @@ export function SyncStatus() {
     <div className="ml-auto flex items-center gap-2" data-sync-status={status}>
       {/* Plain text, not a live region: automatic refreshes every 30 minutes would interrupt a
           screen reader. Problems are announced by the banners. */}
-      <span className="text-sm text-muted-foreground">{text}</span>
+      <span className="text-sm whitespace-nowrap text-muted-foreground">{text}</span>
       {/* Never disabled: a disabled button drops keyboard focus, and refresh() already shares a
           download in progress. */}
       <Button

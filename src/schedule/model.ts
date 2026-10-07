@@ -1,4 +1,4 @@
-// Builds the Schedule tab's rows for one game (PRD FR15, FR16): times resolved on the user's
+// Builds the Schedule tab's rows for one game: times resolved on the user's
 // server, ongoing and upcoming entries, and entries removed once they end.
 import type { DataFile } from "@/data/classify";
 import { type Region, toInstant } from "@/time/clock";
@@ -19,7 +19,7 @@ export type ScheduleRow = {
 };
 
 // An entry without an end, such as a livestream, leaves the list this long after it starts
-// (Design Doc, "Allowed time kinds").
+//.
 const NO_END_MS = 3 * 60 * 60 * 1000;
 
 const visibleUntil = (row: ScheduleRow) => row.end ?? row.start + NO_END_MS;
@@ -61,7 +61,7 @@ export function scheduleRows(game: GameData, region: Region, now: number) {
   };
 }
 
-/** The data file's text in the UI language; English falls back to Korean (Design Doc, D2). */
+/** The data file's text in the UI language; English falls back to Korean. */
 export function localText(text: Text, language: string) {
   return language === "en" ? (text.en ?? text.ko) : text.ko;
 }

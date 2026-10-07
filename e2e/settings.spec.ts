@@ -78,9 +78,7 @@ test.describe("Settings for a game", () => {
     );
     await playing.click();
     await app.keyboard.press("Escape");
-    await expect(
-      app.getByText(/기록하지 않는 게임입니다|Genshin Impact isn’t tracked/),
-    ).toBeVisible();
+    await expect(app.getByText(/기록하지 않는 게임입니다|This game isn’t tracked/)).toBeVisible();
     await app.getByRole("tab", { name: /^(일정|Schedule)$/ }).click();
     await expect(app.getByRole("heading", { name: /진행 중|Ongoing/ })).toBeVisible();
   });

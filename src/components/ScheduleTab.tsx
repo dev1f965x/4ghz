@@ -1,18 +1,18 @@
-import { openUrl } from "@tauri-apps/plugin-opener";
 import { useId } from "react";
 import { useTranslation } from "react-i18next";
+import { EmptyState } from "@/components/EmptyState";
+import { ExternalLinkButton } from "@/components/ExternalLinkButton";
 import { Button } from "@/components/ui/button";
 import { useDataSync } from "@/data/store";
 import { useNow } from "@/hooks/useNow";
 import { formatDuration } from "@/i18n/duration";
 import type { Locale } from "@/i18n/locale";
-import { logError } from "@/log";
 import { localText, type ScheduleRow, scheduleRows } from "@/schedule/model";
 import { useLocalState } from "@/state/app-state";
 import type { GameId } from "@/state/schema";
 import { formatDateTime, formatRange } from "@/time/format";
 
-/** The Schedule tab: ongoing and upcoming entries with live countdowns (PRD FR15 to FR18). */
+/** The Schedule tab: ongoing and upcoming entries with live countdowns. */
 export function ScheduleTab({ game }: { game: GameId }) {
   const { t, i18n } = useTranslation();
   const { data } = useDataSync();
@@ -24,12 +24,7 @@ export function ScheduleTab({ game }: { game: GameId }) {
 
   if (ongoing.length === 0 && upcoming.length === 0) {
     const date = formatDateTime(Date.parse(data.updatedAt), i18n.language as Locale);
-    return (
-      <div className="flex flex-col items-center gap-1 rounded-lg border border-input bg-card px-4 py-8 text-center">
-        <h2 className="font-bold">{t("schedule.emptyTitle")}</h2>
-        <p className="text-sm text-muted-foreground">{t("schedule.emptyBody", { date })}</p>
-      </div>
-    );
+    return <EmptyState title={t("schedule.emptyTitle")} body={t("schedule.emptyBody", { date })} />;
   }
   return (
     <div className="flex flex-col gap-4">
@@ -82,13 +77,7 @@ function Row({ row, now, ongoing }: { row: ScheduleRow; now: number; ongoing: bo
     countdown = t("schedule.timeLeft", { time: formatDuration(t, now, row.end) });
 
   const { url } = row;
-  const open = () => {
-    if (!url) return;
-    openUrl(url).catch((error: unknown) => {
-      // The capability or a missing default browser refused it; nothing else to show yet.
-      logError(`Opening ${url} failed`, error);
-    });
-  };
+  const label = t("schedule.openAnnouncement");
 
   // Fixed widths for the type, countdown, and button columns keep titles aligned across rows. At
   // large Windows text sizes the countdown and button wrap below the title instead of squeezing it.
@@ -109,20 +98,19 @@ function Row({ row, now, ongoing }: { row: ScheduleRow; now: number; ongoing: bo
         </p>
       </div>
       <span className="ml-auto min-w-32 shrink-0 text-right text-sm tabular-nums">{countdown}</span>
-      <Button
-        variant="outline"
-        size="sm"
-        // Rows without a link keep an invisible button, so the columns line up.
-        className={url ? undefined : "invisible"}
-        aria-hidden={url ? undefined : true}
-        tabIndex={url ? undefined : -1}
+      {url ? (
         // Names the entry too, since every row has the same button text.
-        aria-label={`${t("schedule.openAnnouncement")}: ${title}`}
-        onClick={open}
-      >
-        {t("schedule.openAnnouncement")}
-        <span aria-hidden>↗</span>
-      </Button>
+        <ExternalLinkButton url={url} variant="outline" size="sm" aria-label={`${label}: ${title}`}>
+          {label}
+          <span aria-hidden>↗</span>
+        </ExternalLinkButton>
+      ) : (
+        // Rows without a link keep an invisible button, so the columns line up.
+        <Button variant="outline" size="sm" className="invisible" aria-hidden tabIndex={-1}>
+          {label}
+          <span aria-hidden>↗</span>
+        </Button>
+      )}
     </li>
   );
 }

@@ -34,15 +34,15 @@ export default function App() {
   }, [game]);
 
   // Resets and missed days apply on start, every 30 seconds, and when the window regains focus
-  // or becomes visible (PRD FR29). A clock change or a resume that triggers neither is picked up
+  // or becomes visible. A clock change or a resume that triggers neither is picked up
   // by the next 30-second tick.
   const { data } = useDataSync();
   const now = useNow(30_000);
   useEffect(() => {
     if (data !== null) advanceAllChores(data, now);
   }, [data, now]);
-  // Marks when data is first on screen; the smoke test reads it to measure the startup target
-  // (Design Doc D5: cached data within 1 second of launch).
+  // Marks when data is first on screen; the smoke test reads it to measure the startup target:
+  // cached data within 1 second of launch.
   useEffect(() => {
     if (data !== null && performance.getEntriesByName(FIRST_DATA_MARK).length === 0) {
       performance.mark(FIRST_DATA_MARK);
@@ -89,7 +89,6 @@ export default function App() {
   const inSettings = view === "settings";
   return (
     <div className="flex min-h-svh flex-col">
-      {/* A panel with a hairline under it, as in the visual direction. */}
       <header className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b bg-card px-4 py-2">
         <Mark />
         {inSettings ? (
@@ -101,7 +100,6 @@ export default function App() {
           <GameSelect game={game} onChange={(g) => void updateSettings({ lastGame: g })} />
         )}
         <SyncStatus />
-        {/* A toggle: pressed while Settings is open, with the accent tint of a pressed button. */}
         <Button
           ref={settingsButton}
           variant="outline"

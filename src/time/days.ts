@@ -1,10 +1,10 @@
-// Records game-day results for one game, following the Design Doc's "Time and reset logic".
+// Records game-day results for one game.
 // Pure functions: callers pass the current instant and store the returned state.
 import { addDays, DAY, gameDayEnd, gameDayLabel, gameDayStart, type Region } from "./clock";
 
 // The previous game day stays editable for this long after the daily reset.
 export const GRACE_MS = 2 * 60 * 60 * 1000;
-// A clock that moved back by more than this is treated as wrong (Design Doc, Clock changes).
+// A clock that moved back by more than this is treated as wrong.
 const CLOCK_TOLERANCE_MS = 60 * 1000;
 // Checks of a recorded day are kept this long after the day was fixed.
 const CHECK_RETENTION_MS = 7 * DAY;
@@ -211,7 +211,7 @@ export function setDailyCheck(
 }
 
 /**
- * Moves the game to another server region (PRD Q1, Design Doc "Region change").
+ * Moves the game to another server region.
  * `ctx` describes the old region; the returned state counts days of `newRegion` from `countFrom`.
  */
 export function changeRegion(state: GameDays, ctx: Context, newRegion: Region): GameDays {
@@ -249,7 +249,7 @@ export function changeRegion(state: GameDays, ctx: Context, newRegion: Region): 
   };
 }
 
-/** Days to highlight: at least one tracked game and every tracked game done (PRD FR33). */
+/** Days to highlight: at least one tracked game and every tracked game done. */
 export function isAllDone(records: readonly (DayRecord | undefined)[]): boolean {
   const tracked = records.filter(
     (r): r is DayRecord => r !== undefined && r.result !== "untracked",
@@ -261,7 +261,7 @@ export function isAllDone(records: readonly (DayRecord | undefined)[]): boolean 
  * The result so far of a counted day that has not been fixed yet: today, the previous day in
  * its grace period, or a day whose grace period just ended before the next advance fixes it.
  * Undefined when the game is not played, the day is before countFrom, or it is already
- * processed. During the day it follows the current chores and settings (PRD FR34).
+ * processed. During the day it follows the current chores and settings.
  */
 export function unfixedDayResult(
   state: GameDays,

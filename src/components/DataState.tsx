@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { refreshData, useDataSync } from "@/data/store";
 
-/** Shows the tab's content once data is available, and why it is not otherwise (PRD FR12). */
+/** Shows the tab's content once data is available, and why it is not otherwise. */
 export function DataState({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
   const { data, status, problem } = useDataSync();

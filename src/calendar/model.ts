@@ -1,9 +1,9 @@
-// The month grid (PRD FR31 to FR36): each game day's per-game result and the highlight. Fixed
+// The month grid: each game day's per-game result and the highlight. Fixed
 // days come from the stored records; today and a previous day in its grace period are computed
 // from the current checks, so their marks follow the checklist. Pure, on top of the time model.
 import { choreContext, type GameData, type GamePrefs } from "@/chores/model";
 import type { GameChores, GameId } from "@/state/schema";
-import { gameIds } from "@/state/schema";
+import { gameIds, mapGames } from "@/state/schema";
 import { addDays, gameDayLabel } from "@/time/clock";
 import { type DayResult, isAllDone, unfixedDayResult } from "@/time/days";
 
@@ -17,8 +17,10 @@ export type CalendarDay = {
   inMonth: boolean;
   status: DayStatus;
   games: Record<GameId, GameMark>;
-  /** Every tracked game is done (PRD FR33). */
+  /** Every tracked game is done. */
   all: boolean;
+  /** False before any game was tracked: such days show nothing, not "no record". */
+  tracked: boolean;
 };
 
 export type CalendarInput = {
@@ -82,16 +84,11 @@ export function calendarToday(prefs: Record<GameId, GamePrefs>, now: number): st
 
 export function calendarDay(input: CalendarInput, label: string, month: string): CalendarDay {
   const today = calendarToday(input.prefs, input.now);
-  const live = Object.fromEntries(gameIds.map((g) => [g, unfixed(input, g, label)])) as Record<
-    GameId,
-    DayResult | undefined
-  >;
-  const games = Object.fromEntries(
-    gameIds.map((g) => [
-      g,
+  const live = mapGames((g) => unfixed(input, g, label));
+  const games = mapGames(
+    (g): GameMark =>
       label > today ? "none" : (live[g] ?? input.chores[g].days[label]?.result ?? "none"),
-    ]),
-  ) as Record<GameId, GameMark>;
+  );
   let status: DayStatus = "past";
   if (label > today) status = "upcoming";
   else if (label === today) status = "today";
@@ -104,14 +101,29 @@ export function calendarDay(input: CalendarInput, label: string, month: string):
       return mark === "none" ? undefined : { result: mark, fixedAt: 0 };
     }),
   );
-  return { label, inMonth: monthOf(label) === month, status, games, all };
+  const tracked = label >= firstTrackedLabel(input);
+  return { label, inMonth: monthOf(label) === month, status, games, all, tracked };
 }
 
 export function calendarMonth(input: CalendarInput, month: string): CalendarDay[][] {
   return monthLabels(month).map((week) => week.map((label) => calendarDay(input, label, month)));
 }
 
-/** The earliest month with a record, so the user can go back that far (PRD FR36). */
+/** The first day any game counted: its earliest record or the start of tracking. */
+function firstTrackedLabel(input: CalendarInput): string {
+  let first = "9999-12-31";
+  for (const g of gameIds) {
+    const state = input.chores[g];
+    if (state.countFrom !== null) {
+      const start = gameDayLabel(state.countFrom, input.prefs[g].region);
+      if (start < first) first = start;
+    }
+    for (const label of Object.keys(state.days)) if (label < first) first = label;
+  }
+  return first;
+}
+
+/** The earliest month with a record, so the user can go back that far. */
 export function firstMonth(chores: Record<GameId, GameChores>, current: string): string {
   let first = current;
   for (const g of gameIds) {

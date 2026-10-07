@@ -9,7 +9,7 @@ function isLocale(value: unknown): value is Locale {
 
 /**
  * An explicit choice from settings wins; otherwise the Windows display language, which
- * WebView2 reports in navigator.languages (Design Doc, Spike results).
+ * WebView2 reports in navigator.languages.
  */
 export function detectLocale(stored: Locale | undefined, languages: readonly string[]): Locale {
   if (stored) return stored;

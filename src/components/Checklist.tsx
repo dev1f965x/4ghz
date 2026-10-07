@@ -1,9 +1,10 @@
-import { type ReactNode, useCallback, useEffect, useId, useState } from "react";
+import { type ReactNode, useEffect, useId, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { type ChoreItem, checklist, nextChange } from "@/chores/model";
-import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/EmptyState";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useDataSync } from "@/data/store";
+import { useAnnouncer } from "@/hooks/useAnnouncer";
 import { useNow } from "@/hooks/useNow";
 import type { Locale } from "@/i18n/locale";
 import { localText } from "@/schedule/model";
@@ -19,7 +20,7 @@ import {
 
 type Group = "previous" | "daily" | "weekly" | "periodic";
 
-/** The Calendar's chore checklist for the selected game (PRD FR25 to FR30, FR37, FR38). */
+/** The Calendar's chore checklist for the selected game. */
 export function Checklist({ game, onOpenSettings }: { game: GameId; onOpenSettings: () => void }) {
   const { t, i18n } = useTranslation();
   const locale = i18n.language as Locale;
@@ -34,23 +35,17 @@ export function Checklist({ game, onOpenSettings }: { game: GameId; onOpenSettin
       : checklist(data.games[game], state.chores[game], gamePrefs(state, game), now);
   const next = list === null ? null : nextChange(list, now);
   useEffect(() => setBoundary(next), [next]);
-  const [announcement, setAnnouncement] = useState("");
-  // Clearing first lets the same message be announced again: an unchanged text is not re-read.
-  const announce = useCallback((text: string) => {
-    setAnnouncement("");
-    requestAnimationFrame(() => setAnnouncement(text));
-  }, []);
+  const { announce, region } = useAnnouncer();
   if (data === null || list === null) return null;
   const ro = readOnly !== null;
 
-  // A game the user does not play has no checklist and no records (PRD Q2, FR38).
+  // A game the user does not play has no checklist and no records.
   if (!state.settings.games[game].plays) {
     return (
       <EmptyState
-        title={t("chores.notPlayedTitle", { game: t(`game.${game}`) })}
+        title={t("chores.notPlayedTitle")}
         body={t("chores.notPlayedBody")}
-        action={t("firstRun.open")}
-        onAction={onOpenSettings}
+        action={{ label: t("firstRun.open"), onClick: onOpenSettings }}
       />
     );
   }
@@ -60,8 +55,7 @@ export function Checklist({ game, onOpenSettings }: { game: GameId; onOpenSettin
       <EmptyState
         title={t("chores.noneTitle")}
         body={t("chores.noneBody", { game: t(`game.${game}`) })}
-        action={t("firstRun.open")}
-        onAction={onOpenSettings}
+        action={{ label: t("firstRun.open"), onClick: onOpenSettings }}
       />
     );
   }
@@ -101,9 +95,7 @@ export function Checklist({ game, onOpenSettings }: { game: GameId; onOpenSettin
       <h2 id="checklist-heading" className="sr-only">
         {t("chores.title")}
       </h2>
-      <p role="status" className="sr-only">
-        {announcement}
-      </p>
+      {region}
 
       {list.previous && (
         <GroupBox
@@ -177,7 +169,7 @@ export function Checklist({ game, onOpenSettings }: { game: GameId; onOpenSettin
         <GroupBox
           id="periodic"
           title={t("chores.periodic")}
-          // Chores without a current period are not counted (PRD FR26); with none, no count.
+          // Chores without a current period are not counted; with none, no count.
           meta={counted.length > 0 ? progress(counted) : null}
         >
           {list.periodic.items.map((item) => (
@@ -270,27 +262,5 @@ function Note({ children }: { children: ReactNode }) {
     <p className="rounded-lg border border-dashed border-input bg-card px-3 py-2 text-sm">
       {children}
     </p>
-  );
-}
-
-function EmptyState({
-  title,
-  body,
-  action,
-  onAction,
-}: {
-  title: string;
-  body: string;
-  action: string;
-  onAction: () => void;
-}) {
-  return (
-    <div className="flex flex-col items-center gap-2 rounded-lg border border-input bg-card px-4 py-8 text-center">
-      <h2 className="font-bold">{title}</h2>
-      <p className="text-sm text-muted-foreground">{body}</p>
-      <Button variant="outline" onClick={onAction}>
-        {action}
-      </Button>
-    </div>
   );
 }

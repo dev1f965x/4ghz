@@ -152,7 +152,7 @@ describe("days not fixed yet", () => {
     expect(day).toMatchObject({ status: "pending", games: { genshin: "done" } });
   });
 
-  it("follows a chore turned off during the day (PRD FR34)", () => {
+  it("follows a chore turned off during the day", () => {
     const chores = fresh(NOW);
     const off: GameData = {
       ...game,
@@ -171,5 +171,13 @@ describe("calendarToday", () => {
     expect(calendarToday({ genshin: america, hsr: ASIA, zzz: america }, NOW)).toBe("2026-10-06");
     const off = { ...ASIA, plays: false };
     expect(calendarToday({ genshin: america, hsr: off, zzz: america }, NOW)).toBe("2026-10-05");
+  });
+});
+
+describe("days before tracking", () => {
+  it("are not tracked, so they show nothing instead of no record", () => {
+    const input = { chores: fresh(NOW), games, prefs: PREFS, now: NOW };
+    expect(calendarDay(input, "2026-10-05", "2026-10").tracked).toBe(false);
+    expect(calendarDay(input, "2026-10-06", "2026-10").tracked).toBe(true);
   });
 });

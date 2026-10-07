@@ -1,4 +1,4 @@
-// Smoke test of the packaged app (Design Doc, Testing): the build starts, shows its tabs,
+// Smoke test of the packaged app: the build starts, shows its tabs,
 // reports no CSP violations, saves a checked chore, and shows it again after a restart.
 //
 // The test build has its own identifier (tauri.e2e.conf.json), so its records live in a
@@ -228,8 +228,8 @@ async function run(label, { check }) {
     // In attach mode this only detaches; close() below closes the app.
     await webdriver("DELETE", `/session/${session.sessionId}`);
     const { firstDataAt, pageStartAt, ...shown } = result;
-    // Reported, not asserted: a cold CI runner varies too much for a hard limit. The target
-    // (Design Doc D5) is measured on a PC and recorded with the verification results.
+    // Reported, not asserted: a cold CI runner varies too much for a hard limit. The 1 second
+    // target is measured on a PC instead.
     const toData =
       firstDataAt === null
         ? "none"

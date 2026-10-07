@@ -1,5 +1,5 @@
 // Display in the user's Windows time zone. Formatters are created per call so a time zone change
-// applies without a restart (Design Doc, Spike results).
+// applies without a restart.
 
 export type Locale = "ko" | "en";
 

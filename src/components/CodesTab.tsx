@@ -1,11 +1,13 @@
 import { writeText } from "@tauri-apps/plugin-clipboard-manager";
 import { CheckIcon } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { activeCodes, type CodeRow } from "@/codes/model";
+import { EmptyState } from "@/components/EmptyState";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useDataSync } from "@/data/store";
+import { useAnnouncer } from "@/hooks/useAnnouncer";
 import { useNow } from "@/hooks/useNow";
 import { formatDuration } from "@/i18n/duration";
 import type { Locale } from "@/i18n/locale";
@@ -18,32 +20,21 @@ import { formatDateTime, timeLeft } from "@/time/format";
 // How long a button reads "Copied" or "Couldn't copy" before it returns to "Copy".
 const RESULT_MS = 2000;
 
-/** The Codes tab: active codes, newest first, to copy and mark as redeemed (PRD FR19 to FR24). */
+/** The Codes tab: active codes, newest first, to copy and mark as redeemed. */
 export function CodesTab({ game }: { game: GameId }) {
   const { t } = useTranslation();
   const { data } = useDataSync();
   const { state } = useLocalState();
   const now = useNow(30_000);
-  const [announcement, setAnnouncement] = useState("");
-  // Clearing first lets the same message be announced again: an unchanged text is not re-read.
-  const announce = useCallback((text: string) => {
-    setAnnouncement("");
-    requestAnimationFrame(() => setAnnouncement(text));
-  }, []);
+  const { announce, region } = useAnnouncer();
   if (data === null) return null;
   const codes = activeCodes(data.games[game], state.settings.games[game].region, now);
 
   return (
     <div className="flex flex-col gap-2">
-      {/* Copy results are announced here, without moving focus. */}
-      <p role="status" className="sr-only">
-        {announcement}
-      </p>
+      {region}
       {codes.length === 0 ? (
-        <div className="flex flex-col items-center gap-1 rounded-lg border border-input bg-card px-4 py-8 text-center">
-          <h2 className="font-bold">{t("codes.emptyTitle")}</h2>
-          <p className="text-sm text-muted-foreground">{t("codes.emptyBody")}</p>
-        </div>
+        <EmptyState title={t("codes.emptyTitle")} body={t("codes.emptyBody")} />
       ) : (
         <>
           <h2 className="font-bold">{t("codes.title")}</h2>
@@ -154,7 +145,6 @@ function Row({
         {result === "copied" && <CheckIcon aria-hidden data-icon="inline-start" />}
         {buttonText}
       </Button>
-      {/* Base UI's documented pattern: the label wraps the checkbox, so clicking the text toggles it. */}
       <label className="flex shrink-0 items-center gap-1.5 text-sm">
         <Checkbox
           checked={redeemed}

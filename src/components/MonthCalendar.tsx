@@ -16,13 +16,13 @@ import { useDataSync } from "@/data/store";
 import { useNow } from "@/hooks/useNow";
 import type { Locale } from "@/i18n/locale";
 import { allPrefs, useLocalState } from "@/state/app-state";
-import { gameIds } from "@/state/schema";
+import { type GameId, gameIds } from "@/state/schema";
 import { addDays, gameDayLabel, gameDayStart } from "@/time/clock";
 import { GRACE_MS } from "@/time/days";
 import { formatLabelLong, formatMonth, weekdayNames } from "@/time/format";
 
 /**
- * The month grid of completed days (PRD FR31 to FR36), a WAI-ARIA grid with a roving tabindex:
+ * The month grid of completed days, a WAI-ARIA grid with a roving tabindex:
  * arrows move by day and week, Home and End to the week's ends, Page Up and Page Down by month.
  * It needs no data file: stored days show without one.
  */
@@ -213,7 +213,7 @@ export function MonthCalendar() {
         </tbody>
       </table>
 
-      <Legend />
+      <Legend games={gameIds.filter((g) => prefs[g].plays)} />
       {readOnly !== null && (
         <p className="text-sm text-muted-foreground">{t("calendar.readOnly")}</p>
       )}
@@ -262,6 +262,7 @@ function DayCell({
   const done = gameIds.filter((g) => day.games[g] === "done");
   const noRecord =
     day.inMonth &&
+    day.tracked &&
     (day.status === "past" || (readOnly && day.status !== "upcoming")) &&
     done.length === 0 &&
     gameIds.every((g) => day.games[g] === "none");
@@ -301,12 +302,12 @@ function DayCell({
   );
 }
 
-function Legend() {
+function Legend({ games }: { games: GameId[] }) {
   const { t } = useTranslation();
   const sample = "inline-flex size-5 items-center justify-center rounded-sm border";
   return (
     <ul className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-muted-foreground">
-      {gameIds.map((g) => (
+      {games.map((g) => (
         <li key={g} className="inline-flex items-center gap-1.5">
           <GameMark game={g} />
           {t("calendar.legend.done", { game: t(`game.${g}`) })}

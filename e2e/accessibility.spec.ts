@@ -1,4 +1,4 @@
-// Pre-acceptance accessibility checks (GHZ-23) on every screen: Windows contrast themes through
+// Pre-acceptance accessibility checks on every screen: Windows contrast themes through
 // forced colors, and the largest Windows text size. Screenshots are attached to the report for
 // review; Narrator is checked by hand during acceptance testing.
 import type { Page, TestInfo } from "@playwright/test";
@@ -58,7 +58,7 @@ test.describe("at 225% text size", () => {
     }, testInfo) => {
       await app.setViewportSize({ width: 720, height: 560 });
       // WebView2 applies the Windows text size to the root font size, and the layout uses rem,
-      // so this matches the setting (Design Doc, spike results).
+      // so this matches the setting.
       await app.addStyleTag({ content: "html { font-size: 225%; }" });
       await screen.open(app);
       const overflow = await app.evaluate(

@@ -14,7 +14,7 @@ import type { DataFile } from "@/data/classify";
 import { logError } from "@/log";
 import { readStore, writeStore } from "@/storage";
 import type { Region } from "@/time/clock";
-import { type GameId, gameIds, type LocalState } from "./schema";
+import { type GameId, gameIds, type LocalState, mapGames } from "./schema";
 import { createLocalStore } from "./store";
 
 const localStore = createLocalStore({
@@ -64,26 +64,17 @@ export function setRedeemed(game: GameId, code: string, redeemed: boolean) {
 // lastAdvancedAt per game as last saved by an advance; null until the first advance.
 let savedAdvancedAt: Record<GameId, number> | null = null;
 
-/** Applies resets and missed days to every game (PRD FR28, FR29); writes only real changes. */
+/** Applies resets and missed days to every game; writes only real changes. */
 export function advanceAllChores(data: DataFile, now: number) {
   const { state } = localStore.getSnapshot();
-  const next = Object.fromEntries(
-    gameIds.map((g) => [
-      g,
-      advanceChores(data.games[g], state.chores[g], gamePrefs(state, g), now),
-    ]),
-  ) as LocalState["chores"];
+  const next = mapGames((g) =>
+    advanceChores(data.games[g], state.chores[g], gamePrefs(state, g), now),
+  );
   // Starts from the loaded file; every save of the chores below writes all games.
-  savedAdvancedAt ??= Object.fromEntries(
-    gameIds.map((g) => [g, state.chores[g].lastAdvancedAt]),
-  ) as Record<GameId, number>;
+  savedAdvancedAt ??= mapGames((g) => state.chores[g].lastAdvancedAt);
   const saved = savedAdvancedAt;
   const save = gameIds.some((g) => advanceNeedsSave(state.chores[g], next[g], saved[g]));
-  if (save)
-    savedAdvancedAt = Object.fromEntries(gameIds.map((g) => [g, next[g].lastAdvancedAt])) as Record<
-      GameId,
-      number
-    >;
+  if (save) savedAdvancedAt = mapGames((g) => next[g].lastAdvancedAt);
   void localStore.update((s) => ({ ...s, chores: next }), { save });
 }
 
@@ -99,19 +90,9 @@ export function checkDailyChore(
   checked: boolean,
   now: number,
 ) {
-  const { state } = localStore.getSnapshot();
-  const next = checkDaily(
-    data.games[game],
-    state.chores[game],
-    gamePrefs(state, game),
-    now,
-    label,
-    choreId,
-    checked,
+  return applyCheck(game, (chores, prefs) =>
+    checkDaily(data.games[game], chores, prefs, now, label, choreId, checked),
   );
-  if (next === null) return false;
-  void localStore.update((s) => ({ ...s, chores: { ...s.chores, [game]: next } }));
-  return true;
 }
 
 /** Checks or unchecks a weekly or periodic chore; false when cycle `key` has ended. */
@@ -123,16 +104,21 @@ export function checkCycleChore(
   checked: boolean,
   now: number,
 ) {
-  const { state } = localStore.getSnapshot();
-  const next = checkCycle(
-    data.games[game],
-    state.chores[game],
-    gamePrefs(state, game),
-    now,
-    key,
-    choreId,
-    checked,
+  return applyCheck(game, (chores, prefs) =>
+    checkCycle(data.games[game], chores, prefs, now, key, choreId, checked),
   );
+}
+
+/** Saves a check the model accepted; false when it refused, as for a cycle that closed. */
+function applyCheck(
+  game: GameId,
+  check: (
+    chores: LocalState["chores"][GameId],
+    prefs: GamePrefs,
+  ) => LocalState["chores"][GameId] | null,
+) {
+  const { state } = localStore.getSnapshot();
+  const next = check(state.chores[game], gamePrefs(state, game));
   if (next === null) return false;
   void localStore.update((s) => ({ ...s, chores: { ...s.chores, [game]: next } }));
   return true;
@@ -145,22 +131,19 @@ export function gamePrefs(state: LocalState, game: GameId): GamePrefs {
 }
 
 export function allPrefs(state: LocalState): Record<GameId, GamePrefs> {
-  return Object.fromEntries(gameIds.map((g) => [g, gamePrefs(state, g)])) as Record<
-    GameId,
-    GamePrefs
-  >;
+  return mapGames((g) => gamePrefs(state, g));
 }
 
 /**
  * Days that ended under the old settings are fixed with them before a setting changes, so a
- * change never rewrites past days (PRD FR34). Without data nothing can be fixed yet.
+ * change never rewrites past days. Without data nothing can be fixed yet.
  */
 function advanceBeforeChange(data: DataFile | null, now: number) {
   if (data !== null) advanceAllChores(data, now);
 }
 
 /**
- * Turns a game on or off in "games I play" (PRD Q2). Turning it off first records the previous
+ * Turns a game on or off in "games I play". Turning it off first records the previous
  * day if it is still in its grace period, so a finished day is not lost to the new setting.
  */
 export function setPlays(data: DataFile | null, game: GameId, plays: boolean, now: number) {
@@ -181,7 +164,7 @@ export function setPlays(data: DataFile | null, game: GameId, plays: boolean, no
   }));
 }
 
-/** Turns a chore on or off; today's result follows at once (PRD FR34). */
+/** Turns a chore on or off; today's result follows at once. */
 export function setChoreEnabled(
   data: DataFile | null,
   game: GameId,
@@ -202,7 +185,7 @@ export function setChoreEnabled(
   }));
 }
 
-/** What a server change would do, for the confirmation (PRD Q1). */
+/** What a server change would do, for the confirmation. */
 export function previewRegionChange(data: DataFile, game: GameId, region: Region, now: number) {
   const { state } = localStore.getSnapshot();
   return changeGameRegion(
@@ -222,6 +205,8 @@ export function setRegion(data: DataFile, game: GameId, region: Region, now: num
     chores: { ...s.chores, [game]: next },
     settings: {
       ...s.settings,
+      // Choosing a server is what the first-run notice asks for.
+      firstRunNoticeDismissed: true,
       games: { ...s.settings.games, [game]: { ...s.settings.games[game], region } },
     },
   }));

@@ -1,14 +1,14 @@
 import { Dialog } from "@base-ui/react/dialog";
-import { openUrl } from "@tauri-apps/plugin-opener";
 import { ExternalLinkIcon } from "lucide-react";
 import { useId, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { ExternalLinkButton } from "@/components/ExternalLinkButton";
 import { Button } from "@/components/ui/button";
 import { issuesUrl } from "@/links";
 import { logError } from "@/log";
 import licenseText from "../../LICENSE?raw";
 
-/** About (PRD FR6): version, notices, privacy, licenses, and feedback. */
+/** About: version, notices, privacy, licenses, and feedback. */
 export function About() {
   const { t } = useTranslation();
   return (
@@ -25,17 +25,10 @@ export function About() {
           load={() => Promise.resolve(licenseText)}
         />
         <TextDialog name="third-party notices" label={t("about.notices")} load={loadNotices} />
-        <Button
-          variant="outline"
-          onClick={() =>
-            openUrl(issuesUrl).catch((error: unknown) =>
-              logError("Opening the issues page failed", error),
-            )
-          }
-        >
+        <ExternalLinkButton url={issuesUrl} variant="outline">
           {t("about.feedback")}
           <ExternalLinkIcon aria-hidden data-icon="inline-end" />
-        </Button>
+        </ExternalLinkButton>
       </div>
     </div>
   );
