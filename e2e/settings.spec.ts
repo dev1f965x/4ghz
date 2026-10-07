@@ -78,9 +78,7 @@ test.describe("Settings for a game", () => {
     );
     await playing.click();
     await app.keyboard.press("Escape");
-    await expect(
-      app.getByText(/기록하지 않는 게임입니다|Genshin Impact isn’t tracked/),
-    ).toBeVisible();
+    await expect(app.getByText(/기록하지 않는 게임입니다|This game isn’t tracked/)).toBeVisible();
     await app.getByRole("tab", { name: /^(일정|Schedule)$/ }).click();
     await expect(app.getByRole("heading", { name: /진행 중|Ongoing/ })).toBeVisible();
   });
@@ -149,6 +147,30 @@ test.describe("changing the server with history", () => {
     await back(app).click();
     await expect(app.getByRole("region", { name: /^(일간|Daily)$/ })).toContainText(
       /일간 숙제는 10월 7일 18:00부터 다시 기록합니다|Daily chores are recorded again from Oct 7, 18:00/,
+    );
+  });
+});
+
+test.describe("with the first-run notice showing", () => {
+  test.use({
+    localFiles: {
+      state: JSON.stringify({
+        schemaVersion: 1,
+        settings: { ...settings, firstRunNoticeDismissed: false },
+      }),
+    },
+  });
+
+  test("a server change dismisses it, since that is what it asks for", async ({ app }) => {
+    await expect(
+      app.getByText(/서버와 게임을 확인하세요|Check your server and games/),
+    ).toBeVisible();
+    await settingsButton(app).click();
+    await chooseServer(app, /^(유럽|Europe)$/);
+    await app.getByRole("button", { name: /서버 바꾸기|Change server/ }).click();
+    await back(app).click();
+    await expect(app.getByText(/서버와 게임을 확인하세요|Check your server and games/)).toHaveCount(
+      0,
     );
   });
 });

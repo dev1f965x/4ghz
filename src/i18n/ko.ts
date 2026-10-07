@@ -13,10 +13,12 @@ export const ko: Messages = {
     settings: "설정",
     back: "돌아가기",
   },
+  links: { openFailed: "브라우저를 열지 못했습니다." },
   about: {
     title: "정보",
     version: "4ghz {{version}}",
-    unofficial: "4ghz는 이 게임들의 퍼블리셔나 권리자와 제휴하거나 승인받지 않은 비공식 앱입니다.",
+    unofficial:
+      "4ghz는 각 게임의 퍼블리셔나 권리자와 제휴하지 않았고 승인도 받지 않은 비공식 앱입니다.",
     trademarks: "원신, 붕괴: 스타레일, 젠레스 존 제로는 각 권리자의 상표입니다.",
     privacyTitle: "개인정보",
     privacy:
@@ -30,15 +32,15 @@ export const ko: Messages = {
   },
   update: {
     title: "새 버전이 나왔습니다",
-    body: "릴리스 페이지에서 4ghz {{version}} 버전을 받을 수 있습니다.",
+    body: "릴리스 페이지에서 4ghz {{version}} 버전을 받으세요.",
     open: "릴리스 열기",
     dismiss: "새 버전 알림 닫기",
   },
   firstRun: {
     title: "서버와 게임을 확인하세요",
-    body: "기본 서버는 아시아입니다.",
+    body: "서버는 게임마다 따로 고릅니다. 기본값은 아시아입니다.",
     open: "설정 열기",
-    dismiss: "알림 닫기",
+    dismiss: "서버 확인 알림 닫기",
   },
   readOnly: {
     title: "기록을 읽을 수 없습니다",
@@ -133,7 +135,8 @@ export const ko: Messages = {
     playing: "플레이 중",
     playingHint: "끄면 숙제와 캘린더에 기록하지 않습니다. 일정과 코드는 계속 볼 수 있습니다.",
     server: "서버",
-    serverNeedsData: "데이터를 불러온 뒤 바꿀 수 있습니다.",
+    serverNeedsData: "데이터를 불러오면 바꿀 수 있습니다.",
+    serverHint: "시간은 이 PC의 시간대로 표시합니다.",
     chores: { daily: "일간 숙제", weekly: "주간 숙제", periodic: "기간 숙제" },
     choresNeedData: "데이터를 불러오면 숙제를 고를 수 있습니다.",
     language: "언어",
@@ -160,7 +163,7 @@ export const ko: Messages = {
     previous: "이전 달",
     next: "다음 달",
     today: "오늘",
-    all: "모두",
+    all: "전부",
     readOnly: "기록을 읽을 수 없어 날짜별 결과를 표시하지 않습니다.",
     state: {
       done: "완료",
@@ -172,7 +175,7 @@ export const ko: Messages = {
     dayStatus: { today: "오늘", pending: "확정 대기", upcoming: "다가올 날" },
     allDone: "하는 게임 모두 완료",
     legend: {
-      done: "{{game}} 완료",
+      done: "{{game}}: 일간 숙제 모두 완료",
       all: "하는 게임 모두 완료",
       today: "오늘",
       pending: "확정 대기",

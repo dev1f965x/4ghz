@@ -1,4 +1,4 @@
-// Keeps the last valid data file and refreshes it (PRD FR8 to FR12): the cached copy shows at once
+// Keeps the last valid data file and refreshes it: the cached copy shows at once
 // at startup, then the network copy replaces it if it is valid. Any failure keeps the last valid
 // copy. I/O is injected, so every outcome is unit-tested without a network or Tauri.
 import { classify, type DataFile } from "./classify";

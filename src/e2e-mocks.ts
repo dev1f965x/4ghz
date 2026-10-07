@@ -15,6 +15,8 @@ declare global {
     __E2E_CLIPBOARD__?: string;
     /** While true, write_store fails the way a full disk would. */
     __E2E_WRITE_FAILS__?: boolean;
+    /** While true, opening a URL fails, as without a default browser. */
+    __E2E_OPEN_FAILS__?: boolean;
     /** How many times the app asked to open its data folder. */
     __E2E_FOLDER_OPENED__?: number;
   }
@@ -46,6 +48,7 @@ export function installE2eMocks() {
         window.__E2E_FOLDER_OPENED__ = (window.__E2E_FOLDER_OPENED__ ?? 0) + 1;
         return null;
       case "plugin:opener|open_url":
+        if (window.__E2E_OPEN_FAILS__) throw new Error("No default browser");
         window.__E2E_OPENED__ = [
           ...(window.__E2E_OPENED__ ?? []),
           (payload as { url: string }).url,

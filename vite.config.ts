@@ -27,6 +27,12 @@ export default defineConfig({
   // The version the About screen shows and the update check compares; tauri.conf.json reads
   // the same package.json, so the two cannot differ.
   define: { __APP_VERSION__: JSON.stringify(version) },
+  build: {
+    // The bundle loads from the installed app, not over a network, so the web-oriented 500 kB
+    // warning does not apply; startup is measured instead (e2e/app-smoke.mjs). The limit still
+    // flags an unexpected jump in size.
+    chunkSizeWarningLimit: 700,
+  },
   resolve: { alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) } },
   // Unit tests live next to the code; e2e/ holds Playwright tests, which Vitest must not run.
   test: { include: ["src/**/*.test.{ts,tsx}"] },

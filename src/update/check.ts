@@ -1,4 +1,4 @@
-// The new-version notice (PRD Q8, Design Doc "Update check"): once at startup the app asks the
+// The new-version notice: once at startup the app asks the
 // GitHub REST API for the latest published release and compares it with its own version. The
 // app never installs anything; the notice links to the release page.
 import { z } from "@/data/zod";

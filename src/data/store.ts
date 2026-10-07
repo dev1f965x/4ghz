@@ -21,7 +21,7 @@ const dataSync = createDataSync({
   logError,
 });
 
-/** Loads the cache, downloads, and refreshes every 30 minutes (Design Doc, "Data file"). */
+/** Loads the cache, downloads, and refreshes every 30 minutes. */
 export function startDataSync() {
   void dataSync.start();
   setInterval(() => void dataSync.refresh(), REFRESH_INTERVAL_MS);

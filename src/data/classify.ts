@@ -1,6 +1,6 @@
-// Decides what a downloaded or cached data file means for the app (Design Doc, "Validation and
-// compatibility"): the schema version first, then the retired flag, and only then the whole file,
-// so an app that meets a newer or retired file says it needs an update instead of "invalid".
+// Decides what a downloaded or cached data file means for the app: the schema version first,
+// then the retired flag, and only then the whole file, so an app that meets a newer or retired
+// file says it needs an update instead of "invalid".
 import type { z } from "zod";
 import { dataFileSchema } from "./schema";
 

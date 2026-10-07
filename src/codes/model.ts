@@ -1,4 +1,4 @@
-// The Codes tab's rows for one game (PRD FR19, FR22, Q3): codes that have not expired on the
+// The Codes tab's rows for one game: codes that have not expired on the
 // user's server, newest first. A code without a known expiry stays until the owner removes it.
 import type { DataFile } from "@/data/classify";
 import { type Region, toInstant } from "@/time/clock";
@@ -25,7 +25,7 @@ export function activeCodes(game: GameData, region: Region, now: number): CodeRo
     .map(({ added: _, ...row }) => row);
 }
 
-// The official redemption page per game (PRD FR21); every host is in official-hosts.ts.
+// The official redemption page per game; every host is in official-hosts.ts.
 export function redemptionUrl(game: "genshin" | "hsr" | "zzz", language: string) {
   switch (game) {
     case "genshin":

@@ -1,4 +1,4 @@
-// The Calendar's checklist for one game (PRD FR25 to FR30, FR37): which chores show, which are
+// The Calendar's checklist for one game: which chores show, which are
 // checked, which can be changed, and when each cycle resets. Pure, on top of the time model.
 import type { DataFile } from "@/data/classify";
 import type { GameChores } from "@/state/schema";
@@ -30,13 +30,13 @@ type Chore = GameData["chores"][number];
 export type ChoreItem = { id: string; name: Chore["name"]; checked: boolean };
 
 export type Checklist = {
-  /** The day before today while it can still be changed (the grace period, PRD Q5). */
+  /** The day before today while it can still be changed (the grace period). */
   previous: { label: string; editableUntil: number; items: ChoreItem[] } | null;
   daily: {
     label: string;
     items: ChoreItem[];
     resetsAt: number;
-    /** Set while a region change waits for the new server's next day (PRD Q1). */
+    /** Set while a region change waits for the new server's next day. */
     resumesAt: number | null;
   };
   weekly: { key: string; items: ChoreItem[]; resetsAt: number };
@@ -44,7 +44,7 @@ export type Checklist = {
   periodic: { items: (ChoreItem & { key: string | null; endsAt: number | null })[] };
 };
 
-/** The user's settings for one game (PRD FR3, Q1, Q2). */
+/** The user's settings for one game. */
 export type GamePrefs = {
   plays: boolean;
   region: Region;
@@ -190,7 +190,7 @@ export function checkCycle(
 const CYCLE_RETENTION_MS = 7 * DAY;
 
 /**
- * Applies resets and missed days (PRD FR28, FR29) and drops checks of cycles that ended more
+ * Applies resets and missed days and drops checks of cycles that ended more
  * than a week ago. Retention counts from when the app first saw the cycle as ended, not from
  * the cycle's end, so a wrong future clock must last a week before it removes anything; when
  * the clock moves back before a cycle's end, the cycle is open again. A period missing from the
@@ -265,7 +265,7 @@ export type RegionChange = {
   resumesAt: number;
 };
 
-/** Moves a game to another server (PRD Q1); also used to preview the confirmation. */
+/** Moves a game to another server; also used to preview the confirmation. */
 export function changeGameRegion(
   game: GameData,
   state: GameChores,

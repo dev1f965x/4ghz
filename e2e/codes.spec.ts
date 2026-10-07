@@ -134,3 +134,22 @@ test.describe("with no active codes", () => {
     await expectNoA11yViolations(app);
   });
 });
+
+test.describe("when the browser cannot be opened", () => {
+  test.use({ localFiles: { state: stateWithTab } });
+
+  test("says so next to the button, again on every failed try", async ({ app }) => {
+    await app.evaluate(() => {
+      (window as unknown as { __E2E_OPEN_FAILS__: boolean }).__E2E_OPEN_FAILS__ = true;
+    });
+    const button = app.getByRole("button", { name: /교환 페이지 열기|Open redemption page/ });
+    const alert = app
+      .getByRole("alert")
+      .filter({ hasText: /브라우저를 열지 못했습니다|browser couldn’t be opened/ });
+    await button.click();
+    await expect(alert).toBeVisible();
+    await button.click();
+    await expect(alert).toBeVisible();
+    await expectNoA11yViolations(app);
+  });
+});

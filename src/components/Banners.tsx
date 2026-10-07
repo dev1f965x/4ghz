@@ -1,11 +1,10 @@
-import { openUrl } from "@tauri-apps/plugin-opener";
 import { XIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
+import { ExternalLinkButton } from "@/components/ExternalLinkButton";
 import { OpenFolderButton } from "@/components/SettingsView";
 import { Button } from "@/components/ui/button";
 import { refreshData, useDataSync } from "@/data/store";
-import { logError } from "@/log";
 import { updateSettings, useLocalState } from "@/state/app-state";
 import { useAvailableUpdate } from "@/update/store";
 import { Banner } from "./Banner";
@@ -124,17 +123,9 @@ export function Banners({ onOpenSettings }: { onOpenSettings?: () => void }) {
           body={t("update.body", { version: update.version })}
           actions={
             <>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() =>
-                  openUrl(update.url).catch((error: unknown) =>
-                    logError("Opening the release page failed", error),
-                  )
-                }
-              >
+              <ExternalLinkButton url={update.url} variant="outline" size="sm">
                 {t("update.open")}
-              </Button>
+              </ExternalLinkButton>
               <Button
                 variant="ghost"
                 size="icon-sm"

@@ -19,6 +19,8 @@ import { useNow } from "@/hooks/useNow";
 import { advanceAllChores, updateSettings, useLocalState } from "@/state/app-state";
 import { type TabId, tabIds } from "@/state/schema";
 
+const FIRST_DATA_MARK = "first-data-render";
+
 export default function App() {
   const { t } = useTranslation();
   const { state } = useLocalState();
@@ -32,13 +34,20 @@ export default function App() {
   }, [game]);
 
   // Resets and missed days apply on start, every 30 seconds, and when the window regains focus
-  // or becomes visible (PRD FR29). A clock change or a resume that triggers neither is picked up
+  // or becomes visible. A clock change or a resume that triggers neither is picked up
   // by the next 30-second tick.
   const { data } = useDataSync();
   const now = useNow(30_000);
   useEffect(() => {
     if (data !== null) advanceAllChores(data, now);
   }, [data, now]);
+  // Marks when data is first on screen; the smoke test reads it to measure the startup target:
+  // cached data within 1 second of launch.
+  useEffect(() => {
+    if (data !== null && performance.getEntriesByName(FIRST_DATA_MARK).length === 0) {
+      performance.mark(FIRST_DATA_MARK);
+    }
+  }, [data]);
   const openSettings = useCallback(() => setView("settings"), []);
   const closeSettings = useCallback(() => {
     returnFocus.current = true;
@@ -80,8 +89,7 @@ export default function App() {
   const inSettings = view === "settings";
   return (
     <div className="flex min-h-svh flex-col">
-      {/* A panel with a hairline under it, as in the visual direction. */}
-      <header className="flex items-center gap-3 border-b bg-card px-4 py-2">
+      <header className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b bg-card px-4 py-2">
         <Mark />
         {inSettings ? (
           <Button variant="outline" onClick={closeSettings}>
@@ -92,7 +100,6 @@ export default function App() {
           <GameSelect game={game} onChange={(g) => void updateSettings({ lastGame: g })} />
         )}
         <SyncStatus />
-        {/* A toggle: pressed while Settings is open, with the accent tint of a pressed button. */}
         <Button
           ref={settingsButton}
           variant="outline"
@@ -117,7 +124,7 @@ export default function App() {
                 if (tabIds.includes(value)) void updateSettings({ lastTab: value });
               }}
             >
-              <div className="flex items-center justify-between gap-3">
+              <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
                 <TabsList variant="line">
                   {tabIds.map((id) => (
                     <TabsTrigger key={id} value={id}>

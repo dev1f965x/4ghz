@@ -6,7 +6,7 @@ import { fetchJson, findUpdate, type Release } from "./check";
 let release: Release | null = null;
 const listeners = new Set<() => void>();
 
-/** Checks once; a failure is logged and shows nothing (PRD Q8). */
+/** Checks once; a failure is logged and shows nothing. */
 export function startUpdateCheck() {
   findUpdate(__APP_VERSION__, fetchJson)
     .then(

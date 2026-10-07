@@ -1,7 +1,7 @@
-// state.json, the user's settings and history (Design Doc, "Local data"). Each story adds the
-// fields it needs. Until the first release nothing has been shipped, so v1 still grows; after it,
-// any added or changed field bumps schemaVersion with a migration in load.ts, because an older
-// app would strip unknown keys and lose them on its next save.
+// state.json, the user's settings and history. Until the first release nothing has been
+// shipped, so v1 still grows; after it, any added or changed field bumps schemaVersion with a
+// migration in load.ts, because an older app would strip unknown keys and lose them on its next
+// save.
 import { z } from "@/data/zod";
 import { locales } from "@/i18n/locale";
 import { regions } from "@/time/clock";
@@ -46,14 +46,14 @@ export const localStateSchema = z.object({
   settings: z.object({
     lastGame: z.enum(gameIds),
     lastTab: z.enum(tabIds),
-    /** The first-run notice to check the server and games (PRD Q9). */
+    /** The first-run notice to check the server and games. */
     firstRunNoticeDismissed: z.boolean(),
-    /** Only an explicit choice is stored; without one the Windows language applies (PRD FR4). */
+    /** Only an explicit choice is stored; without one the Windows language applies. */
     // An unknown value, such as a language a later version adds, falls back to Windows.
     locale: z.enum(locales).optional().catch(undefined),
-    /** The release whose update notice the user dismissed (PRD Q8). */
+    /** The release whose update notice the user dismissed. */
     dismissedUpdateVersion: z.string().optional(),
-    /** Whether the user plays each game and on which server (PRD Q1, Q2). */
+    /** Whether the user plays each game and on which server. */
     games: z
       .object({ genshin: gameSettings, hsr: gameSettings, zzz: gameSettings })
       .default(() => defaultGameSettings()),
@@ -63,13 +63,13 @@ export const localStateSchema = z.object({
       .default(() => ({ genshin: {}, hsr: {}, zzz: {} })),
   }),
   /**
-   * Codes the user marked as redeemed, by game (PRD Q4). Pre-release fields added after the
+   * Codes the user marked as redeemed, by game. Pre-release fields added after the
    * first state.json default when missing, so earlier files stay valid instead of read-only.
    */
   redeemedCodes: z
     .object({ genshin: z.array(z.string()), hsr: z.array(z.string()), zzz: z.array(z.string()) })
     .default(() => noRedeemedCodes()),
-  /** Day history and checks per game (Design Doc, "Time and reset logic"). */
+  /** Day history and checks per game. */
   chores: z
     .object({ genshin: gameChores, hsr: gameChores, zzz: gameChores })
     .default(() => noChores()),
@@ -104,4 +104,9 @@ export function defaultLocalState(): LocalState {
     redeemedCodes: noRedeemedCodes(),
     chores: noChores(),
   };
+}
+
+/** A value for every game, so per-game maps need no cast at each call. */
+export function mapGames<T>(value: (game: GameId) => T): Record<GameId, T> {
+  return { genshin: value("genshin"), hsr: value("hsr"), zzz: value("zzz") };
 }

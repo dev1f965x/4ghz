@@ -152,7 +152,7 @@ describe("days not fixed yet", () => {
     expect(day).toMatchObject({ status: "pending", games: { genshin: "done" } });
   });
 
-  it("follows a chore turned off during the day (PRD FR34)", () => {
+  it("follows a chore turned off during the day", () => {
     const chores = fresh(NOW);
     const off: GameData = {
       ...game,
@@ -171,5 +171,30 @@ describe("calendarToday", () => {
     expect(calendarToday({ genshin: america, hsr: ASIA, zzz: america }, NOW)).toBe("2026-10-06");
     const off = { ...ASIA, plays: false };
     expect(calendarToday({ genshin: america, hsr: off, zzz: america }, NOW)).toBe("2026-10-05");
+  });
+});
+
+describe("days before tracking", () => {
+  it("are not tracked, so they show nothing instead of no record", () => {
+    const input = { chores: fresh(NOW), games, prefs: PREFS, now: NOW };
+    expect(calendarDay(input, "2026-10-05", "2026-10").tracked).toBe(false);
+    expect(calendarDay(input, "2026-10-06", "2026-10").tracked).toBe(true);
+  });
+});
+
+describe("days before tracking with mixed settings", () => {
+  it("ignores games not played and takes the earliest start among the rest", () => {
+    const chores = fresh(NOW);
+    // HSR has records from September but is turned off now; ZZZ is on America.
+    chores.hsr = { ...chores.hsr, days: { "2026-09-20": { result: "done", fixedAt: NOW } } };
+    const prefs = {
+      ...PREFS,
+      hsr: { ...ASIA, plays: false },
+      zzz: { ...ASIA, region: "america" as const },
+    };
+    const input = { chores, games, prefs, now: NOW };
+    expect(calendarDay(input, "2026-09-20", "2026-09").tracked).toBe(false);
+    // Tracking began Oct 6 on every server, labelled Oct 6 in Asia and Oct 5 in America.
+    expect(calendarDay(input, "2026-10-05", "2026-10").tracked).toBe(true);
   });
 });

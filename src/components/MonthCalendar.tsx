@@ -16,13 +16,13 @@ import { useDataSync } from "@/data/store";
 import { useNow } from "@/hooks/useNow";
 import type { Locale } from "@/i18n/locale";
 import { allPrefs, useLocalState } from "@/state/app-state";
-import { gameIds } from "@/state/schema";
+import { type GameId, gameIds } from "@/state/schema";
 import { addDays, gameDayLabel, gameDayStart } from "@/time/clock";
 import { GRACE_MS } from "@/time/days";
 import { formatLabelLong, formatMonth, weekdayNames } from "@/time/format";
 
 /**
- * The month grid of completed days (PRD FR31 to FR36), a WAI-ARIA grid with a roving tabindex:
+ * The month grid of completed days, a WAI-ARIA grid with a roving tabindex:
  * arrows move by day and week, Home and End to the week's ends, Page Up and Page Down by month.
  * It needs no data file: stored days show without one.
  */
@@ -117,10 +117,13 @@ export function MonthCalendar() {
   const dayName = (day: CalendarDay) => {
     const parts = [formatLabelLong(day.label, locale)];
     if (day.status !== "past") parts.push(t(`calendar.dayStatus.${day.status}`));
-    const games =
+    // Upcoming days report nothing. Before tracking, only stored results, such as those of a game
+    // turned off later, are read, as only those show on screen.
+    const reported =
       day.status === "upcoming"
         ? []
-        : gameIds.map((g) => `${t(`game.${g}`)} ${markText(day.games[g], day.status)}`);
+        : gameIds.filter((g) => day.tracked || day.games[g] !== "none");
+    const games = reported.map((g) => `${t(`game.${g}`)} ${markText(day.games[g], day.status)}`);
     if (day.all) games.push(t("calendar.allDone"));
     return games.length > 0 ? `${parts.join(", ")}: ${games.join(", ")}` : parts.join(", ");
   };
@@ -213,7 +216,12 @@ export function MonthCalendar() {
         </tbody>
       </table>
 
-      <Legend />
+      {/* Games played, plus any game whose marks show in this month, such as one turned off. */}
+      <Legend
+        games={gameIds.filter(
+          (g) => prefs[g].plays || weeks.some((w) => w.some((d) => d.games[g] === "done")),
+        )}
+      />
       {readOnly !== null && (
         <p className="text-sm text-muted-foreground">{t("calendar.readOnly")}</p>
       )}
@@ -235,7 +243,8 @@ function shiftMonth(label: string, months: number) {
 // border and an hourglass, upcoming a dashed border, today an inverted date. Days of the next
 // or previous month are plain and muted, as in most calendars.
 function cellStyle(day: CalendarDay) {
-  if (!day.inMonth) return "border-transparent text-muted-foreground";
+  // In contrast themes a transparent border is drawn, so days of other months drop theirs.
+  if (!day.inMonth) return "border-transparent text-muted-foreground forced-colors:border-0";
   if (day.all) return "border-4 border-double border-foreground bg-muted";
   if (day.status === "pending") return "border-2 border-dotted border-foreground bg-card";
   if (day.status === "upcoming") return "border-dashed border-input text-muted-foreground";
@@ -262,6 +271,7 @@ function DayCell({
   const done = gameIds.filter((g) => day.games[g] === "done");
   const noRecord =
     day.inMonth &&
+    day.tracked &&
     (day.status === "past" || (readOnly && day.status !== "upcoming")) &&
     done.length === 0 &&
     gameIds.every((g) => day.games[g] === "none");
@@ -279,7 +289,10 @@ function DayCell({
       <span
         aria-hidden
         className={`inline-flex min-w-5 justify-center rounded-full px-1 ${
-          day.status === "today" ? "bg-foreground font-bold text-background" : ""
+          // The transparent border shows in contrast themes, where the fill is removed.
+          day.status === "today"
+            ? "border-2 border-transparent bg-foreground font-bold text-background"
+            : ""
         }`}
       >
         {Number(day.label.slice(8))}
@@ -301,12 +314,12 @@ function DayCell({
   );
 }
 
-function Legend() {
+function Legend({ games }: { games: GameId[] }) {
   const { t } = useTranslation();
   const sample = "inline-flex size-5 items-center justify-center rounded-sm border";
   return (
     <ul className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-muted-foreground">
-      {gameIds.map((g) => (
+      {games.map((g) => (
         <li key={g} className="inline-flex items-center gap-1.5">
           <GameMark game={g} />
           {t("calendar.legend.done", { game: t(`game.${g}`) })}
@@ -320,7 +333,10 @@ function Legend() {
         {t("calendar.legend.all")}
       </li>
       <li className="inline-flex items-center gap-1.5">
-        <span aria-hidden className="inline-block size-4 rounded-full bg-foreground" />
+        <span
+          aria-hidden
+          className="inline-block size-4 rounded-full border-2 border-transparent bg-foreground"
+        />
         {t("calendar.legend.today")}
       </li>
       <li className="inline-flex items-center gap-1.5">
