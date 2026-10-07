@@ -7,6 +7,7 @@ import { CodesTab } from "@/components/CodesTab";
 import { DataState } from "@/components/DataState";
 import { GameSelect } from "@/components/GameSelect";
 import { Mark } from "@/components/Mark";
+import { MonthCalendar } from "@/components/MonthCalendar";
 import { RedemptionLink } from "@/components/RedemptionLink";
 import { ScheduleTab } from "@/components/ScheduleTab";
 import { SettingsView } from "@/components/SettingsView";
@@ -129,12 +130,21 @@ export default function App() {
               </div>
               {tabIds.map((id) => (
                 <TabsContent key={id} value={id}>
-                  {/* The Calendar's content arrives with its stories (GHZ-18, GHZ-19). */}
-                  <DataState>
-                    {id === "schedule" && <ScheduleTab game={game} />}
-                    {id === "codes" && <CodesTab game={game} />}
-                    {id === "calendar" && <Checklist game={game} onOpenSettings={openSettings} />}
-                  </DataState>
+                  {id === "calendar" ? (
+                    // Side by side when wide, the grid below the checklist at 720 px. The grid
+                    // needs no data file, so it stays when the checklist cannot load.
+                    <div className="grid gap-4 lg:grid-cols-2">
+                      <DataState>
+                        <Checklist game={game} onOpenSettings={openSettings} />
+                      </DataState>
+                      <MonthCalendar />
+                    </div>
+                  ) : (
+                    <DataState>
+                      {id === "schedule" && <ScheduleTab game={game} />}
+                      {id === "codes" && <CodesTab game={game} />}
+                    </DataState>
+                  )}
                 </TabsContent>
               ))}
             </Tabs>

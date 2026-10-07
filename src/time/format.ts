@@ -91,3 +91,32 @@ export function formatRange(start: number, end: number, locale: Locale, timeZone
     : formatDateTime(end, locale, timeZone);
   return `${formatDateTime(start, locale, timeZone)} – ${to}`;
 }
+
+/** "2026-10" as "October 2026" / "2026년 10월". */
+export function formatMonth(month: string, locale: Locale) {
+  return new Intl.DateTimeFormat(locale === "ko" ? "ko-KR" : "en-US", {
+    year: "numeric",
+    month: "long",
+    timeZone: "UTC",
+  }).format(Date.parse(`${month}-01T00:00:00Z`));
+}
+
+/** A game-day label as "Tuesday, October 6" / "10월 6일 화요일", for a day's accessible name. */
+export function formatLabelLong(label: string, locale: Locale) {
+  return new Intl.DateTimeFormat(locale === "ko" ? "ko-KR" : "en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    timeZone: "UTC",
+  }).format(Date.parse(`${label}T00:00:00Z`));
+}
+
+/** Short weekday names from Monday, as the month grid's column headers. */
+export function weekdayNames(locale: Locale) {
+  const format = new Intl.DateTimeFormat(locale === "ko" ? "ko-KR" : "en-US", {
+    weekday: "short",
+    timeZone: "UTC",
+  });
+  // 2026-10-05 is a Monday.
+  return Array.from({ length: 7 }, (_, i) => format.format(Date.UTC(2026, 9, 5 + i)));
+}

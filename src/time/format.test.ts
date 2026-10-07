@@ -2,10 +2,13 @@ import { describe, expect, it } from "vitest";
 import {
   formatDateTime,
   formatDateTimeWithWeekday,
+  formatLabelLong,
+  formatMonth,
   formatRange,
   formatUpdated,
   isTomorrow,
   timeLeft,
+  weekdayNames,
 } from "./format";
 
 describe("formatDateTime", () => {
@@ -115,5 +118,16 @@ describe("formatDateTimeWithWeekday", () => {
     const reset = Date.parse("2026-10-11T20:00:00Z");
     expect(formatDateTimeWithWeekday(reset, "ko", "Asia/Seoul")).toBe("10월 12일 (월) 05:00");
     expect(formatDateTimeWithWeekday(reset, "en", "Asia/Seoul")).toBe("Mon, Oct 12, 05:00");
+  });
+});
+
+describe("calendar formats", () => {
+  it("names months, days, and weekdays in both languages", () => {
+    expect(formatMonth("2026-10", "ko")).toBe("2026년 10월");
+    expect(formatMonth("2026-10", "en")).toBe("October 2026");
+    expect(formatLabelLong("2026-10-06", "ko")).toBe("10월 6일 화요일");
+    expect(formatLabelLong("2026-10-06", "en")).toBe("Tuesday, October 6");
+    expect(weekdayNames("ko")).toEqual(["월", "화", "수", "목", "금", "토", "일"]);
+    expect(weekdayNames("en")[0]).toBe("Mon");
   });
 });
