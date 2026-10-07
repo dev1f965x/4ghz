@@ -33,10 +33,11 @@ Each release lists the installer's SHA-256 checksum in `<installer>.sha256`. In 
 
 The result must match the checksum file (letter case aside).
 
-The installer also has a build provenance attestation, which proves it was built by this repository's release workflow from the tagged commit. With the [GitHub CLI](https://cli.github.com/):
+The installer also has a build provenance attestation, signed when this repository's release workflow built it from the version tag. With the [GitHub CLI](https://cli.github.com/):
 
 ```powershell
-gh attestation verify .\4GHz_<version>_x64-setup.exe --repo dev1f965x/4ghz
+gh attestation verify .\4GHz_<version>_x64-setup.exe --repo dev1f965x/4ghz `
+  --signer-workflow dev1f965x/4ghz/.github/workflows/release.yml --source-ref refs/tags/v<version>
 ```
 
 ### Uninstall
@@ -49,7 +50,7 @@ Uninstall 4GHz in **Settings > Apps > Installed apps**. Your records stay in `%L
 
 - **Stored on your PC only:** your settings, checked chores, completed days, redeemed codes, and a copy of the downloaded data, in `%LOCALAPPDATA%\io.github.dev1f965x.4ghz`. Warnings and errors are logged to the `logs` folder there, at most three files of 1 MB.
 - **Network requests:** the app downloads the schedule and code data from `dev1f965x.github.io` and checks `api.github.com` for a new release. These are plain downloads; like any web request, GitHub receives your IP address under [GitHub's privacy statement](https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement).
-- **Links:** announcements and redemption pages open in your browser, on the publishers' sites.
+- **Links:** announcements, redemption pages, and release pages open in your browser, on the publishers' sites or GitHub.
 
 ## Data accuracy
 
@@ -94,8 +95,8 @@ Run `mise install` once in the repository to get the pinned tools, then `pnpm in
 
 ### Release
 
-1. Set the version in `package.json` and move the changes in `CHANGELOG.md` under a heading for that version.
-2. Push a tag for that version, for example `git tag v0.1.0 && git push origin v0.1.0`.
+1. In a pull request, set the version in `package.json`, move the changes in `CHANGELOG.md` under a heading for that version with the release date, and update the comparison links at the end. Merge it.
+2. Tag the merged commit on main and push the tag, for example `git tag v0.1.0 origin/main && git push origin v0.1.0`. The workflow stops if the tag does not match the version, is not on main, or already has a release. To redo a tag, delete it with `git push --delete origin v0.1.0` and `git tag -d v0.1.0`.
 3. The Release workflow checks the build, attaches the installer, its checksum, and a build provenance attestation to a draft release, and uses the CHANGELOG section as the notes. Review the draft on GitHub and publish it.
 
 ## License

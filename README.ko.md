@@ -15,7 +15,7 @@
 
 ## 설치
 
-64비트 Windows 11이 필요합니다. Windows 10에서도 동작할 것으로 보지만 시험하지는 않았습니다.
+64비트 Windows 11이 필요합니다. Windows 10에서도 동작할 것으로 보지만 테스트하지는 않았습니다.
 
 1. [최신 릴리스](https://github.com/dev1f965x/4ghz/releases/latest)에서 `4GHz_<버전>_x64-setup.exe`를 내려받습니다.
 2. 실행합니다. 현재 Windows 계정에만 설치되며 관리자 권한을 요구하지 않습니다.
@@ -33,10 +33,11 @@
 
 결과가 체크섬 파일과 같아야 합니다(대소문자는 무시).
 
-설치 파일에는 빌드 출처 증명(attestation)도 있습니다. 이 저장소의 릴리스 워크플로가 태그된 커밋에서 빌드했다는 증명입니다. [GitHub CLI](https://cli.github.com/)로 확인합니다.
+설치 파일에는 빌드 출처 증명(attestation)도 있습니다. 이 저장소의 릴리스 워크플로가 버전 태그에서 빌드할 때 서명한 증명입니다. [GitHub CLI](https://cli.github.com/)로 확인합니다.
 
 ```powershell
-gh attestation verify .\4GHz_<버전>_x64-setup.exe --repo dev1f965x/4ghz
+gh attestation verify .\4GHz_<버전>_x64-setup.exe --repo dev1f965x/4ghz `
+  --signer-workflow dev1f965x/4ghz/.github/workflows/release.yml --source-ref refs/tags/v<버전>
 ```
 
 ### 삭제
@@ -49,7 +50,7 @@ gh attestation verify .\4GHz_<버전>_x64-setup.exe --repo dev1f965x/4ghz
 
 - **이 PC에만 저장:** 설정, 체크한 숙제, 숙제를 끝낸 날, 교환한 코드, 내려받은 데이터의 사본을 `%LOCALAPPDATA%\io.github.dev1f965x.4ghz`에 저장합니다. 경고와 오류는 그 안의 `logs` 폴더에 최대 1 MB 파일 세 개까지 남깁니다.
 - **네트워크 요청:** 일정과 코드 데이터를 `dev1f965x.github.io`에서 내려받고, 새 릴리스가 있는지 `api.github.com`에서 확인합니다. 일반 다운로드이며, 다른 웹 요청처럼 GitHub는 [GitHub 개인정보처리방침](https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement)에 따라 IP 주소를 받습니다.
-- **링크:** 공지와 교환 페이지는 브라우저에서 각 퍼블리셔 사이트로 열립니다.
+- **링크:** 공지, 교환 페이지, 릴리스 페이지는 브라우저에서 각 퍼블리셔 사이트나 GitHub로 열립니다.
 
 ## 데이터 정확성
 
@@ -68,8 +69,8 @@ gh attestation verify .\4GHz_<버전>_x64-setup.exe --repo dev1f965x/4ghz
 
 ### 릴리스
 
-1. `package.json`의 버전을 정하고, `CHANGELOG.md`의 변경 사항을 그 버전의 제목 아래로 옮깁니다.
-2. 그 버전의 태그를 푸시합니다. 예: `git tag v0.1.0 && git push origin v0.1.0`
+1. 풀 리퀘스트에서 `package.json`의 버전을 정하고, `CHANGELOG.md`의 변경 사항을 출시일을 적은 그 버전의 제목 아래로 옮기고, 끝의 비교 링크를 고친 다음 머지합니다.
+2. main에 머지된 커밋에 태그를 붙여 푸시합니다. 예: `git tag v0.1.0 origin/main && git push origin v0.1.0`. 태그가 버전과 다르거나, main에 없거나, 이미 릴리스가 있으면 워크플로가 멈춥니다. 태그를 다시 만들려면 `git push --delete origin v0.1.0`과 `git tag -d v0.1.0`으로 지웁니다.
 3. Release 워크플로가 빌드를 검사하고, 설치 파일과 체크섬, 빌드 출처 증명을 초안 릴리스에 첨부하며, CHANGELOG 내용을 릴리스 노트로 씁니다. GitHub에서 초안을 확인하고 게시합니다.
 
 ## 라이선스
