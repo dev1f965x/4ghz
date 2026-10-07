@@ -127,7 +127,7 @@ function Row({
       {/* Space kept on every card so times line up; the arrow marks cards that open. */}
       <span aria-hidden className="w-4 shrink-0 text-muted-foreground">
         {url && (
-          <ArrowUpRightIcon className="size-4 opacity-50 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100" />
+          <ArrowUpRightIcon className="size-4 opacity-75 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100" />
         )}
       </span>
     </>

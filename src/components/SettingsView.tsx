@@ -45,11 +45,11 @@ import { formatDateTime, formatLabelDate } from "@/time/format";
 
 type Section = GameId | "language" | "display" | "data" | "about";
 
-/** Settings: each game, the language, the local data, and About. */
 /** The selected section is filled, outlined, and bold; contrast themes highlight it instead (index.css). */
 const trigger =
   "justify-start px-3 py-1.5 data-active:border-input data-active:bg-muted data-active:font-semibold dark:data-active:bg-muted";
 
+/** Settings: each game, the language, the local data, and About. */
 export function SettingsView({ game }: { game: GameId }) {
   const { t } = useTranslation();
   const heading = useRef<HTMLHeadingElement>(null);

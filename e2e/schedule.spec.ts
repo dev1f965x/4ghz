@@ -102,9 +102,12 @@ test.describe("with no entries", () => {
 });
 
 test("every card reacts to the pointer, with or without an announcement", async ({ app }) => {
-  const cards = app.getByRole("main").getByRole("listitem");
-  // The second ongoing entry has no announcement, so the card itself is the list item.
-  const plain = cards.nth(1);
+  // Spiral Abyss has no announcement, so the card itself is the list item.
+  const plain = app
+    .getByRole("main")
+    .getByRole("listitem")
+    .filter({ hasText: /나선 비경|Spiral Abyss/ })
+    .first();
   await expect(plain.getByRole("button")).toHaveCount(0);
   const border = () => plain.evaluate((e) => getComputedStyle(e).borderTopColor);
   const rest = await border();
