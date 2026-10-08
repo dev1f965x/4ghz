@@ -43,7 +43,7 @@
         <li><a href="#필요한-것">필요한 것</a></li>
         <li><a href="#설치">설치</a></li>
         <li><a href="#내려받은-파일-검증">내려받은 파일 검증</a></li>
-        <li><a href="#삭제">삭제</a></li>
+        <li><a href="#제거">제거</a></li>
       </ul>
     </li>
     <li><a href="#사용법">사용법</a></li>
@@ -64,6 +64,8 @@
 </details>
 
 ## 프로젝트 소개
+
+![원신의 진행 중인 일정과 예정된 일정, 남은 시간을 보여 주는 일정 탭][product-screenshot]
 
 원신, 붕괴: 스타레일, 젠레스 존 제로의 일정, 코드, 숙제 캘린더를 보여 주는 비공식 Windows 앱입니다.
 
@@ -114,7 +116,7 @@ gh attestation verify .\4GHz_<버전>_x64-setup.exe --repo dev1f965x/4ghz `
   --signer-workflow dev1f965x/4ghz/.github/workflows/release.yml --source-ref refs/tags/v<버전>
 ```
 
-### 삭제
+### 제거
 
 **설정 > 앱 > 설치된 앱**에서 4GHz를 제거합니다. 제거 프로그램에서 앱 데이터 삭제를 선택하지 않으면 기록은 `%LOCALAPPDATA%\io.github.dev1f965x.4ghz`에 남습니다.
 
@@ -162,7 +164,11 @@ gh attestation verify .\4GHz_<버전>_x64-setup.exe --repo dev1f965x/4ghz `
 - 저장소가 고정한 Node.js, pnpm, cargo-deny, cargo-about 버전을 설치하는 mise
 - E2E 테스트용 Microsoft Edge (Windows 11에 포함)
 
-저장소에서 `mise install`을 한 번 실행해 고정된 도구를 설치한 뒤 `pnpm install`을 실행하세요. 명령은 [README.md](README.md#development)의 표를 따릅니다. 스모크 테스트도 [README.md](README.md#smoke-test)에 있습니다.
+저장소에서 `mise install`을 한 번 실행해 고정된 도구를 설치한 뒤 `pnpm install`을 실행하세요.
+
+명령 목록은 [README.md](README.md#development)의 표를 따릅니다. 스모크 테스트도 [README.md](README.md#smoke-test)에 있습니다.
+
+<p align="right">(<a href="#readme-top">맨 위로</a>)</p>
 
 ### 릴리스
 
@@ -207,6 +213,7 @@ gh attestation verify .\4GHz_<버전>_x64-setup.exe --repo dev1f965x/4ghz `
 [issues-url]: https://github.com/dev1f965x/4ghz/issues
 [license-shield]: https://img.shields.io/github/license/dev1f965x/4ghz?style=for-the-badge
 [license-url]: LICENSE
+[product-screenshot]: docs/screenshot-ko.png
 [tauri-shield]: https://img.shields.io/badge/Tauri_2-24C8D8?style=for-the-badge&logo=tauri&logoColor=white
 [tauri-url]: https://tauri.app/
 [rust-shield]: https://img.shields.io/badge/Rust-000000?style=for-the-badge&logo=rust&logoColor=white

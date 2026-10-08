@@ -66,6 +66,8 @@
 
 ## About The Project
 
+![The Schedule tab for Genshin Impact with ongoing and upcoming events and their countdowns][product-screenshot]
+
 An unofficial Windows app with schedules, redeem codes, and a chore calendar for Genshin Impact, Honkai: Star Rail, and Zenless Zone Zero.
 
 4GHz is not affiliated with or endorsed by the publishers or owners of these games. Genshin Impact, Honkai: Star Rail, and Zenless Zone Zero are trademarks of their respective owners.
@@ -185,6 +187,8 @@ Run `mise install` once in the repository to get the pinned tools, then `pnpm in
 | `pnpm build` | Type check and build only the web frontend |
 | `pnpm tauri <command>` | Run other Tauri CLI commands, for example `pnpm tauri icon design/icon/app-icon.svg` |
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 ### Smoke test
 
 `pnpm app:build:e2e` builds a copy of the app in `src-tauri/target/e2e` whose WebView2 opens a debugging port; it is never shipped. It has its own identifier, so its records stay apart from an installed copy. Its window settings repeat `tauri.conf.json` in `src-tauri/tauri.e2e.conf.json`, so change both together.
@@ -234,6 +238,7 @@ Project link: <https://github.com/dev1f965x/4ghz>
 [issues-url]: https://github.com/dev1f965x/4ghz/issues
 [license-shield]: https://img.shields.io/github/license/dev1f965x/4ghz?style=for-the-badge
 [license-url]: LICENSE
+[product-screenshot]: docs/screenshot-en.png
 [tauri-shield]: https://img.shields.io/badge/Tauri_2-24C8D8?style=for-the-badge&logo=tauri&logoColor=white
 [tauri-url]: https://tauri.app/
 [rust-shield]: https://img.shields.io/badge/Rust-000000?style=for-the-badge&logo=rust&logoColor=white
