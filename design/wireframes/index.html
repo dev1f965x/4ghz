@@ -324,8 +324,10 @@ const screens = {
   "settings-data": () => [header({ settings: true }), "", "", settings("data")],
   "settings-about": () => [header({ settings: true }), "", "", settings("about")],
 };
-const [h, b, t, body, overlay = ""] = (screens[s] || screens.schedule)();
-document.getElementById("root").innerHTML = `<div class="app">${h}<div class="banners">${b}</div>${t}<main>${body}</main></div>${overlay}<span class="note">wireframe · ${s}${en ? " · en" : ""}</span>`;
+// Only a known screen name is used, so the query string never reaches a call or the markup.
+const name = Object.hasOwn(screens, s) ? s : "schedule";
+const [h, b, t, body, overlay = ""] = screens[name]();
+document.getElementById("root").innerHTML = `<div class="app">${h}<div class="banners">${b}</div>${t}<main>${body}</main></div>${overlay}<span class="note">wireframe · ${name}${en ? " · en" : ""}</span>`;
 </script>
 </body>
 </html>
