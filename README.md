@@ -1,21 +1,96 @@
-# 4GHz
+<a id="readme-top"></a>
 
-English | [한국어](README.ko.md)
+[![CI][ci-shield]][ci-url]
+[![Release][release-shield]][release-url]
+[![Issues][issues-shield]][issues-url]
+[![License][license-shield]][license-url]
+
+<br />
+<div align="center">
+  <a href="https://github.com/dev1f965x/4ghz/releases/latest">
+    <img src="design/icon/app-icon.svg" alt="4GHz logo" width="80" height="80">
+  </a>
+
+<h3 align="center">4GHz</h3>
+
+  <p align="center">
+    An unofficial Windows app with schedules, redeem codes, and a chore calendar for Genshin Impact, Honkai: Star Rail, and Zenless Zone Zero.
+    <br />
+    English | <a href="README.ko.md">한국어</a>
+    <br />
+    <br />
+    <a href="https://github.com/dev1f965x/4ghz/releases/latest"><strong>Download »</strong></a>
+    <br />
+    <br />
+    <a href="https://github.com/dev1f965x/4ghz/issues/new?template=bug_report.yml">Report a bug</a>
+    &middot;
+    <a href="https://github.com/dev1f965x/4ghz/issues/new?template=feature_request.yml">Request a feature</a>
+  </p>
+</div>
+
+<details>
+  <summary>Table of Contents</summary>
+  <ol>
+    <li>
+      <a href="#about-the-project">About The Project</a>
+      <ul>
+        <li><a href="#built-with">Built With</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#getting-started">Getting Started</a>
+      <ul>
+        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#installation">Installation</a></li>
+        <li><a href="#verify-the-download">Verify the download</a></li>
+        <li><a href="#uninstall">Uninstall</a></li>
+      </ul>
+    </li>
+    <li><a href="#usage">Usage</a></li>
+    <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#privacy">Privacy</a></li>
+    <li><a href="#data-accuracy">Data accuracy</a></li>
+    <li>
+      <a href="#development">Development</a>
+      <ul>
+        <li><a href="#smoke-test">Smoke test</a></li>
+        <li><a href="#release">Release</a></li>
+      </ul>
+    </li>
+    <li><a href="#contributing">Contributing</a></li>
+    <li><a href="#license">License</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="#acknowledgments">Acknowledgments</a></li>
+  </ol>
+</details>
+
+## About The Project
 
 An unofficial Windows app with schedules, redeem codes, and a chore calendar for Genshin Impact, Honkai: Star Rail, and Zenless Zone Zero.
 
 4GHz is not affiliated with or endorsed by the publishers or owners of these games. Genshin Impact, Honkai: Star Rail, and Zenless Zone Zero are trademarks of their respective owners.
 
-## Features
+Changes are listed in the [changelog](CHANGELOG.md).
 
-- **Schedule:** ongoing and upcoming events, end content, and livestreams for each game, with a live countdown. Entries with an announcement open it in your browser.
-- **Codes:** active redeem codes to copy, with a link to each game's redemption page. Mark codes you have redeemed.
-- **Calendar:** a checklist of daily, weekly, and periodic chores that resets at your server's reset time, and a month view of the days you finished them.
-- **Settings:** the games you play, your server for each game, which chores to track, the language (English or Korean), and whether countdowns show seconds.
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-## Install
+### Built With
+
+* [![Tauri][tauri-shield]][tauri-url]
+* [![Rust][rust-shield]][rust-url]
+* [![React][react-shield]][react-url]
+* [![TypeScript][typescript-shield]][typescript-url]
+* [![Tailwind CSS][tailwind-shield]][tailwind-url]
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## Getting Started
+
+### Prerequisites
 
 Requires 64-bit Windows 11. Windows 10 is expected to work but is not tested.
+
+### Installation
 
 1. Download `4GHz_<version>_x64-setup.exe` from the [latest release](https://github.com/dev1f965x/4ghz/releases/latest).
 2. Run it. It installs for your Windows account only and does not ask for administrator rights.
@@ -44,6 +119,25 @@ gh attestation verify .\4GHz_<version>_x64-setup.exe --repo dev1f965x/4ghz `
 
 Uninstall 4GHz in **Settings > Apps > Installed apps**. Your records stay in `%LOCALAPPDATA%\io.github.dev1f965x.4ghz` unless you choose to delete app data in the uninstaller.
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## Usage
+
+- **Schedule:** ongoing and upcoming events, endgame, and livestreams for each game, with a live countdown. Entries with an announcement open it in your browser.
+- **Codes:** active redeem codes to copy, with a link to each game's redemption page. Mark codes you have redeemed.
+- **Calendar:** a checklist of daily, weekly, and periodic chores that resets at your server's reset time, and a month view of the days you finished them.
+- **Settings:** the games you play, your server for each game, which chores to track, the language (English or Korean), and whether countdowns show seconds.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## Roadmap
+
+- [x] Schedule, codes, chore calendar, settings, a new-version notice, and offline use of downloaded data (0.1.0)
+
+Feature requests go to [GitHub Issues](https://github.com/dev1f965x/4ghz/issues/new?template=feature_request.yml).
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 ## Privacy
 
 4GHz has no account and collects no personal data, usage data, or crash reports. It sends nothing about you anywhere.
@@ -52,9 +146,13 @@ Uninstall 4GHz in **Settings > Apps > Installed apps**. Your records stay in `%L
 - **Network requests:** the app downloads the schedule and code data from `dev1f965x.github.io` and checks `api.github.com` for a new release. These are plain downloads; like any web request, GitHub receives your IP address under [GitHub's privacy statement](https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement).
 - **Links:** announcements, redemption pages, and release pages open in your browser, on the publishers' sites or GitHub.
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 ## Data accuracy
 
 Schedules and codes are collected by hand from official announcements and may be late or wrong. Times marked as estimated are guesses based on past patterns. Check the official announcement when a time matters.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Development
 
@@ -99,6 +197,50 @@ Run `mise install` once in the repository to get the pinned tools, then `pnpm in
 2. Tag the merged commit on main and push the tag, for example `git tag v0.1.0 origin/main && git push origin v0.1.0`. The workflow stops if the tag does not match the version, is not on main, or already has a release. To redo a tag, delete it with `git push --delete origin v0.1.0` and `git tag -d v0.1.0`.
 3. The Release workflow checks the build, attaches the installer, its checksum, and a build provenance attestation to a draft release, and uses the CHANGELOG section as the notes. Review the draft on GitHub and publish it.
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## Contributing
+
+Bug reports and feature requests go to [GitHub Issues](https://github.com/dev1f965x/4ghz/issues/new/choose), which has a template for each. Report security issues privately as described in [SECURITY.md](SECURITY.md).
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 ## License
 
-[MIT](LICENSE)
+Distributed under the [MIT License](LICENSE). The app's About screen shows the third-party notices, which `pnpm app:build` generates into `public/third-party-notices.txt`.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## Contact
+
+Project link: <https://github.com/dev1f965x/4ghz>
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## Acknowledgments
+
+* [Best-README-Template](https://github.com/othneildrew/Best-README-Template), the layout of this README
+* [shadcn/ui](https://ui.shadcn.com) and [Base UI](https://base-ui.com), the UI components
+* [Lucide](https://lucide.dev), the icons
+* [Pretendard](https://github.com/orioncactus/pretendard) and [JetBrains Mono](https://www.jetbrains.com/lp/mono/), the typefaces
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+[ci-shield]: https://img.shields.io/github/actions/workflow/status/dev1f965x/4ghz/ci.yml?branch=main&style=for-the-badge&label=CI
+[ci-url]: https://github.com/dev1f965x/4ghz/actions/workflows/ci.yml
+[release-shield]: https://img.shields.io/github/v/release/dev1f965x/4ghz?style=for-the-badge
+[release-url]: https://github.com/dev1f965x/4ghz/releases
+[issues-shield]: https://img.shields.io/github/issues/dev1f965x/4ghz?style=for-the-badge
+[issues-url]: https://github.com/dev1f965x/4ghz/issues
+[license-shield]: https://img.shields.io/github/license/dev1f965x/4ghz?style=for-the-badge
+[license-url]: LICENSE
+[tauri-shield]: https://img.shields.io/badge/Tauri_2-24C8D8?style=for-the-badge&logo=tauri&logoColor=white
+[tauri-url]: https://tauri.app/
+[rust-shield]: https://img.shields.io/badge/Rust-000000?style=for-the-badge&logo=rust&logoColor=white
+[rust-url]: https://www.rust-lang.org/
+[react-shield]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
+[react-url]: https://react.dev/
+[typescript-shield]: https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white
+[typescript-url]: https://www.typescriptlang.org/
+[tailwind-shield]: https://img.shields.io/badge/Tailwind_CSS-0F172A?style=for-the-badge&logo=tailwindcss&logoColor=38BDF8
+[tailwind-url]: https://tailwindcss.com/
